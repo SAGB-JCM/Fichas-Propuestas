@@ -929,8 +929,7 @@
                 // Usar onSnapshot para escuchar cambios en tiempo real
                 documentsCollection.where('userId', '==', currentUserId)
                     .orderBy('createdAt', 'desc')
-                    .onSnapshot(
-                    .then((querySnapshot) => {
+                    .onSnapshot((querySnapshot) => {
                         currentDocuments = [];
                         const documentsContainer = document.getElementById('documentsContainer');
                         
@@ -963,11 +962,10 @@
                         // Aplicar filtro según la pestaña activa
                         const activeTab = document.querySelector('.tab-active').dataset.tab;
                         filterDocuments(activeTab);
-                    })
-                    .catch((error) => {
+                    }, (error) => {
                         console.error('Error obteniendo documentos:', error);
                         showToast('Error al cargar las fichas. Inténtalo de nuevo.', 'error');
-                    }));
+                    });
             }
 
             // Filtrar documentos
