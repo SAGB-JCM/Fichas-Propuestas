@@ -1289,19 +1289,27 @@
             // Mostrar notificación toast
             function showToast(message, type = 'success') {
                 const toast = document.getElementById('toast');
+                const toastContainer = toast.querySelector('div');
                 const toastMessage = document.getElementById('toastMessage');
                 
                 toastMessage.textContent = message;
                 
-                // Cambiar icono según el tipo
-                const icon = toast.querySelector('i');
+                // Eliminar icono anterior si existe
+                const oldIcon = toastContainer.querySelector('i');
+                if (oldIcon) {
+                    oldIcon.remove();
+                }
+
+                // Crear y añadir el nuevo icono dinámicamente
+                const icon = document.createElement('i');
+                icon.className = 'w-5 h-5 mr-2';
+                toastContainer.prepend(icon);
+
                 if (type === 'error') {
                     icon.setAttribute('data-feather', 'alert-circle');
-                    icon.classList.remove('text-green-400');
                     icon.classList.add('text-red-400');
                 } else {
                     icon.setAttribute('data-feather', 'check-circle');
-                    icon.classList.remove('text-red-400');
                     icon.classList.add('text-green-400');
                 }
                 feather.replace();
