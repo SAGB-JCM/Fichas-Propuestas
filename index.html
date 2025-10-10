@@ -922,13 +922,14 @@
             // Cargar documentos desde Firestore
             function loadDocuments() {
                 if (!currentUserId) {
-                    console.log("Esperando ID de usuario para cargar documentos...");
+                    console.log("Esperando ID de usuario...");
                     return;
                 }
-
+            
+                // Usar onSnapshot para escuchar cambios en tiempo real
                 documentsCollection.where('userId', '==', currentUserId)
                     .orderBy('createdAt', 'desc')
-                    .get()
+                    .onSnapshot(
                     .then((querySnapshot) => {
                         currentDocuments = [];
                         const documentsContainer = document.getElementById('documentsContainer');
@@ -966,7 +967,7 @@
                     .catch((error) => {
                         console.error('Error obteniendo documentos:', error);
                         showToast('Error al cargar las fichas. Inténtalo de nuevo.', 'error');
-                    });
+                    }));
             }
 
             // Filtrar documentos
