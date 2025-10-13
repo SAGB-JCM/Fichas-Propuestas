@@ -1866,15 +1866,136 @@
                         </tr>
                         <tr>
                             <th class="font-bold">Transparencia Presupuestaria</th>
-                            <td class="formatted-content" colspan="5">${ficha.transparenciaPresupuestaria || 'N/A'}</td>
+                            <td class="formatted-content" colspan="5">
+                                ${ficha.transparenciaPresupuestaria || 'N/A'}
+                                ${(() => {
+                                    if (ficha.programasPresupuestarios && ficha.programasPresupuestarios.length > 0) {
+                                        let mirHTML = `
+                                            <div class="mt-4 text-sm">
+                                                <h4 class="font-semibold text-primary mb-3">Tabla MIR - Programas Presupuestarios y Proyectos de Inversión</h4>
+                                                <div class="bg-white p-2 rounded border">
+                                                    <table class="sub-table">
+                                                        <thead>
+                                                            <tr class="bg-primary text-white font-extrabold">
+                                                                <th>Programas Presupuestarios /<br> Proyectos de Inversión</th>
+                                                                <th>Monto Aprobado (MDP)</th>
+                                                                <th>Monto Modificado (MDP)</th>
+                                                                <th>Monto Pagado (MDP)</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>`;
+                                        let granTotalAprobado = 0, granTotalModificado = 0, granTotalPagado = 0;
+                                        ficha.programasPresupuestarios.forEach(pp => {
+                                            let totalAprobado = 0, totalModificado = 0, totalPagado = 0;
+                                            pp.proyectos.forEach(proyecto => {
+                                                totalAprobado += parseFloat(proyecto.montoAprobado) || 0;
+                                                totalModificado += parseFloat(proyecto.montoModificado) || 0;
+                                                totalPagado += parseFloat(proyecto.montoPagado) || 0;
+                                            });
+                                            granTotalAprobado += totalAprobado;
+                                            granTotalModificado += totalModificado;
+                                            granTotalPagado += totalPagado;
+                                            mirHTML += `<tr class="font-bold bg-slate-100"><td class="text-center">${pp.nombre || 'Programa Presupuestario'}</td><td>${totalAprobado.toFixed(2)}</td><td>${totalModificado.toFixed(2)}</td><td>${totalPagado.toFixed(2)}</td></tr>`;
+                                            pp.proyectos.forEach(proyecto => {
+                                                mirHTML += `<tr class="hover:bg-gray-50"><td class="pl-8 text-left-important">${proyecto.nombre || ''}</td><td>${proyecto.montoAprobado || 0}</td><td>${proyecto.montoModificado || 0}</td><td>${proyecto.montoPagado || 0}</td></tr>`;
+                                            });
+                                        });
+                                        mirHTML += `<tr class="font-extrabold bg-primary text-white"><td class="text-center">TOTAL GENERAL</td><td>${granTotalAprobado.toFixed(2)}</td><td>${granTotalModificado.toFixed(2)}</td><td>${granTotalPagado.toFixed(2)}</td></tr>`;
+                                        mirHTML += `</tbody></table></div></div>`;
+                                        return mirHTML;
+                                    }
+                                    return '';
+                                })()}
+                            </td>
                         </tr>
                         <tr>
                             <th class="font-bold">Licitaciones</th>
-                            <td class="formatted-content" colspan="5">${ficha.licitaciones || 'N/A'}</td>
+                            <td class="formatted-content" colspan="5">
+                                ${ficha.licitaciones || 'N/A'}
+                                ${(() => {
+                                    if (ficha.licitacionesData && ficha.licitacionesData.length > 0) {
+                                        let licHTML = `
+                                            <div class="mt-4 text-sm">
+                                                <h4 class="font-semibold text-primary mb-3">Licitaciones Identificadas</h4>
+                                                <div class="bg-white p-2 rounded border">
+                                                    <table class="sub-table">
+                                                        <thead class="bg-primary text-white font-extrabold">
+                                                            <tr class="bg-primary text-white font-extrabold">
+                                                                <th>Concepto</th>
+                                                                <th>Programado</th>
+                                                                <th>Estatus</th>
+                                                                <th>No. de Oficio</th>
+                                                                <th>Fecha de Fallo</th>
+                                                                <th>Importe Adjudicado</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>`;
+                                        ficha.licitacionesData.forEach(licitacion => {
+                                            licHTML += `
+                                                <tr>
+                                                    <td class="text-left-important">${licitacion.concepto || ''}</td>
+                                                    <td>${licitacion.programado || ''}</td>
+                                                    <td>${licitacion.estatus || ''}</td>
+                                                    <td>${licitacion.numeroOficio || ''}</td>
+                                                    <td>${licitacion.fechaFallo || ''}</td>
+                                                    <td>${formatCurrency(licitacion.importeAdjudicado)}</td>
+                                                </tr>
+                                            `;
+                                        });
+                                        licHTML += `</tbody></table></div></div>`;
+                                        return licHTML;
+                                    }
+                                    return '';
+                                })()}
+                            </td>
                         </tr>
                         <tr>
                             <th class="font-bold">Indicadores</th>
-                            <td class="formatted-content" colspan="5">${ficha.indicadores || 'N/A'}</td>
+                            <td class="formatted-content" colspan="5">
+                                ${ficha.indicadores || 'N/A'}
+                                ${(() => {
+                                    if (ficha.nivelesIndicadores && ficha.nivelesIndicadores.length > 0) {
+                                        let indHTML = `
+                                            <div class="mt-4 text-sm">
+                                                <h4 class="font-semibold text-primary mb-3">Tabla de Indicadores</h4>
+                                                <div class="bg-white p-2 rounded border overflow-x-auto">
+                                                    <table class="sub-table">
+                                                        <thead class="bg-primary text-white font-extrabold">
+                                                            <tr class="bg-primary text-white font-extrabold">
+                                                                <th>Denominación</th>
+                                                                <th>Frecuencia</th>
+                                                                <th>Meta Anual Prog.</th>
+                                                                <th>Meta Anual Aj.</th>
+                                                                <th>Meta al Periodo</th>
+                                                                <th>Meta Aj. Periodo</th>
+                                                                <th>Realizado</th>
+                                                                <th>Avance %</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>`;
+                                        ficha.nivelesIndicadores.forEach(nivel => {
+                                            indHTML += `<tr class="font-bold bg-slate-100"><td colspan="8" class="text-center">Nivel: ${nivel.nivel || 'Sin nombre'}</td></tr>`;
+                                            nivel.indicadores.forEach(indicador => {
+                                                indHTML += `
+                                                    <tr class="hover:bg-gray-50">
+                                                        <td class="text-left-important">${indicador.denominacion || ''}</td>
+                                                        <td>${indicador.frecuencia || ''}</td>
+                                                        <td>${indicador.metaAnualProgramada || ''}</td>
+                                                        <td>${indicador.metaAnualAjustada || ''}</td>
+                                                        <td>${indicador.metaAlPeriodo || ''}</td>
+                                                        <td>${indicador.metaAjustadaPeriodo || ''}</td>
+                                                        <td>${indicador.realizadoPeriodo || ''}</td>
+                                                        <td>${indicador.avancePorcentaje || ''}</td>
+                                                    </tr>
+                                                `;
+                                            });
+                                        });
+                                        indHTML += `</tbody></table></div></div>`;
+                                        return indHTML;
+                                    }
+                                    return '';
+                                })()}
+                            </td>
                         </tr>
                         <tr>
                             <th class="font-bold">Hitos del Programa</th>
@@ -1895,163 +2016,6 @@
                     </table>
                 </div>
             `;
-            
-            // Agregar tabla MIR si existe
-            if (ficha.programasPresupuestarios && ficha.programasPresupuestarios.length > 0) {
-                detailsHTML += `
-                    <div class="bg-gray-50 p-4 rounded-lg mt-6">
-                        <h4 class="font-semibold text-primary mb-3">Tabla MIR - Programas Presupuestarios y Proyectos de Inversión</h4>
-                        <div class="bg-white p-4 rounded border">
-                            <table class="sub-table">
-                                <thead>
-                                    <tr class="bg-primary text-white font-extrabold">
-                                        <th>Programas Presupuestarios /<br> Proyectos de Inversión</th>
-                                        <th>Monto Aprobado (MDP)</th>
-                                        <th>Monto Modificado (MDP)</th>
-                                        <th>Monto Pagado (MDP)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                `;
-
-                let granTotalAprobado = 0;
-                let granTotalModificado = 0;
-                let granTotalPagado = 0;
-
-                ficha.programasPresupuestarios.forEach((pp, ppIndex) => {
-                    let totalAprobado = 0;
-                    let totalModificado = 0;
-                    let totalPagado = 0;
-
-                    pp.proyectos.forEach(proyecto => {
-                        totalAprobado += parseFloat(proyecto.montoAprobado) || 0;
-                        totalModificado += parseFloat(proyecto.montoModificado) || 0;
-                        totalPagado += parseFloat(proyecto.montoPagado) || 0;
-                    });
-
-                    granTotalAprobado += totalAprobado;
-                    granTotalModificado += totalModificado;
-                    granTotalPagado += totalPagado;
-
-                    // Fila del programa (sub-encabezado) con sus totales
-                    detailsHTML += `
-                        <tr class="font-bold bg-slate-100">
-                            <td class="text-center">${pp.nombre || 'Programa Presupuestario'}</td>
-                            <td>${totalAprobado.toFixed(2)}</td>
-                            <td>${totalModificado.toFixed(2)}</td>
-                            <td>${totalPagado.toFixed(2)}</td>
-                        </tr>
-                    `;
-
-                    // Filas de los proyectos de inversión para este programa
-                    pp.proyectos.forEach(proyecto => {
-                        detailsHTML += `
-                            <tr class="hover:bg-gray-50">
-                                <td class="pl-8 text-left-important">${proyecto.nombre || ''}</td>
-                                <td>${proyecto.montoAprobado || 0}</td>
-                                <td>${proyecto.montoModificado || 0}</td>
-                                <td>${proyecto.montoPagado || 0}</td>
-                            </tr>
-                        `;
-                    });
-                });
-
-                // Fila de Gran Total
-                detailsHTML += `
-                        <tr class="font-extrabold bg-primary text-white">
-                            <td class="text-center">TOTAL GENERAL</td>
-                            <td>${granTotalAprobado.toFixed(2)}</td>
-                            <td>${granTotalModificado.toFixed(2)}</td>
-                            <td>${granTotalPagado.toFixed(2)}</td>
-                        </tr>
-                    </tbody></table></div></div>`;
-            }
-            
-            // Agregar tabla de licitaciones si existe
-            if (ficha.licitacionesData && ficha.licitacionesData.length > 0) {
-                detailsHTML += `
-                    <div class="bg-gray-50 p-4 rounded-lg mt-6">
-                        <h4 class="font-semibold text-primary mb-3">Licitaciones Identificadas</h4>
-                        <div class="bg-white p-4 rounded border">
-                            <table class="sub-table">
-                                <thead class="bg-primary text-white font-extrabold">
-                                    <tr class="bg-primary text-white font-extrabold">
-                                        <th>Concepto</th>
-                                        <th>Programado</th>
-                                        <th>Estatus</th>
-                                        <th>No. de Oficio</th>
-                                        <th>Fecha de Fallo</th>
-                                        <th>Importe Adjudicado</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                `;
-                
-                ficha.licitacionesData.forEach(licitacion => {
-                    detailsHTML += `
-                        <tr>
-                            <td class="text-left-important">${licitacion.concepto || ''}</td>
-                            <td>${licitacion.programado || ''}</td>
-                            <td>${licitacion.estatus || ''}</td>
-                            <td>${licitacion.numeroOficio || ''}</td>
-                            <td>${licitacion.fechaFallo || ''}</td>
-                            <td>${formatCurrency(licitacion.importeAdjudicado)}</td>
-                        </tr>
-                    `;
-                });
-                
-                detailsHTML += `</tbody></table></div></div>`;
-            }
-            
-            // Agregar tabla de indicadores si existe
-            if (ficha.nivelesIndicadores && ficha.nivelesIndicadores.length > 0) {
-                detailsHTML += `
-                    <div class="bg-gray-50 p-4 rounded-lg mt-6">
-                        <h4 class="font-semibold text-primary mb-3">Tabla de Indicadores</h4>
-                        <div class="bg-white p-4 rounded border overflow-x-auto">
-                            <table class="sub-table">
-                                <thead class="bg-primary text-white font-extrabold">
-                                    <tr class="bg-primary text-white font-extrabold">
-                                        <th>Denominación</th>
-                                        <th>Frecuencia</th>
-                                        <th>Meta Anual Prog.</th>
-                                        <th>Meta Anual Aj.</th>
-                                        <th>Meta al Periodo</th>
-                                        <th>Meta Aj. Periodo</th>
-                                        <th>Realizado</th>
-                                        <th>Avance %</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                `;
-                
-                ficha.nivelesIndicadores.forEach(nivel => {
-                    // Fila para el Nivel (actúa como sub-encabezado)
-                    detailsHTML += `
-                        <tr class="font-bold bg-slate-100">
-                            <td colspan="8" class="text-center">Nivel: ${nivel.nivel || 'Sin nombre'}</td>
-                        </tr>
-                    `;
-                    
-                    // Filas para los indicadores de este nivel
-                    nivel.indicadores.forEach(indicador => {
-                        detailsHTML += `
-                            <tr class="hover:bg-gray-50">
-                                <td class="text-left-important">${indicador.denominacion || ''}</td>
-                                <td>${indicador.frecuencia || ''}</td>
-                                <td>${indicador.metaAnualProgramada || ''}</td>
-                                <td>${indicador.metaAnualAjustada || ''}</td>
-                                <td>${indicador.metaAlPeriodo || ''}</td>
-                                <td>${indicador.metaAjustadaPeriodo || ''}</td>
-                                <td>${indicador.realizadoPeriodo || ''}</td>
-                                <td>${indicador.avancePorcentaje || ''}</td>
-                            </tr>
-                        `;
-                    });
-                });
-                
-                detailsHTML += `</tbody></table></div></div>`;
-            }
             
             // Agregar fuentes si existen
             if (ficha.fuente) {
@@ -2140,5 +2104,5 @@
             }, 3000);
         }
     </script>
-</body>
+</body> 
 </html>
