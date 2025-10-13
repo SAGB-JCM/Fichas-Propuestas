@@ -169,7 +169,7 @@
         .details-table th { 
             background-color: var(--primary-color);
             font-weight: 600; 
-            color: white; 
+            color: white;
         }
 
         .ramo-display, .fuente-display {
@@ -1822,74 +1822,74 @@
                     <h4 class="font-semibold text-primary mb-3">Ficha: Información Consolidada</h4>
                     <table class="details-table">
                         <tr>
-                            <th>Nombre del Programa Estratégico</th>
+                            <th class="font-bold">Nombre del Programa Estratégico</th>
                             <td>${ficha.nombrePrograma || 'N/A'}</td>
-                            <th>Ramo</th>
+                            <th class="font-bold">Ramo</th>
                             <td class="ramo-display">${formatRamoDisplay(ficha.ramo) ? formatRamoDisplay(ficha.ramo) : 'N/A'}</td>
-                            <th>Fecha de Actualización</th>
+                            <th class="font-bold">Fecha de Actualización</th>
                             <td>${formatDate(ficha.fechaActualizacion)}</td>
                         </tr>
-                            <th>Entidad Responsable</th>
+                            <th class="font-bold">Entidad Responsable</th>
                             <td colspan="3">${ficha.entidadResponsable || 'N/A'}</td>
-                            <th>Número de Cartera</th>
+                            <th class="font-bold">Número de Cartera</th>
                             <td>${ficha.numeroCartera || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th>Cobertura</th>
+                            <th class="font-bold">Cobertura</th>
                             <td class="formatted-content" colspan="3">${ficha.cobertura || 'N/A'}</td>
-                            <th>Periodo Reportado</th>
+                            <th class="font-bold">Periodo Reportado</th>
                             <td>${ficha.periodoReportado || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th>Objetivos, Metas y Líneas de Acción</th>
+                            <th class="font-bold">Objetivos, Metas y Líneas de Acción</th>
                             <td class="formatted-content" colspan="5">${ficha.objetivosMetas || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th>Descripción de actividades</th>
+                            <th class="font-bold">Descripción de actividades</th>
                             <td class="formatted-content" colspan="5">${ficha.descripcionActividades || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th>Clasificación Funcional</th>
+                            <th class="font-bold">Clasificación Funcional</th>
                             <td class="formatted-content" colspan="5">${ficha.clasificacionFuncional || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th>Programa presupuestario</th>
+                            <th class="font-bold">Programa presupuestario</th>
                             <td class="formatted-content" colspan="3">${ficha.programaPresupuestario || 'N/A'}</td>
-                            <th>Presupuesto aprobado</th>
+                            <th class="font-bold">Presupuesto aprobado</th>
                             <td>${formatCurrency(ficha.presupuestoAprobado)}</td>
                         </tr>
                         <tr>
-                            <th>Presupuesto modificado</th>
+                            <th class="font-bold">Presupuesto modificado</th>
                             <td colspan="3">${formatCurrency(ficha.presupuestoModificado)}</td>
-                            <th>Presupuesto ejercido</th>
+                            <th class="font-bold">Presupuesto ejercido</th>
                             <td>${formatCurrency(ficha.presupuestoEjercido)}</td>
                         </tr>
                         <tr>
-                            <th>Transparencia Presupuestaria</th>
+                            <th class="font-bold">Transparencia Presupuestaria</th>
                             <td class="formatted-content" colspan="5">${ficha.transparenciaPresupuestaria || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th>Licitaciones</th>
+                            <th class="font-bold">Licitaciones</th>
                             <td class="formatted-content" colspan="5">${ficha.licitaciones || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th>Indicadores</th>
+                            <th class="font-bold">Indicadores</th>
                             <td class="formatted-content" colspan="5">${ficha.indicadores || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th>Hitos del Programa</th>
+                            <th class="font-bold">Hitos del Programa</th>
                             <td class="formatted-content" colspan="5">${ficha.hitosPrograma || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th>Seguimiento del programa</th>
+                            <th class="font-bold">Seguimiento del programa</th>
                             <td class="formatted-content" colspan="5">${ficha.seguimientoPrograma || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th>Medios de Comunicación Relevantes</th>
+                            <th class="font-bold">Medios de Comunicación Relevantes</th>
                             <td class="formatted-content" colspan="5">${ficha.mediosComunicacion || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th>Observaciones</th>
+                            <th class="font-bold">Observaciones</th>
                             <td class="formatted-content" colspan="5">${ficha.observaciones || 'N/A'}</td>
                         </tr>
                     </table>
