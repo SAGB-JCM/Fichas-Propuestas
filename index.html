@@ -78,14 +78,15 @@
         body.modal-open { overflow: hidden; }
 
         .formatted-content ul, .formatted-content ol {
-            padding-left: 1.5rem; /* Usar padding en lugar de margin para la indentación de la lista */
+            margin-left: 1.5rem;
             margin-bottom: 0.5rem;
         }
 
         .formatted-content ul li, .formatted-content ol li {
-            list-style-position: outside; /* La viñeta se coloca fuera del flujo del texto */
-            /* Se eliminan las reglas de padding, text-indent y margin en el <li> */
-            /* para permitir un comportamiento de envoltura de texto natural y alineado. */
+            list-style-position: outside !important;
+            padding-left: 1.5em;
+            text-indent: -1.5em;
+            margin-left: 1.5em;
         }
 
         /* ==========================================================================
@@ -161,29 +162,14 @@
         .details-table th, .details-table td { 
             border: 1px solid #e5e7eb; 
             padding: 0.75rem; 
-            text-align: left;
-            vertical-align: top; /* Cambiado a 'top' para un mejor ajuste de contenido variable */
+            text-align: left; 
+            vertical-align: top; 
         }
 
         .details-table th { 
             background-color: var(--primary-color);
             font-weight: 600; 
             color: white;
-        }
-
-        /* --- Estilos para tablas dentro del contenido enriquecido --- */
-        .formatted-content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-            font-size: 0.875rem; /* Un poco más pequeño para que quepa bien */
-        }
-
-        .formatted-content th, .formatted-content td {
-            border: 1px solid #d1d5db; /* Borde gris */
-            padding: 0.5rem;
-            text-align: left;
-            height: auto; /* Asegura que la altura se ajuste al contenido */
         }
 
         .ramo-display, .fuente-display {
@@ -278,7 +264,7 @@
     <div id="app" class="min-h-screen hidden">
         <!-- Header -->
         <header class="bg-primary shadow-lg sticky top-0 z-30">
-            <div class="max-w-4xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
                 <div class="flex items-center space-x-4">
                     <i class="fa-solid fa-file-invoice text-white text-3xl"></i>
                     <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">
@@ -291,7 +277,7 @@
 
         <!-- Navigation Tabs -->
         <div class="bg-white shadow-sm sticky top-[56px] z-20">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="border-b border-gray-200">
                     <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                         <button data-tab="fichas" class="tab-btn active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 border-primary text-primary">
@@ -306,7 +292,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
             <!-- Fichas Tab Content -->
             <div id="tab-content-fichas" class="tab-content">
                 <section class="mb-8">
@@ -375,7 +361,7 @@
 
     <!-- Modal para Agregar/Editar Ficha -->
     <div id="ficha-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative bg-white p-6 rounded-lg shadow-xl w-full max-w-4xl mx-auto my-8">
+        <div class="relative bg-white p-6 rounded-lg shadow-xl w-full max-w-7xl mx-auto my-8">
             <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
                 <i class="fa-solid fa-times-circle fa-2x"></i>
             </button>
@@ -444,7 +430,7 @@
                             <!-- Número de Cartera -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">8. Número de Cartera</label>
-                                <input type="text" id="numeroCartera" name="numeroCartera" 
+                                <input type="number" id="numeroCartera" name="numeroCartera" 
                                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                             </div>
 
@@ -606,7 +592,7 @@
                     <!-- Parte 4: Variables Finales -->
                     <div class="section-card">
                         <h4 class="section-title">4. Variables Finales</h4>
-                        <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Hitos del Programa (con editor) -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">41. Hitos del Programa</label>
@@ -640,7 +626,7 @@
                             </div>
 
                             <!-- Fuente (URL) - Múltiple como Ramo -->
-                            <div>
+                            <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">45. Fuente (URL)</label>
                                 <div class="flex gap-2 mb-2">
                                     <input type="url" id="fuente-input" placeholder="https://ejemplo.com" 
@@ -1846,7 +1832,7 @@
                             <th class="font-bold">Entidad Responsable</th>
                             <td colspan="3">${ficha.entidadResponsable || 'N/A'}</td>
                             <th class="font-bold">Número de Cartera</th>
-                            <td class="whitespace-nowrap">${ficha.numeroCartera || 'N/A'}</td>
+                            <td>${ficha.numeroCartera || 'N/A'}</td>
                         </tr>
                         <tr>
                             <th class="font-bold">Cobertura</th>
