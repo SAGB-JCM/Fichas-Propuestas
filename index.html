@@ -78,15 +78,14 @@
         body.modal-open { overflow: hidden; }
 
         .formatted-content ul, .formatted-content ol {
-            margin-left: 1.5rem;
+            padding-left: 1.5rem; /* Usar padding en lugar de margin para la indentación de la lista */
             margin-bottom: 0.5rem;
         }
 
         .formatted-content ul li, .formatted-content ol li {
-            list-style-position: outside !important;
-            padding-left: 1.5em;
-            text-indent: -1.5em;
-            margin-left: 1.5em;
+            list-style-position: outside; /* La viñeta se coloca fuera del flujo del texto */
+            /* Se eliminan las reglas de padding, text-indent y margin en el <li> */
+            /* para permitir un comportamiento de envoltura de texto natural y alineado. */
         }
 
         /* ==========================================================================
