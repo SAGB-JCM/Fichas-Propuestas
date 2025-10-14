@@ -161,14 +161,29 @@
         .details-table th, .details-table td { 
             border: 1px solid #e5e7eb; 
             padding: 0.75rem; 
-            text-align: left; 
-            vertical-align: middle; 
+            text-align: left;
+            vertical-align: top; /* Cambiado a 'top' para un mejor ajuste de contenido variable */
         }
 
         .details-table th { 
             background-color: var(--primary-color);
             font-weight: 600; 
             color: white;
+        }
+
+        /* --- Estilos para tablas dentro del contenido enriquecido --- */
+        .formatted-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.875rem; /* Un poco más pequeño para que quepa bien */
+        }
+
+        .formatted-content th, .formatted-content td {
+            border: 1px solid #d1d5db; /* Borde gris */
+            padding: 0.5rem;
+            text-align: left;
+            height: auto; /* Asegura que la altura se ajuste al contenido */
         }
 
         .ramo-display, .fuente-display {
