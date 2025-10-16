@@ -2162,4 +2162,2133 @@
         }
     </script>
 </body>
+</html>        .border-primary { border-color: var(--primary-color); }
+
+        .loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(255, 255, 255, 0.9); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .loader .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%;
+            border-left-color: var(--primary-color); animation: spin 1s ease infinite;
+        }
+
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+
+        .tab-btn.active { 
+            border-color: var(--primary-color); 
+            color: var(--primary-color); 
+            font-weight: bold; 
+        }
+
+        /* Estilos para las pestañas del modal */
+        .modal-tab-btn.active {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            max-height: 455px;
+            overflow-y: auto;
+        }
+
+        .modal-enter { animation: fadeIn 0.3s ease-out forwards; }
+        .modal-leave { animation: fadeOut 0.3s ease-in forwards; }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: scale(0.95); } 
+            to { opacity: 1; transform: scale(1); } 
+        }
+
+        @keyframes fadeOut { 
+            from { opacity: 1; transform: scale(1); } 
+            to { opacity: 0; transform: scale(0.95); } 
+        }
+
+        body.modal-open { overflow: hidden; }
+
+        .formatted-content ul, .formatted-content ol {
+            padding-left: 1.5rem; /* Usar padding en lugar de margin para la indentación de la lista */
+            margin-bottom: 0.5rem;
+        }
+
+        .formatted-content ul li, .formatted-content ol li {
+            list-style-position: outside; /* La viñeta se coloca fuera del flujo del texto */
+            /* Se eliminan las reglas de padding, text-indent y margin en el <li> */
+            /* para permitir un comportamiento de envoltura de texto natural y alineado. */
+        }
+
+        /* ==========================================================================
+           Estilos robustos para el contenido del editor en el modal de detalles
+           ========================================================================== */
+        .formatted-content {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+            line-height: 1.0; /* Mejora la legibilidad del texto */
+        }
+
+        /* --- Párrafos y Encabezados --- */
+        .formatted-content p {
+            margin-bottom: 0.75rem; /* 12px */
+        }
+        .formatted-content h1, .formatted-content h2, .formatted-content h3, .formatted-content h4, .formatted-content h5, .formatted-content h6 {
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        .formatted-content h1 { font-size: 2.25rem; }
+        .formatted-content h2 { font-size: 1.875rem; }
+        .formatted-content h3 { font-size: 1.5rem; }
+        .formatted-content h4 { font-size: 1.25rem; }
+
+        /* --- Listas --- */
+        .formatted-content ul {
+            list-style-type: disc;
+            margin-left: 1.5rem; /* 24px */
+            margin-bottom: 0.75rem;
+        }
+        .formatted-content ol {
+            list-style-type: decimal;
+            margin-left: 1.75rem; /* Un poco más de espacio para los números */
+            margin-bottom: 0.75rem;
+        }
+        .formatted-content li {
+            margin-bottom: 0.25rem;
+        }
+
+        /* --- Otros elementos de bloque --- */
+        .formatted-content blockquote {
+            border-left: 4px solid #e5e7eb; /* Borde gris claro */
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: #6b7280; /* Texto gris */
+            font-style: italic;
+        }
+
+        /* --- Elementos en línea --- */
+        .formatted-content a {
+            color: #2563eb; /* Azul estándar para enlaces */
+            text-decoration: underline;
+        }
+        .formatted-content a:hover {
+            color: #1d4ed8;
+        }
+        .formatted-content code {
+            background-color: #f3f4f6;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        .details-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 1rem; 
+        }
+
+        .details-table th, .details-table td { 
+            border: 1px solid #e5e7eb; 
+            padding: 0.75rem; 
+            text-align: left;
+            vertical-align: top; /* Cambiado a 'top' para un mejor ajuste de contenido variable */
+        }
+
+        .details-table th { 
+            background-color: var(--primary-color);
+            font-weight: 600; 
+            color: white;
+        }
+
+        /* --- Estilos para tablas dentro del contenido enriquecido --- */
+        .formatted-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.875rem; /* Un poco más pequeño para que quepa bien */
+        }
+
+        .formatted-content th, .formatted-content td {
+            border: 1px solid #d1d5db; /* Borde gris */
+            padding: 0.5rem;
+            text-align: left;
+            height: auto; /* Asegura que la altura se ajuste al contenido */
+        }
+
+        .ramo-display, .fuente-display {
+            white-space: pre-line;
+        }
+
+        .chip {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            margin: 0.25rem;
+        }
+
+        .chip button {
+            margin-left: 0.5rem;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .sub-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.5rem 0;
+        }
+
+        .sub-table th, .sub-table td {
+            border: 1px solid #d1d5db;
+            padding: 0.5rem;
+            text-align: center; /* Centrado por defecto para las sub-tablas */
+            vertical-align: middle;
+        }
+
+        .text-left-important {
+            text-align: left !important;
+        }
+
+        /* Aplica fondo gris a los TH de sub-table, excepto si el TR padre ya tiene un fondo primario */
+        .sub-table tr:not(.bg-primary) th {
+            background-color: #f3f4f6; 
+            font-weight: 600;
+        }
+
+        .nivel-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 0.375rem 0.375rem 0 0;
+        }
+
+        .clickable-row {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .clickable-row:hover {
+            background-color: #f8fafc;
+        }
+
+        .section-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background-color: white;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="antialiased text-slate-700 bg-gray-50">
+    <!-- Loader -->
+    <div id="loader" class="loader">
+        <div class="spinner"></div>
+        <p class="mt-4 text-sm text-slate-600">Cargando aplicación, por favor espera...</p>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app" class="min-h-screen hidden">
+        <!-- Header -->
+        <header class="bg-primary shadow-lg sticky top-0 z-30">
+            <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <i class="fa-solid fa-file-invoice text-white text-3xl"></i>
+                    <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                        Sistema de Fichas de Programas Estratégicos
+                    </h1>
+                </div>
+                <div id="user-info" class="text-white text-sm font-mono"></div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="bg-white shadow-sm sticky top-[56px] z-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                        <button data-tab="fichas" class="tab-btn active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 border-primary text-primary">
+                            Fichas de Trabajo
+                        </button>
+                        <button data-tab="reportes" class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                            Reportes
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <!-- Fichas Tab Content -->
+            <div id="tab-content-fichas" class="tab-content">
+                <section class="mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-primary">Gestión de Fichas de Programas Estratégicos</h2>
+                        <button id="add-ficha-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow transition-all duration-200 ease-in-out flex items-center space-x-2">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Agregar Nueva Ficha</span>
+                        </button>
+                    </div>
+
+                    <!-- Search and Filters -->
+                    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-1 relative">
+                                <input type="text" id="search-input" placeholder="Buscar en todas las fichas..." 
+                                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                            <button id="clear-search-btn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                                <i class="fa-solid fa-times mr-2"></i>Limpiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Fichas Table -->
+                    <div class="bg-white rounded-xl shadow-md table-container">
+                        <table class="w-full text-sm text-left text-slate-500">
+                            <thead class="text-xs text-slate-700 uppercase bg-slate-100 sticky top-0">
+                                <tr>
+                                    <th class="py-3 px-6">No.</th>
+                                    <th class="py-3 px-6">Proyecto</th>
+                                    <th class="py-3 px-6">Subproyecto</th>
+                                    <th class="py-3 px-6">Programa Estratégico</th>
+                                    <th class="py-3 px-6">Ramo</th>
+                                    <th class="py-3 px-6">Fecha Actualización</th>
+                                    <th class="py-3 px-6">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fichas-table-body">
+                                <!-- Las filas se llenarán dinámicamente -->
+                            </tbody>
+                        </table>
+                        <div id="no-fichas-message" class="p-8 text-center text-slate-500 hidden">
+                            <i class="fa-solid fa-folder-open text-4xl mb-4 text-gray-300"></i>
+                            <p class="text-lg">No hay fichas registradas</p>
+                            <p class="text-sm mt-2">Haz clic en "Agregar Nueva Ficha" para comenzar</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Reportes Tab Content -->
+            <div id="tab-content-reportes" class="tab-content hidden">
+                <section class="bg-white p-8 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-primary mb-6">Reportes y Estadísticas</h2>
+                    <div class="text-center py-12">
+                        <i class="fa-solid fa-chart-bar text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500 text-lg">Módulo de reportes en desarrollo</p>
+                        <p class="text-gray-400 mt-2">Esta funcionalidad estará disponible próximamente</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar/Editar Ficha -->
+    <div id="ficha-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative bg-white p-6 rounded-lg shadow-xl w-[90vw] max-w-6xl h-[90vh] mx-auto my-8 flex flex-col">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
+                <i class="fa-solid fa-times-circle fa-2x"></i>
+            </button>
+
+            <h3 class="text-2xl font-bold text-primary mb-6" id="modal-title">Agregar Nueva Ficha</h3>
+
+            <!-- Pestañas del Modal -->
+            <div class="border-b border-gray-200 mb-6">
+                <nav class="-mb-px flex space-x-4" aria-label="Tabs">
+                    <button data-modal-tab="principal" class="modal-tab-btn active whitespace-nowrap py-3 px-4 border border-b-0 rounded-t-lg font-medium text-sm text-gray-600 bg-gray-100 hover:bg-gray-200">Principal</button>
+                    <button data-modal-tab="descripcion" class="modal-tab-btn whitespace-nowrap py-3 px-4 border border-b-0 rounded-t-lg font-medium text-sm text-gray-600 bg-gray-100 hover:bg-gray-200">Descripción</button>
+                    <button data-modal-tab="indicadores" class="modal-tab-btn whitespace-nowrap py-3 px-4 border border-b-0 rounded-t-lg font-medium text-sm text-gray-600 bg-gray-100 hover:bg-gray-200">Indicadores</button>
+                    <button data-modal-tab="licitaciones" class="modal-tab-btn whitespace-nowrap py-3 px-4 border border-b-0 rounded-t-lg font-medium text-sm text-gray-600 bg-gray-100 hover:bg-gray-200">Licitaciones</button>
+                    <button data-modal-tab="notas" class="modal-tab-btn whitespace-nowrap py-3 px-4 border border-b-0 rounded-t-lg font-medium text-sm text-gray-600 bg-gray-100 hover:bg-gray-200">Notas Relevantes</button>
+                    <button data-modal-tab="fuentes" class="modal-tab-btn whitespace-nowrap py-3 px-4 border border-b-0 rounded-t-lg font-medium text-sm text-gray-600 bg-gray-100 hover:bg-gray-200">Fuentes</button>
+                </nav>
+            </div>
+
+            <div class="flex-grow overflow-y-auto pr-2 pb-6">
+                <form id="ficha-form" class="space-y-8 ">
+                    <input type="hidden" id="ficha-id" name="id">
+
+                    <!-- Contenido Pestaña Principal -->
+                    <div id="modal-tab-content-principal" class="modal-tab-content space-y-8">
+                        <!-- Parte 1: Variables Principales -->
+                        <div class="section-card">
+                            <h4 class="section-title">1. Variables Principales</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Proyecto -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">2. Proyecto</label>
+                                    <input type="text" id="proyecto" name="proyecto" 
+                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+
+                                <!-- Subproyecto -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">3. Subproyecto</label>
+                                    <input type="text" id="subproyecto" name="subproyecto" 
+                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+
+                                <!-- Nombre del Programa Estratégico -->
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">4. Nombre del Programa Estratégico</label>
+                                    <input type="text" id="nombrePrograma" name="nombrePrograma" 
+                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+
+                                <!-- Ramo (Múltiple) -->
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">5. Ramo</label>
+                                    <div class="flex gap-2 mb-2">
+                                        <input type="text" id="ramo-input" placeholder="Agregar ramo..." 
+                                               class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                        <button type="button" id="add-ramo-btn" class="bg-primary text-white px-4 rounded-lg hover:bg-primary-dark transition-colors">
+                                            <i class="fa-solid fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div id="ramos-container" class="flex flex-wrap gap-2 p-3 border border-gray-300 rounded-lg min-h-[50px]">
+                                        <!-- Los ramos se agregarán aquí dinámicamente -->
+                                    </div>
+                                    <input type="hidden" id="ramo" name="ramo">
+                                </div>
+
+                                <!-- Fecha de Actualización -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">6. Fecha de Actualización</label>
+                                    <input type="date" id="fechaActualizacion" name="fechaActualizacion" 
+                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+
+                                <!-- Entidad Responsable -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">7. Entidad Responsable</label>
+                                    <input type="text" id="entidadResponsable" name="entidadResponsable" 
+                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+
+                                <!-- Número de Cartera -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">8. Número de Cartera</label>
+                                    <input type="text" id="numeroCartera" name="numeroCartera" 
+                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+
+                                <!-- Periodo Reportado -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">10. Periodo Reportado</label>
+                                    <select id="periodoReportado" name="periodoReportado" 
+                                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="Primer Trimestre">Primer Trimestre</option>
+                                        <option value="Segundo Trimestre">Segundo Trimestre</option>
+                                        <option value="Tercer Trimestre">Tercer Trimestre</option>
+                                        <option value="Cuarto Trimestre">Cuarto Trimestre</option>
+                                    </select>
+                                </div>
+
+                                <!-- Cobertura (con editor enriquecido) -->
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">9. Cobertura</label>
+                                    <textarea id="cobertura" name="cobertura" rows="4"
+                                              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                                    <div id="cobertura-editor"></div>
+                                </div>
+
+                                <!-- Objetivos (con editor) -->
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">11. Objetivos</label>
+                                    <textarea id="objetivos" name="objetivos" rows="4"
+                                              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                                    <div id="objetivos-editor"></div>
+                                </div>                                
+                                <!-- Avance Físico (con editor) -->
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">13. Avance Físico</label>
+                                    <textarea id="avanceFisico" name="avanceFisico" rows="4"
+                                              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                                    <div id="avanceFisico-editor"></div>
+                                </div>
+                                <!-- Avance Financiero (con editor) -->
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">44. Avance Financiero</label>
+                                    <textarea id="avanceFinanciero" name="avanceFinanciero" rows="4"
+                                              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                                    <div id="avanceFinanciero-editor"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Parte 2: Montos Principales -->
+                        <div class="section-card">
+                            <h4 class="section-title">2. Montos Principales</h4>
+                            <div class="space-y-6">
+                                <!-- Programa Presupuestario (con editor) -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">14. Programa Presupuestario</label>
+                                    <textarea id="programaPresupuestario" name="programaPresupuestario" rows="4"
+                                              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                                    <div id="programaPresupuestario-editor"></div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">15. Presupuesto Aprobado</label>
+                                        <input type="number" step="0.01" id="presupuestoAprobado" name="presupuestoAprobado" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">16. Presupuesto Modificado</label>
+                                        <input type="number" step="0.01" id="presupuestoModificado" name="presupuestoModificado" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">17. Presupuesto Ejercido</label>
+                                        <input type="number" step="0.01" id="presupuestoEjercido" name="presupuestoEjercido" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido Pestaña Descripción -->
+                    <div id="modal-tab-content-descripcion" class="modal-tab-content hidden">
+                        <div class="section-card">
+                            <h4 class="section-title">12. Descripción del Proyecto</h4>
+                            <textarea id="descripcionProyecto" name="descripcionProyecto" rows="4"
+                                      class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                            <div id="descripcionProyecto-editor"></div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido Pestaña Indicadores -->
+                    <div id="modal-tab-content-indicadores" class="modal-tab-content hidden">
+                        <div class="section-card mb-8">
+                            <h4 class="section-title">31. Indicadores</h4>
+                            <textarea id="indicadores" name="indicadores" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                            <div id="indicadores-editor"></div>
+                            
+                            <!-- Tabla de Indicadores -->
+                            <div class="mt-6">
+                                <h6 class="font-semibold text-gray-700 mb-3">Tabla de Indicadores por Nivel</h6>
+                                <div id="indicadores-table-container" class="border border-gray-300 rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <span class="font-medium">Indicadores por Nivel</span>
+                                        <button type="button" id="add-nivel-btn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
+                                            <i class="fa-solid fa-plus mr-2"></i>Agregar Nivel
+                                        </button>
+                                    </div>
+                                    <div id="niveles-container">
+                                        <!-- Los niveles e indicadores se agregarán aquí dinámicamente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Transparencia Presupuestaria movida aquí -->
+                        <div class="section-card">
+                            <h4 class="section-title">18. Transparencia Presupuestaria</h4>
+                            <textarea id="transparenciaPresupuestaria" name="transparenciaPresupuestaria" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                            <div id="transparenciaPresupuestaria-editor"></div>
+                            
+                            <!-- Tabla MIR -->
+                            <div class="mt-6">
+                                <h6 class="font-semibold text-gray-700 mb-3">Tabla MIR - Programas Presupuestarios y Proyectos de Inversión</h6>
+                                <div id="mir-table-container" class="border border-gray-300 rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <span class="font-medium">Programas Presupuestarios</span>
+                                        <button type="button" id="add-pp-btn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
+                                            <i class="fa-solid fa-plus mr-2"></i>Agregar Programa
+                                        </button>
+                                    </div>
+                                    <div id="pp-container">
+                                        <!-- Los programas presupuestarios se agregarán aquí dinámicamente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido Pestaña Licitaciones -->
+                    <div id="modal-tab-content-licitaciones" class="modal-tab-content hidden">
+                        <div class="section-card">
+                            <h4 class="section-title">24. Licitaciones</h4>
+                            <textarea id="licitaciones" name="licitaciones" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                            <div id="licitaciones-editor"></div>
+                            
+                            <!-- Tabla de Licitaciones -->
+                            <div class="mt-6">
+                                <h6 class="font-semibold text-gray-700 mb-3">Lista de Licitaciones</h6>
+                                <div id="licitaciones-table-container" class="border border-gray-300 rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <span class="font-medium">Licitaciones Registradas</span>
+                                        <button type="button" id="add-licitacion-btn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
+                                            <i class="fa-solid fa-plus mr-2"></i>Agregar Licitación
+                                        </button>
+                                    </div>
+                                    <div id="licitaciones-container">
+                                        <!-- Las licitaciones se agregarán aquí dinámicamente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido Pestaña Notas Relevantes -->
+                    <div id="modal-tab-content-notas" class="modal-tab-content hidden">
+                        <div class="section-card">
+                            <h4 class="section-title">Notas Relevantes</h4>
+                            <div class="space-y-6">
+                                <!-- Hitos del Programa (con editor) -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">41. Hitos del Programa</label>
+                                    <textarea id="hitosPrograma" name="hitosPrograma" rows="4"
+                                              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                                    <div id="hitosPrograma-editor"></div>
+                                </div>
+
+                                <!-- Seguimiento del Programa (con editor) -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">42. Seguimiento del Programa</label>
+                                    <textarea id="seguimientoPrograma" name="seguimientoPrograma" rows="4"
+                                              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                                    <div id="seguimientoPrograma-editor"></div>
+                                </div>
+
+                                <!-- Medios de Comunicación (con editor) -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">43. Medios de Comunicación Notas Relevantes</label>
+                                    <textarea id="mediosComunicacion" name="mediosComunicacion" rows="4"
+                                              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                                    <div id="mediosComunicacion-editor"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido Pestaña Fuentes -->
+                    <div id="modal-tab-content-fuentes" class="modal-tab-content hidden">
+                        <div class="section-card">
+                            <h4 class="section-title">45. Fuente (URL)</h4>
+                            <div class="flex gap-2 mb-2">
+                                <input type="url" id="fuente-input" placeholder="https://ejemplo.com" 
+                                       class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                <button type="button" id="add-fuente-btn" class="bg-primary text-white px-4 rounded-lg hover:bg-primary-dark transition-colors">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                            <div id="fuentes-container" class="flex flex-wrap gap-2 p-3 border border-gray-300 rounded-lg min-h-[50px]">
+                                <!-- Las fuentes se agregarán aquí dinámicamente -->
+                            </div>
+                            <input type="hidden" id="fuente" name="fuente">
+                            <p class="text-sm text-gray-500 mt-2">
+                                Agrega los enlaces a las fuentes de información relevantes para esta ficha.
+                            </p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Botones de acción fijos en el pie del modal -->
+            <div class="flex justify-end space-x-4 pt-4 mt-4 border-t border-gray-200">
+                <button type="button" id="cancel-btn" class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors">
+                    Cancelar
+                </button>
+                <button type="submit" form="ficha-form" class="px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors font-semibold">
+                    Guardar Ficha
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalles -->
+    <div id="details-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative bg-white p-8 rounded-lg shadow-xl w-full max-w-7xl mx-auto my-8">
+            <button id="close-details-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
+                <i class="fa-solid fa-times-circle fa-2x"></i>
+            </button>
+
+            <div class="flex items-center space-x-4 mb-6">
+                <i class="fa-solid fa-file-invoice text-primary text-4xl"></i>
+                <h3 class="text-2xl font-bold text-primary">Detalles de la Ficha</h3>
+            </div>
+
+            <div class="max-h-[80vh] overflow-y-auto pr-2">
+                <div id="details-content" class="details-modal-content space-y-6">
+                    <!-- El contenido se generará dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Programa Presupuestario (MIR) -->
+    <div id="pp-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-[60]">
+        <div class="relative bg-white p-6 rounded-lg shadow-xl w-full max-w-4xl mx-auto my-8">
+            <h3 class="text-xl font-bold text-primary mb-6" id="pp-modal-title">Programa Presupuestario</h3>
+            <form id="pp-form" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                <input type="hidden" id="pp-id">
+                <div>
+                    <label for="pp-nombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Programa Presupuestario</label>
+                    <input type="text" id="pp-nombre" class="w-full p-2 border border-gray-300 rounded-lg">
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mt-4 mb-2">Proyectos de Inversión</h4>
+                    <div id="pp-proyectos-container" class="space-y-3">
+                        <!-- Proyectos se agregarán aquí -->
+                    </div>
+                    <button type="button" id="add-proyecto-inversion-btn" class="mt-3 text-sm bg-green-100 text-green-800 px-3 py-1 rounded hover:bg-green-200">
+                        <i class="fa-solid fa-plus mr-1"></i> Agregar Proyecto
+                    </button>
+                </div>
+            </form>
+            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200 mt-6">
+                <button type="button" id="cancel-pp-btn" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg">Cancelar</button>
+                <button type="button" id="save-pp-btn" class="px-6 py-2 bg-primary text-white rounded-lg">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Licitación -->
+    <div id="licitacion-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-[60]">
+        <div class="relative bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl mx-auto my-8">
+            <h3 class="text-xl font-bold text-primary mb-6" id="licitacion-modal-title">Licitación</h3>
+            <form id="licitacion-form" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                <input type="hidden" id="licitacion-id">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="licitacion-concepto" class="block text-sm font-medium text-gray-700 mb-1">Concepto</label>
+                        <input type="text" id="licitacion-concepto" class="w-full p-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label for="licitacion-programado" class="block text-sm font-medium text-gray-700 mb-1">Programado</label>
+                        <input type="text" id="licitacion-programado" class="w-full p-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label for="licitacion-estatus" class="block text-sm font-medium text-gray-700 mb-1">Estatus</label>
+                        <select id="licitacion-estatus" class="w-full p-2 border border-gray-300 rounded-lg">
+                            <option>Pendiente</option>
+                            <option>Adjudicada</option>
+                            <option>En Evaluación</option>
+                            <option>Cancelada</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="licitacion-numeroOficio" class="block text-sm font-medium text-gray-700 mb-1">Número de Oficio</label>
+                        <input type="text" id="licitacion-numeroOficio" class="w-full p-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label for="licitacion-fechaFallo" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Fallo</label>
+                        <input type="date" id="licitacion-fechaFallo" class="w-full p-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label for="licitacion-importeAdjudicado" class="block text-sm font-medium text-gray-700 mb-1">Importe Adjudicado</label>
+                        <input type="number" step="0.01" id="licitacion-importeAdjudicado" class="w-full p-2 border border-gray-300 rounded-lg">
+                    </div>
+                </div>
+            </form>
+            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200 mt-6">
+                <button type="button" id="cancel-licitacion-btn" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg">Cancelar</button>
+                <button type="button" id="save-licitacion-btn" class="px-6 py-2 bg-primary text-white rounded-lg">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Nivel de Indicador -->
+    <div id="nivel-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-[60]">
+        <div class="relative bg-white p-6 rounded-lg shadow-xl w-full max-w-6xl mx-auto my-8">
+            <h3 class="text-xl font-bold text-primary mb-6" id="nivel-modal-title">Nivel de Indicador</h3>
+            <form id="nivel-form" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                <input type="hidden" id="nivel-id">
+                <div>
+                    <label for="nivel-nombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Nivel</label>
+                    <input type="text" id="nivel-nombre" class="w-full p-2 border border-gray-300 rounded-lg">
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mt-4 mb-2">Indicadores</h4>
+                    <div id="nivel-indicadores-container" class="space-y-3">
+                        <!-- Indicadores se agregarán aquí -->
+                    </div>
+                    <button type="button" id="add-indicador-btn" class="mt-3 text-sm bg-green-100 text-green-800 px-3 py-1 rounded hover:bg-green-200">
+                        <i class="fa-solid fa-plus mr-1"></i> Agregar Indicador
+                    </button>
+                </div>
+            </form>
+            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200 mt-6">
+                <button type="button" id="cancel-nivel-btn" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg">Cancelar</button>
+                <button type="button" id="save-nivel-btn" class="px-6 py-2 bg-primary text-white rounded-lg">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div id="confirm-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative bg-white p-8 rounded-lg shadow-xl w-full max-w-md mx-auto my-8">
+            <div class="text-center">
+                <i class="fa-solid fa-triangle-exclamation text-yellow-500 text-4xl mb-4"></i>
+                <h3 class="text-xl font-bold text-slate-800 mb-4">Confirmar Eliminación</h3>
+                <p class="text-slate-600 mb-6">¿Estás seguro de que deseas eliminar esta ficha? Esta acción no se puede deshacer.</p>
+                <div class="flex justify-center space-x-4">
+                    <button id="cancel-delete-btn" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors">
+                        Cancelar
+                    </button>
+                    <button id="confirm-delete-btn" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Principal -->
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBEOhoRa3dP28WeGs2jTlDrUa5H9mPWEGI",
+            authDomain: "fichas-propuestas.firebaseapp.com",
+            projectId: "fichas-propuestas",
+            storageBucket: "fichas-propuestas.firebasestorage.app",
+            messagingSenderId: "83231445757",
+            appId: "1:83231445757:web:667bff5f33d06528ed6494",
+            measurementId: "G-BPEV7F66FH"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Variables globales
+        let fichas = [];
+        let currentEditingId = null;
+        let editors = {};
+        let ramos = [];
+        let fuentes = [];
+        let programasPresupuestarios = [];
+        let licitacionesData = [];
+        let nivelesIndicadores = [];
+        let fichaToDeleteId = null;
+        // IDs para edición en sub-modales
+        let currentPpId = null;
+        let currentLicitacionId = null;
+        let currentNivelId = null;
+
+        // Referencias a elementos DOM
+        const elements = {
+            loader: document.getElementById('loader'),
+            app: document.getElementById('app'),
+            userInfo: document.getElementById('user-info'),
+            tabButtons: document.querySelectorAll('.tab-btn'),
+            tabContents: document.querySelectorAll('.tab-content'),
+            addFichaBtn: document.getElementById('add-ficha-btn'),
+            fichasTableBody: document.getElementById('fichas-table-body'),
+            noFichasMessage: document.getElementById('no-fichas-message'),
+            searchInput: document.getElementById('search-input'),
+            clearSearchBtn: document.getElementById('clear-search-btn'),
+            fichaModal: document.getElementById('ficha-modal'),
+            closeModalBtn: document.getElementById('close-modal-btn'),
+            modalTitle: document.getElementById('modal-title'),
+            fichaForm: document.getElementById('ficha-form'),
+            fichaId: document.getElementById('ficha-id'),
+            cancelBtn: document.getElementById('cancel-btn'),
+            detailsModal: document.getElementById('details-modal'),
+            closeDetailsBtn: document.getElementById('close-details-btn'),
+            detailsContent: document.getElementById('details-content'),
+            confirmModal: document.getElementById('confirm-modal'),
+            cancelDeleteBtn: document.getElementById('cancel-delete-btn'),
+            confirmDeleteBtn: document.getElementById('confirm-delete-btn')
+        };
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            try {
+                // Autenticación anónima
+                await auth.signInAnonymously();
+                
+                // Cargar datos
+                await loadFichas();
+                
+                // Configurar eventos
+                setupEventListeners();
+                
+                // Inicializar editores de texto enriquecido
+                initializeEditors();
+                
+                // Mostrar aplicación
+                elements.loader.classList.add('hidden');
+                elements.app.classList.remove('hidden');
+                
+                console.log('Aplicación inicializada correctamente');
+            } catch (error) {
+                console.error('Error al inicializar la aplicación:', error);
+                showAlert('Error al cargar la aplicación', 'error');
+            }
+        }
+
+        function setupEventListeners() {
+            // Navegación entre pestañas
+            elements.tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.dataset.tab;
+                    switchTab(tab);
+                });
+            });
+
+            // Botón agregar ficha
+            elements.addFichaBtn.addEventListener('click', () => openFichaModal());
+
+            // Botones del modal
+            elements.closeModalBtn.addEventListener('click', () => closeFichaModal());
+            elements.cancelBtn.addEventListener('click', () => closeFichaModal());
+            elements.closeDetailsBtn.addEventListener('click', () => closeDetailsModal());
+
+            // Formulario
+            elements.fichaForm.addEventListener('submit', handleFormSubmit);
+
+            // Búsqueda
+            elements.searchInput.addEventListener('input', handleSearch);
+            elements.clearSearchBtn.addEventListener('click', clearSearch);
+
+            // Manejo de ramos
+            document.getElementById('add-ramo-btn').addEventListener('click', addRamo);
+            document.getElementById('ramo-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addRamo();
+                }
+            });
+
+            // Manejo de fuentes
+            document.getElementById('add-fuente-btn').addEventListener('click', addFuente);
+            document.getElementById('fuente-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addFuente();
+                }
+            });
+
+            // Manejo de programas presupuestarios
+            document.getElementById('add-pp-btn').addEventListener('click', addProgramaPresupuestario);
+
+            // Manejo de licitaciones
+            document.getElementById('add-licitacion-btn').addEventListener('click', addLicitacion);
+
+            // Manejo de niveles de indicadores
+            document.getElementById('add-nivel-btn').addEventListener('click', addNivelIndicador);
+
+            // Modal de confirmación
+            elements.cancelDeleteBtn.addEventListener('click', () => closeConfirmModal());
+            elements.confirmDeleteBtn.addEventListener('click', confirmDelete);
+
+            // Modales de variables especiales
+            document.getElementById('cancel-pp-btn').addEventListener('click', closePpModal);
+            document.getElementById('save-pp-btn').addEventListener('click', savePp);
+            document.getElementById('add-proyecto-inversion-btn').addEventListener('click', addProyectoInversionRow);
+
+            document.getElementById('cancel-licitacion-btn').addEventListener('click', closeLicitacionModal);
+            document.getElementById('save-licitacion-btn').addEventListener('click', saveLicitacion);
+
+            document.getElementById('cancel-nivel-btn').addEventListener('click', closeNivelModal);
+            document.getElementById('save-nivel-btn').addEventListener('click', saveNivel);
+            document.getElementById('add-indicador-btn').addEventListener('click', addIndicadorRow);
+
+            // Pestañas del modal de ficha
+            document.querySelectorAll('.modal-tab-btn').forEach(btn => btn.addEventListener('click', handleModalTabClick));
+
+            // Delegación de eventos para botones de eliminar en sub-modales
+            document.getElementById('pp-proyectos-container').addEventListener('click', handleProyectoInversionDelete);
+            document.getElementById('nivel-indicadores-container').addEventListener('click', handleIndicadorDelete);
+        }
+
+        function initializeEditors() {
+            const editorConfig = {
+                buttonList: [
+                    ['undo', 'redo'],
+                    ['font', 'fontSize', 'formatBlock'],
+                    ['bold', 'underline', 'italic', 'strike', 'subscript', 'superscript'],
+                    ['fontColor', 'hiliteColor'],
+                    ['align', 'list', 'lineHeight'],
+                    ['outdent', 'indent'],
+                    ['table', 'link', 'image']
+                ],
+                height: '200px',
+                placeholder: 'Escribe aquí...'
+            };
+
+            // Campos que requieren editor enriquecido
+            const editorFields = [
+                'cobertura', 'objetivos', 'descripcionProyecto', 
+                'avanceFisico', 'programaPresupuestario',
+                'transparenciaPresupuestaria', 'licitaciones', 'indicadores',
+                'hitosPrograma', 'seguimientoPrograma', 'mediosComunicacion', 'avanceFinanciero'
+            ];
+
+            editorFields.forEach(field => {
+                const editorElement = document.getElementById(`${field}-editor`);
+                if (editorElement) {
+                    editors[field] = SUNEDITOR.create(editorElement, editorConfig);
+                    
+                    // Vincular el editor con el textarea oculto
+                    editors[field].onChange = function(contents) {
+                        document.getElementById(field).value = contents;
+                    };
+                }
+            });
+        }
+
+        async function loadFichas() {
+            try {
+                const snapshot = await db.collection('fichas').orderBy('fechaActualizacion', 'desc').get();
+                fichas = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                renderFichasTable();
+            } catch (error) {
+                console.error('Error al cargar fichas:', error);
+                showAlert('Error al cargar las fichas', 'error');
+            }
+        }
+
+        function renderFichasTable(filteredFichas = null) {
+            const data = filteredFichas || fichas;
+            const tbody = elements.fichasTableBody;
+            
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                elements.noFichasMessage.classList.remove('hidden');
+                return;
+            }
+            
+            elements.noFichasMessage.classList.add('hidden');
+            
+            data.forEach((ficha, index) => {
+                const row = document.createElement('tr');
+                row.className = 'bg-white border-b hover:bg-gray-50 clickable-row';
+                row.setAttribute('data-id', ficha.id);
+                row.innerHTML = `
+                    <td class="py-4 px-6">${index + 1}</td>
+                    <td class="py-4 px-6">${ficha.proyecto || 'N/A'}</td>
+                    <td class="py-4 px-6">${ficha.subproyecto || 'N/A'}</td>
+                    <td class="py-4 px-6">${ficha.nombrePrograma || 'N/A'}</td>
+                    <td class="py-4 px-6 ramo-display">${formatRamoDisplay(ficha.ramo)}</td>
+                    <td class="py-4 px-6">${formatDate(ficha.fechaActualizacion)}</td>
+                    <td class="py-4 px-6">
+                        <div class="flex space-x-2">
+                            <button class="edit-btn text-green-600 hover:text-green-800" data-id="${ficha.id}">
+                                <i class="fa-solid fa-edit"></i>
+                            </button>
+                            <button class="delete-btn text-red-600 hover:text-red-800" data-id="${ficha.id}">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Agregar event listeners a las filas para doble clic
+            document.querySelectorAll('.clickable-row').forEach(row => {
+                row.addEventListener('dblclick', (e) => {
+                    const id = e.currentTarget.getAttribute('data-id');
+                    viewFicha(id);
+                });
+            });
+            
+            // Agregar event listeners a los botones
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = e.currentTarget.getAttribute('data-id');
+                    editFicha(id);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = e.currentTarget.getAttribute('data-id');
+                    confirmDeleteFicha(id);
+                });
+            });
+        }
+
+        function formatRamoDisplay(ramo) {
+            if (!ramo) return 'N/A';
+            return ramo.split(';').map(r => r.trim()).join('\n');
+        }
+
+        function formatFuenteDisplay(fuente) {
+            if (!fuente) return 'N/A';
+            return fuente.split(';').map(f => {
+                const url = f.trim();
+                return `<a href="${url}" target="_blank" class="text-blue-600 hover:underline">${url}</a>`;
+            }).join('\n');
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            // El formato YYYY-MM-DD es interpretado como UTC.
+            // Reemplazar guiones con diagonales lo fuerza a ser interpretado como hora local,
+            // evitando el problema del día anterior por la conversión de zona horaria.
+            const localDate = new Date(dateString.replace(/-/g, '\/'));
+            return localDate.toLocaleDateString('es-ES');
+        }
+
+        function switchTab(tabName) {
+            // Actualizar botones activos
+            elements.tabButtons.forEach(btn => {
+                btn.classList.remove('active', 'border-primary', 'text-primary');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            // Activar botón actual
+            const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+            activeBtn.classList.add('active', 'border-primary', 'text-primary');
+            activeBtn.classList.remove('border-transparent', 'text-gray-500');
+            
+            // Mostrar contenido activo
+            elements.tabContents.forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(`tab-content-${tabName}`).classList.remove('hidden');
+        }
+
+        function openFichaModal(ficha = null) {
+            currentEditingId = ficha ? ficha.id : null;
+            elements.modalTitle.textContent = ficha ? 'Editar Ficha' : 'Agregar Nueva Ficha';
+            
+            // Limpiar formulario
+            elements.fichaForm.reset();
+            resetDynamicSections();
+            
+            // Llenar formulario si es edición
+            if (ficha) {
+                populateForm(ficha);
+            }
+            
+            // Mostrar modal
+            elements.fichaModal.classList.remove('hidden');
+            // Asegurarse de que la primera pestaña esté activa al abrir
+            switchModalTab('principal');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeFichaModal() {
+            elements.fichaModal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+            currentEditingId = null;
+        }
+
+        function resetDynamicSections() {
+            ramos = [];
+            fuentes = [];
+            programasPresupuestarios = [];
+            licitacionesData = [];
+            nivelesIndicadores = [];
+            
+            updateRamosDisplay();
+            updateFuentesDisplay();
+            updateProgramasPresupuestariosDisplay();
+            updateLicitacionesDisplay();
+            updateNivelesIndicadoresDisplay();
+        }
+
+        function populateForm(ficha) {
+            // Establecer ID
+            elements.fichaId.value = ficha.id;
+            
+            // Campos simples
+            const simpleFields = [
+                'proyecto', 'subproyecto', 'nombrePrograma', 'fechaActualizacion',
+                'entidadResponsable', 'numeroCartera', 'periodoReportado',
+                'presupuestoAprobado', 'presupuestoModificado', 'presupuestoEjercido'
+            ];
+            
+            simpleFields.forEach(field => {
+                const element = document.getElementById(field);
+                if (element && ficha[field] !== undefined) {
+                    element.value = ficha[field];
+                }
+            });
+            
+            // Campos con editores
+            const editorFields = [
+                'cobertura', 'objetivos', 'descripcionProyecto', 
+                'avanceFisico', 'avanceFinanciero', 'programaPresupuestario', 'transparenciaPresupuestaria', 'licitaciones', 'indicadores',
+                'hitosPrograma', 'seguimientoPrograma', 'mediosComunicacion', 'avanceFinanciero'
+            ];
+            
+            editorFields.forEach(field => {
+                const textarea = document.getElementById(field);
+                const editor = editors[field];
+                if (textarea && editor && ficha[field] !== undefined) {
+                    textarea.value = ficha[field];
+                    editor.setContents(ficha[field]);
+                }
+            });
+            
+            // Ramos
+            if (ficha.ramo) {
+                ramos = ficha.ramo.split(';').map(r => r.trim()).filter(r => r);
+                updateRamosDisplay();
+            }
+            
+            // Fuentes
+            if (ficha.fuente) {
+                fuentes = ficha.fuente.split(';').map(f => f.trim()).filter(f => f);
+                updateFuentesDisplay();
+            }
+            
+            // Datos complejos (si existen en la ficha)
+            if (ficha.programasPresupuestarios) {
+                programasPresupuestarios = ficha.programasPresupuestarios;
+                updateProgramasPresupuestariosDisplay();
+            }
+            
+            if (ficha.licitacionesData) {
+                licitacionesData = ficha.licitacionesData;
+                updateLicitacionesDisplay();
+            }
+            
+            if (ficha.nivelesIndicadores) {
+                nivelesIndicadores = ficha.nivelesIndicadores;
+                updateNivelesIndicadoresDisplay();
+            }
+        }
+
+        function handleModalTabClick(e) {
+            const tabName = e.currentTarget.dataset.modalTab;
+            switchModalTab(tabName);
+        }
+
+        function switchModalTab(tabName) {
+            // Botones
+            document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-primary', 'text-white');
+                btn.classList.add('bg-gray-100', 'text-gray-600');
+            });
+            document.querySelector(`[data-modal-tab="${tabName}"]`).classList.add('active', 'bg-primary', 'text-white');
+            
+            // Contenido
+            document.querySelectorAll('.modal-tab-content').forEach(content => content.classList.add('hidden'));
+            document.getElementById(`modal-tab-content-${tabName}`).classList.remove('hidden');
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            try {
+                const formData = new FormData(elements.fichaForm);
+                const fichaData = {};
+                
+                // Recoger datos del formulario
+                for (let [key, value] of formData.entries()) {
+                    if (key !== 'id') {
+                        fichaData[key] = value;
+                    }
+                }
+                
+                // Agregar datos dinámicos
+                fichaData.ramo = ramos.join('; ');
+                fichaData.fuente = fuentes.join('; ');
+                fichaData.programasPresupuestarios = programasPresupuestarios;
+                fichaData.licitacionesData = licitacionesData;
+                fichaData.nivelesIndicadores = nivelesIndicadores;
+                
+                // Agregar timestamp
+                fichaData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+                
+                if (currentEditingId) {
+                    // Actualizar ficha existente
+                    await db.collection('fichas').doc(currentEditingId).update(fichaData);
+                    showAlert('Ficha actualizada correctamente', 'success');
+                } else {
+                    // Crear nueva ficha
+                    fichaData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    await db.collection('fichas').add(fichaData);
+                    showAlert('Ficha creada correctamente', 'success');
+                }
+                
+                // Recargar datos y cerrar modal
+                await loadFichas();
+                closeFichaModal();
+                
+            } catch (error) {
+                console.error('Error al guardar ficha:', error);
+                showAlert('Error al guardar la ficha', 'error');
+            }
+        }
+
+        function addRamo() {
+            const input = document.getElementById('ramo-input');
+            const ramo = input.value.trim();
+            
+            if (ramo && !ramos.includes(ramo)) {
+                ramos.push(ramo);
+                updateRamosDisplay();
+                input.value = '';
+            }
+        }
+
+        function updateRamosDisplay() {
+            const container = document.getElementById('ramos-container');
+            container.innerHTML = '';
+            
+            ramos.forEach((ramo, index) => {
+                const chip = document.createElement('div');
+                chip.className = 'chip';
+                chip.innerHTML = `
+                    <span>${ramo}</span>
+                    <button type="button" class="remove-ramo" data-index="${index}">
+                        <i class="fa-solid fa-times text-xs"></i>
+                    </button>
+                `;
+                container.appendChild(chip);
+            });
+            
+            // Agregar event listeners a los botones de eliminar
+            document.querySelectorAll('.remove-ramo').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.currentTarget.dataset.index);
+                    ramos.splice(index, 1);
+                    updateRamosDisplay();
+                });
+            });
+        }
+
+        function addFuente() {
+            const input = document.getElementById('fuente-input');
+            const fuente = input.value.trim();
+            
+            if (fuente && !fuentes.includes(fuente)) {
+                fuentes.push(fuente);
+                updateFuentesDisplay();
+                input.value = '';
+            }
+        }
+
+        function updateFuentesDisplay() {
+            const container = document.getElementById('fuentes-container');
+            container.innerHTML = '';
+            
+            fuentes.forEach((fuente, index) => {
+                const chip = document.createElement('div');
+                chip.className = 'chip';
+                chip.innerHTML = `
+                    <span>${fuente}</span>
+                    <button type="button" class="remove-fuente" data-index="${index}">
+                        <i class="fa-solid fa-times text-xs"></i>
+                    </button>
+                `;
+                container.appendChild(chip);
+            });
+            
+            // Agregar event listeners a los botones de eliminar
+            document.querySelectorAll('.remove-fuente').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.currentTarget.dataset.index);
+                    fuentes.splice(index, 1);
+                    updateFuentesDisplay();
+                });
+            });
+        }
+
+        function addProgramaPresupuestario() {
+            const ppId = Date.now();
+            const pp = {
+                id: ppId,
+                nombre: '',
+                proyectos: []
+            };
+            
+            programasPresupuestarios.push(pp);
+            updateProgramasPresupuestariosDisplay();
+            openPpModal(ppId);
+        }
+
+        function updateProgramasPresupuestariosDisplay() {
+            const container = document.getElementById('pp-container');
+            container.innerHTML = '';
+            
+            if (programasPresupuestarios.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No hay programas presupuestarios agregados</p>';
+                return;
+            }
+            
+            programasPresupuestarios.forEach((pp, index) => {
+                const ppElement = document.createElement('div');
+                ppElement.className = 'border border-gray-300 rounded-lg p-4 mb-4';
+                ppElement.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-semibold">Programa Presupuestario ${index + 1}: ${pp.nombre || 'Sin nombre'}</h4>
+                        <div class="flex space-x-2">
+                            <button type="button" class="edit-pp text-blue-600" data-id="${pp.id}">
+                                <i class="fa-solid fa-edit"></i>
+                            </button>
+                            <button type="button" class="delete-pp text-red-600" data-id="${pp.id}">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600">Proyectos de Inversión: ${pp.proyectos.length}</p>
+                `;
+                container.appendChild(ppElement);
+            });
+            
+            // Agregar event listeners
+            document.querySelectorAll('.edit-pp').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.currentTarget.dataset.id);
+                    openPpModal(id);
+                });
+            });
+            
+            document.querySelectorAll('.delete-pp').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.currentTarget.dataset.id);
+                    deleteProgramaPresupuestario(id);
+                });
+            });
+        }
+
+        function openPpModal(ppId) {
+            currentPpId = ppId;
+            const pp = programasPresupuestarios.find(p => p.id === ppId);
+            const modal = document.getElementById('pp-modal');
+            const title = document.getElementById('pp-modal-title');
+            
+            if (pp) {
+                title.textContent = 'Editar Programa Presupuestario';
+                document.getElementById('pp-id').value = pp.id;
+                document.getElementById('pp-nombre').value = pp.nombre || '';
+                
+                const container = document.getElementById('pp-proyectos-container');
+                container.innerHTML = '';
+                pp.proyectos.forEach(proyecto => addProyectoInversionRow(proyecto));
+            } else {
+                title.textContent = 'Agregar Programa Presupuestario';
+                document.getElementById('pp-form').reset();
+                document.getElementById('pp-proyectos-container').innerHTML = '';
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closePpModal() {
+            document.getElementById('pp-modal').classList.add('hidden');
+            currentPpId = null;
+        }
+
+        function addProyectoInversionRow(proyecto = {}) {
+            const container = document.getElementById('pp-proyectos-container');
+            const div = document.createElement('div');
+            div.className = 'grid grid-cols-1 md:grid-cols-5 gap-2 items-center border p-2 rounded';
+            const proyectoId = proyecto.id || Date.now();
+            div.innerHTML = `
+                <input type="hidden" class="proyecto-id" value="${proyectoId}">
+                <input type="text" placeholder="Nombre Proyecto" class="proyecto-nombre md:col-span-2 p-1 border rounded" value="${proyecto.nombre || ''}">
+                <input type="number" step="0.01" placeholder="Aprobado" class="proyecto-aprobado p-1 border rounded" value="${proyecto.montoAprobado || ''}">
+                <input type="number" step="0.01" placeholder="Modificado" class="proyecto-modificado p-1 border rounded" value="${proyecto.montoModificado || ''}">
+                <input type="number" step="0.01" placeholder="Pagado" class="proyecto-pagado p-1 border rounded" value="${proyecto.montoPagado || ''}">
+                <button type="button" class="delete-proyecto-inversion-btn text-red-500 justify-self-center"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+        }
+
+        function handleProyectoInversionDelete(e) {
+            if (e.target.closest('.delete-proyecto-inversion-btn')) {
+                e.target.closest('.grid').remove();
+            }
+        }
+
+        function savePp() {
+            const ppId = currentPpId;
+            const pp = programasPresupuestarios.find(p => p.id === ppId);
+            if (!pp) return;
+
+            pp.nombre = document.getElementById('pp-nombre').value;
+            pp.proyectos = [];
+
+            document.querySelectorAll('#pp-proyectos-container .grid').forEach(row => {
+                const proyecto = {
+                    id: parseInt(row.querySelector('.proyecto-id').value),
+                    nombre: row.querySelector('.proyecto-nombre').value,
+                    montoAprobado: parseFloat(row.querySelector('.proyecto-aprobado').value) || 0,
+                    montoModificado: parseFloat(row.querySelector('.proyecto-modificado').value) || 0,
+                    montoPagado: parseFloat(row.querySelector('.proyecto-pagado').value) || 0,
+                };
+                pp.proyectos.push(proyecto);
+            });
+
+            updateProgramasPresupuestariosDisplay();
+            closePpModal();
+        }
+
+        function deleteProgramaPresupuestario(ppId) {
+            fichaToDeleteId = ppId; // Re-using for generic confirmation
+            const confirmModal = document.getElementById('confirm-modal');
+            confirmModal.querySelector('h3').textContent = 'Confirmar Eliminación';
+            confirmModal.querySelector('p').textContent = '¿Estás seguro de que deseas eliminar este programa presupuestario?';
+            
+            const confirmBtn = document.getElementById('confirm-delete-btn');
+            
+            // Clone and replace to remove old event listeners
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+            newConfirmBtn.addEventListener('click', () => {
+                programasPresupuestarios = programasPresupuestarios.filter(p => p.id !== fichaToDeleteId);
+                updateProgramasPresupuestariosDisplay();
+                closeConfirmModal();
+                // Restore original confirm modal texts
+                confirmModal.querySelector('h3').textContent = 'Confirmar Eliminación';
+                confirmModal.querySelector('p').textContent = '¿Estás seguro de que deseas eliminar esta ficha? Esta acción no se puede deshacer.';
+            });
+
+            document.getElementById('cancel-delete-btn').onclick = () => closeConfirmModal();
+
+            confirmModal.classList.remove('hidden');
+        }
+
+        function addLicitacion() {
+            const licitacionId = Date.now();
+            const licitacion = {
+                id: licitacionId,
+                concepto: '',
+                programado: '',
+                estatus: 'Pendiente',
+                numeroOficio: '',
+                fechaFallo: '',
+                importeAdjudicado: 0
+            };
+            
+            licitacionesData.push(licitacion);
+            updateLicitacionesDisplay();
+            openLicitacionModal(licitacionId);
+        }
+
+        function updateLicitacionesDisplay() {
+            const container = document.getElementById('licitaciones-container');
+            container.innerHTML = '';
+            
+            if (licitacionesData.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No hay licitaciones agregadas</p>';
+                return;
+            }
+            
+            licitacionesData.forEach((licitacion, index) => {
+                const licElement = document.createElement('div');
+                licElement.className = 'border border-gray-300 rounded-lg p-4 mb-4';
+                licElement.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-semibold">Licitación ${index + 1}: ${licitacion.concepto || 'Sin concepto'}</h4>
+                        <div class="flex space-x-2">
+                            <button type="button" class="edit-lic text-blue-600" data-id="${licitacion.id}">
+                                <i class="fa-solid fa-edit"></i>
+                            </button>
+                            <button type="button" class="delete-lic text-red-600" data-id="${licitacion.id}">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600">Estatus: ${licitacion.estatus} | Importe: ${formatCurrency(licitacion.importeAdjudicado)}</p>
+                `;
+                container.appendChild(licElement);
+            });
+            
+            // Agregar event listeners
+            document.querySelectorAll('.edit-lic').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.currentTarget.dataset.id);
+                    openLicitacionModal(id);
+                });
+            });
+            
+            document.querySelectorAll('.delete-lic').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.currentTarget.dataset.id);
+                    deleteLicitacion(id);
+                });
+            });
+        }
+
+        function openLicitacionModal(licitacionId) {
+            currentLicitacionId = licitacionId;
+            const licitacion = licitacionesData.find(l => l.id === licitacionId);
+            const modal = document.getElementById('licitacion-modal');
+            const title = document.getElementById('licitacion-modal-title');
+
+            if (licitacion) {
+                title.textContent = 'Editar Licitación';
+                document.getElementById('licitacion-id').value = licitacion.id;
+                document.getElementById('licitacion-concepto').value = licitacion.concepto || '';
+                document.getElementById('licitacion-programado').value = licitacion.programado || '';
+                document.getElementById('licitacion-estatus').value = licitacion.estatus || 'Pendiente';
+                document.getElementById('licitacion-numeroOficio').value = licitacion.numeroOficio || '';
+                document.getElementById('licitacion-fechaFallo').value = licitacion.fechaFallo || '';
+                document.getElementById('licitacion-importeAdjudicado').value = licitacion.importeAdjudicado || 0;
+            } else {
+                title.textContent = 'Agregar Licitación';
+                document.getElementById('licitacion-form').reset();
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function closeLicitacionModal() {
+            document.getElementById('licitacion-modal').classList.add('hidden');
+            currentLicitacionId = null;
+        }
+
+        function saveLicitacion() {
+            const licitacionId = currentLicitacionId;
+            const licitacion = licitacionesData.find(l => l.id === licitacionId);
+            if (!licitacion) return;
+
+            licitacion.concepto = document.getElementById('licitacion-concepto').value;
+            licitacion.programado = document.getElementById('licitacion-programado').value;
+            licitacion.estatus = document.getElementById('licitacion-estatus').value;
+            licitacion.numeroOficio = document.getElementById('licitacion-numeroOficio').value;
+            licitacion.fechaFallo = document.getElementById('licitacion-fechaFallo').value;
+            licitacion.importeAdjudicado = parseFloat(document.getElementById('licitacion-importeAdjudicado').value) || 0;
+
+            updateLicitacionesDisplay();
+            closeLicitacionModal();
+        }
+
+        function deleteLicitacion(licitacionId) {
+            // Similar confirmation logic as deleteProgramaPresupuestario can be implemented here
+            // For brevity, using a simple confirm for now, but should be replaced.
+            licitacionesData = licitacionesData.filter(l => l.id !== licitacionId);
+            updateLicitacionesDisplay();
+            showAlert('Licitación eliminada', 'info');
+        }
+
+        function addNivelIndicador() {
+            const nivelId = Date.now();
+            const nivel = {
+                id: nivelId,
+                nivel: '',
+                indicadores: []
+            };
+            
+            nivelesIndicadores.push(nivel);
+            updateNivelesIndicadoresDisplay();
+            openNivelModal(nivelId);
+        }
+
+        function updateNivelesIndicadoresDisplay() {
+            const container = document.getElementById('niveles-container');
+            container.innerHTML = '';
+            
+            if (nivelesIndicadores.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No hay niveles de indicadores agregados</p>';
+                return;
+            }
+            
+            nivelesIndicadores.forEach((nivel, index) => {
+                const nivelElement = document.createElement('div');
+                nivelElement.className = 'border border-gray-300 rounded-lg mb-4';
+                nivelElement.innerHTML = `
+                    <div class="nivel-header flex justify-between items-center">
+                        <h4 class="font-semibold">Nivel ${index + 1}: ${nivel.nivel || 'Sin nombre'}</h4>
+                        <div class="flex space-x-2">
+                            <button type="button" class="edit-nivel text-white" data-id="${nivel.id}">
+                                <i class="fa-solid fa-edit"></i>
+                            </button>
+                            <button type="button" class="delete-nivel text-white" data-id="${nivel.id}">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <p class="text-sm text-gray-600 mb-2">Indicadores: ${nivel.indicadores.length}</p>
+                        ${nivel.indicadores.length > 0 ? `
+                            <table class="sub-table">
+                                <thead>
+                                    <tr>
+                                        <th>Denominación</th>
+                                        <th>Frecuencia</th>
+                                        <th>Meta Anual Prog.</th>
+                                        <th>Meta Anual Aj.</th>
+                                        <th>Meta al Periodo</th>
+                                        <th>Meta Aj. Periodo</th>
+                                        <th>Realizado</th>
+                                        <th>Avance %</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${nivel.indicadores.map(ind => `
+                                        <tr>
+                                            <td>${ind.denominacion || ''}</td>
+                                            <td>${ind.frecuencia || ''}</td>
+                                            <td>${ind.metaAnualProgramada || ''}</td>
+                                            <td>${ind.metaAnualAjustada || ''}</td>
+                                            <td>${ind.metaAlPeriodo || ''}</td>
+                                            <td>${ind.metaAjustadaPeriodo || ''}</td>
+                                            <td>${ind.realizadoPeriodo || ''}</td>
+                                            <td>${ind.avancePorcentaje || ''}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        ` : ''}
+                    </div>
+                `;
+                container.appendChild(nivelElement);
+            });
+            
+            // Agregar event listeners
+            document.querySelectorAll('.edit-nivel').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.currentTarget.dataset.id);
+                    openNivelModal(id);
+                });
+            });
+            
+            document.querySelectorAll('.delete-nivel').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.currentTarget.dataset.id);
+                    deleteNivelIndicador(id);
+                });
+            });
+        }
+
+        function openNivelModal(nivelId) {
+            currentNivelId = nivelId;
+            const nivel = nivelesIndicadores.find(n => n.id === nivelId);
+            const modal = document.getElementById('nivel-modal');
+            const title = document.getElementById('nivel-modal-title');
+
+            if (nivel) {
+                title.textContent = 'Editar Nivel de Indicador';
+                document.getElementById('nivel-id').value = nivel.id;
+                document.getElementById('nivel-nombre').value = nivel.nivel || '';
+
+                const container = document.getElementById('nivel-indicadores-container');
+                container.innerHTML = '';
+                nivel.indicadores.forEach(indicador => addIndicadorRow(indicador));
+            } else {
+                title.textContent = 'Agregar Nivel de Indicador';
+                document.getElementById('nivel-form').reset();
+                document.getElementById('nivel-indicadores-container').innerHTML = '';
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function closeNivelModal() {
+            document.getElementById('nivel-modal').classList.add('hidden');
+            currentNivelId = null;
+        }
+
+        function addIndicadorRow(indicador = {}) {
+            const container = document.getElementById('nivel-indicadores-container');
+            const div = document.createElement('div');
+            div.className = 'border p-2 rounded space-y-2';
+            const indicadorId = indicador.id || Date.now();
+            div.innerHTML = `
+                <input type="hidden" class="indicador-id" value="${indicadorId}">
+                <div class="flex justify-between items-center">
+                    <input type="text" placeholder="Denominación" class="indicador-denominacion w-full p-1 border rounded" value="${indicador.denominacion || ''}">
+                    <button type="button" class="delete-indicador-btn text-red-500 ml-2 flex-shrink-0"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-7 gap-2 text-xs">
+                    <input type="text" placeholder="Frecuencia" class="indicador-frecuencia p-1 border rounded" value="${indicador.frecuencia || ''}">
+                    <input type="text" placeholder="Meta Anual Prog." class="indicador-metaAnualProgramada p-1 border rounded" value="${indicador.metaAnualProgramada || ''}">
+                    <input type="text" placeholder="Meta Anual Aj." class="indicador-metaAnualAjustada p-1 border rounded" value="${indicador.metaAnualAjustada || ''}">
+                    <input type="text" placeholder="Meta Periodo" class="indicador-metaAlPeriodo p-1 border rounded" value="${indicador.metaAlPeriodo || ''}">
+                    <input type="text" placeholder="Meta Aj. Periodo" class="indicador-metaAjustadaPeriodo p-1 border rounded" value="${indicador.metaAjustadaPeriodo || ''}">
+                    <input type="text" placeholder="Realizado" class="indicador-realizadoPeriodo p-1 border rounded" value="${indicador.realizadoPeriodo || ''}">
+                    <input type="text" placeholder="Avance %" class="indicador-avancePorcentaje p-1 border rounded" value="${indicador.avancePorcentaje || ''}">
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function handleIndicadorDelete(e) {
+            if (e.target.closest('.delete-indicador-btn')) {
+                e.target.closest('.border.p-2').remove();
+            }
+        }
+
+        function saveNivel() {
+            const nivelId = currentNivelId;
+            const nivel = nivelesIndicadores.find(n => n.id === nivelId);
+            if (!nivel) return;
+
+            nivel.nivel = document.getElementById('nivel-nombre').value;
+            nivel.indicadores = [];
+
+            document.querySelectorAll('#nivel-indicadores-container .border.p-2').forEach(row => {
+                const indicador = {
+                    id: parseInt(row.querySelector('.indicador-id').value),
+                    denominacion: row.querySelector('.indicador-denominacion').value,
+                    frecuencia: row.querySelector('.indicador-frecuencia').value,
+                    metaAnualProgramada: row.querySelector('.indicador-metaAnualProgramada').value,
+                    metaAnualAjustada: row.querySelector('.indicador-metaAnualAjustada').value,
+                    metaAlPeriodo: row.querySelector('.indicador-metaAlPeriodo').value,
+                    metaAjustadaPeriodo: row.querySelector('.indicador-metaAjustadaPeriodo').value,
+                    realizadoPeriodo: row.querySelector('.indicador-realizadoPeriodo').value,
+                    avancePorcentaje: row.querySelector('.indicador-avancePorcentaje').value,
+                };
+                nivel.indicadores.push(indicador);
+            });
+
+            updateNivelesIndicadoresDisplay();
+            closeNivelModal();
+        }
+
+        function deleteNivelIndicador(nivelId) {
+            // Similar confirmation logic as deleteProgramaPresupuestario can be implemented here
+            nivelesIndicadores = nivelesIndicadores.filter(n => n.id !== nivelId);
+            updateNivelesIndicadoresDisplay();
+            showAlert('Nivel de indicador eliminado', 'info');
+        }
+
+        function handleSearch() {
+            const searchTerm = elements.searchInput.value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                renderFichasTable();
+                return;
+            }
+            
+            const filteredFichas = fichas.filter(ficha => 
+                (ficha.proyecto && ficha.proyecto.toLowerCase().includes(searchTerm)) ||
+                (ficha.subproyecto && ficha.subproyecto.toLowerCase().includes(searchTerm)) ||
+                (ficha.nombrePrograma && ficha.nombrePrograma.toLowerCase().includes(searchTerm)) ||
+                (ficha.ramo && ficha.ramo.toLowerCase().includes(searchTerm)) ||
+                (ficha.entidadResponsable && ficha.entidadResponsable.toLowerCase().includes(searchTerm))
+            );
+            
+            renderFichasTable(filteredFichas);
+        }
+
+        function clearSearch() {
+            elements.searchInput.value = '';
+            renderFichasTable();
+        }
+
+        function viewFicha(id) {
+            const ficha = fichas.find(f => f.id === id);
+            if (!ficha) return;
+
+            // Generar contenido del modal de detalles
+            let detailsHTML = `
+                <div class="details-header border-b border-gray-200 pb-4 mb-6">
+                    <h3 class="text-xl font-bold text-primary">${ficha.proyecto || 'Sin nombre'}</h3>
+                    <h3 class="text-xl font-bold text-primary">${ficha.subproyecto || 'Sin nombre'}</h3>
+                    <h3 class="text-xl font-bold text-primary">${ficha.nombrePrograma || 'Sin nombre'}</h3>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-primary mb-3">Ficha: Información Consolidada</h4>
+                    <table class="details-table" style="table-layout: fixed;">
+                        <tr>
+                            <th class="font-bold w-1/4">Ramo:</th>
+                            <td class="ramo-display w-1/4">${formatRamoDisplay(ficha.ramo) || 'N/A'}</td>
+                            <th class="font-bold w-1/4">Fecha de Actualización:</th>
+                            <td class="w-1/4">${formatDate(ficha.fechaActualizacion)}</td>
+                        </tr>
+                        <tr>
+                            <th class="font-bold">Entidad Responsable:</th>
+                            <td colspan="1">${ficha.entidadResponsable || 'N/A'}</td>
+                            <th class="font-bold">Número de Cartera:</th>
+                            <td class="whitespace-nowrap">${ficha.numeroCartera || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th class="font-bold">Cobertura:</th>
+                            <td class="formatted-content" colspan="1">${ficha.cobertura || 'N/A'}</td>
+                            <th class="font-bold">Periodo Reportado:</th>
+                            <td>${ficha.periodoReportado || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th class="font-bold">Avance físico</th>
+                            <td class="formatted-content">${ficha.avanceFisico || 'N/A'}</td>
+                            <th class="font-bold">Avance financiero</th>
+                            <td class="formatted-content">${ficha.avanceFinanciero || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th class="font-bold">Objetivo:</th>
+                            <td class="formatted-content" colspan="3">${ficha.objetivos || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th class="font-bold">Descripción del Proyecto</th>
+                            <td class="formatted-content" colspan="3">${ficha.descripcionProyecto || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th class="font-bold">Programa presupuestario</th>
+                            <td class="formatted-content" colspan="1">${ficha.programaPresupuestario || 'N/A'}</td>
+                            <th class="font-bold">Presupuesto aprobado:</th>
+                            <td>${formatCurrency(ficha.presupuestoAprobado)}</td>
+                        </tr>
+                        <tr>
+                            <th class="font-bold">Presupuesto modificado:</th>
+                            <td colspan="1">${formatCurrency(ficha.presupuestoModificado)}</td>
+                            <th class="font-bold">Presupuesto ejercido:</th>
+                            <td>${formatCurrency(ficha.presupuestoEjercido)}</td>
+                        </tr>
+                        <tr>
+                            <th class="font-bold">Indicadores y metas:</th>
+                            <td class="formatted-content" colspan="3">
+                                ${ficha.indicadores || 'N/A'}
+                                ${(() => {
+                                    if (ficha.nivelesIndicadores && ficha.nivelesIndicadores.length > 0) {
+                                        let indHTML = `
+                                            <div class="mt-4 text-sm">
+                                                <h4 class="font-semibold text-primary mb-3">Tabla de Indicadores</h4>
+                                                <div class="bg-white p-2 rounded border overflow-x-auto">
+                                                    <table class="sub-table">
+                                                        <thead class="bg-primary text-white font-extrabold">
+                                                            <tr class="bg-primary text-white font-extrabold">
+                                                                <th>Denominación</th>
+                                                                <th>Frecuencia</th>
+                                                                <th>Meta Anual Prog.</th>
+                                                                <th>Meta Anual Aj.</th>
+                                                                <th>Meta al Periodo</th>
+                                                                <th>Meta Aj. Periodo</th>
+                                                                <th>Realizado</th>
+                                                                <th>Avance %</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>`;
+                                        ficha.nivelesIndicadores.forEach(nivel => {
+                                            indHTML += `<tr class="font-bold bg-slate-100"><td colspan="8" class="text-center">Nivel: ${nivel.nivel || 'Sin nombre'}</td></tr>`;
+                                            nivel.indicadores.forEach(indicador => {
+                                                indHTML += `
+                                                    <tr class="hover:bg-gray-50">
+                                                        <td class="text-left-important">${indicador.denominacion || ''}</td>
+                                                        <td>${indicador.frecuencia || ''}</td>
+                                                        <td>${indicador.metaAnualProgramada || ''}</td>
+                                                        <td>${indicador.metaAnualAjustada || ''}</td>
+                                                        <td>${indicador.metaAlPeriodo || ''}</td>
+                                                        <td>${indicador.metaAjustadaPeriodo || ''}</td>
+                                                        <td>${indicador.realizadoPeriodo || ''}</td>
+                                                        <td>${indicador.avancePorcentaje || ''}</td>
+                                                    </tr>
+                                                `;
+                                            });
+                                        });
+                                        indHTML += `</tbody></table></div></div>`;
+                                        return indHTML;
+                                    }
+                                    return '';
+                                })()}
+                                <div class="mt-4 pt-4 border-t border-gray-200">
+                                    <h5 class="font-semibold text-gray-800 mb-2">Transparencia Presupuestaria</h5>
+                                    ${ficha.transparenciaPresupuestaria || 'N/A'}
+                                    ${(() => {
+                                        if (ficha.programasPresupuestarios && ficha.programasPresupuestarios.length > 0) {
+                                            let mirHTML = `
+                                                <div class="mt-4 text-sm">
+                                                    <h4 class="font-semibold text-primary mb-3">Tabla MIR - Programas Presupuestarios y Proyectos de Inversión</h4>
+                                                    <div class="bg-white p-2 rounded border">
+                                                        <table class="sub-table">
+                                                            <thead>
+                                                                <tr class="bg-primary text-white font-extrabold">
+                                                                    <th>Programas Presupuestarios /<br> Proyectos de Inversión</th>
+                                                                    <th>Monto Aprobado (MDP)</th>
+                                                                    <th>Monto Modificado (MDP)</th>
+                                                                    <th>Monto Pagado (MDP)</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>`;
+                                            let granTotalAprobado = 0, granTotalModificado = 0, granTotalPagado = 0;
+                                            ficha.programasPresupuestarios.forEach(pp => {
+                                                let totalAprobado = 0, totalModificado = 0, totalPagado = 0;
+                                                pp.proyectos.forEach(proyecto => {
+                                                    totalAprobado += parseFloat(proyecto.montoAprobado) || 0;
+                                                    totalModificado += parseFloat(proyecto.montoModificado) || 0;
+                                                    totalPagado += parseFloat(proyecto.montoPagado) || 0;
+                                                });
+                                                granTotalAprobado += totalAprobado;
+                                                granTotalModificado += totalModificado;
+                                                granTotalPagado += totalPagado;
+                                                mirHTML += `<tr class="font-bold bg-slate-100"><td class="text-center">${pp.nombre || 'Programa Presupuestario'}</td><td>${totalAprobado.toFixed(2)}</td><td>${totalModificado.toFixed(2)}</td><td>${totalPagado.toFixed(2)}</td></tr>`;
+                                                pp.proyectos.forEach(proyecto => {
+                                                    mirHTML += `<tr class="hover:bg-gray-50"><td class="pl-8 text-left-important">${proyecto.nombre || ''}</td><td>${proyecto.montoAprobado || 0}</td><td>${proyecto.montoModificado || 0}</td><td>${proyecto.montoPagado || 0}</td></tr>`;
+                                                });
+                                            });
+                                            mirHTML += `<tr class="font-extrabold bg-primary text-white"><td class="text-center">TOTAL GENERAL</td><td>${granTotalAprobado.toFixed(2)}</td><td>${granTotalModificado.toFixed(2)}</td><td>${granTotalPagado.toFixed(2)}</td></tr>`;
+                                            mirHTML += `</tbody></table></div></div>`;
+                                            return mirHTML;
+                                        }
+                                        return '';
+                                    })()}
+                                </div>
+                                <!-- END: Moved Transparencia Presupuestaria content -->
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="font-bold">Adjudicación (Licitaciones):</th>
+                            <td class="formatted-content" colspan="3">
+                                ${ficha.licitaciones || 'N/A'}
+                                ${(() => {
+                                    if (ficha.licitacionesData && ficha.licitacionesData.length > 0) {
+                                        let licHTML = `
+                                            <div class="mt-4 text-sm">
+                                                <h4 class="font-semibold text-primary mb-3">Licitaciones Identificadas</h4>
+                                                <div class="bg-white p-2 rounded border">
+                                                    <table class="sub-table">
+                                                        <thead class="bg-primary text-white font-extrabold">
+                                                            <tr class="bg-primary text-white font-extrabold">
+                                                                <th>Concepto</th>
+                                                                <th>Programado</th>
+                                                                <th>Estatus</th>
+                                                                <th>No. de Oficio</th>
+                                                                <th>Fecha de Fallo</th>
+                                                                <th>Importe Adjudicado</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>`;
+                                        ficha.licitacionesData.forEach(licitacion => {
+                                            licHTML += `
+                                                <tr>
+                                                    <td class="text-left-important">${licitacion.concepto || ''}</td>
+                                                    <td>${licitacion.programado || ''}</td>
+                                                    <td>${licitacion.estatus || ''}</td>
+                                                    <td>${licitacion.numeroOficio || ''}</td>
+                                                    <td>${licitacion.fechaFallo || ''}</td>
+                                                    <td>${formatCurrency(licitacion.importeAdjudicado)}</td>
+                                                </tr>
+                                            `;
+                                        });
+                                        licHTML += `</tbody></table></div></div>`;
+                                        return licHTML;
+                                    }
+                                    return '';
+                                })()}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="font-bold">Medios de Comunicación Notas relevantes:</th>
+                            <td class="formatted-content" colspan="3">${ficha.mediosComunicacion || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th class="font-bold">Hitos del Programa</th>
+                            <td class="formatted-content" colspan="3">${ficha.hitosPrograma || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th class="font-bold">Seguimiento del programa</th>
+                            <td class="formatted-content" colspan="3">${ficha.seguimientoPrograma || 'N/A'}</td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+            
+            // Agregar fuentes si existen
+            if (ficha.fuente) {
+                detailsHTML += `
+                    <div class="bg-gray-50 p-4 rounded-lg mt-6">
+                        <h4 class="font-semibold text-primary mb-3">Fuentes (URL)</h4>
+                        <div class="fuente-display bg-white p-3 rounded border">
+                            ${formatFuenteDisplay(ficha.fuente)}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            elements.detailsContent.innerHTML = detailsHTML;
+            elements.detailsModal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeDetailsModal() {
+            elements.detailsModal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+
+        function editFicha(id) {
+            const ficha = fichas.find(f => f.id === id);
+            if (ficha) {
+                openFichaModal(ficha);
+            }
+        }
+
+        function confirmDeleteFicha(id) {
+            fichaToDeleteId = id;
+            elements.confirmModal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeConfirmModal() {
+            elements.confirmModal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+            fichaToDeleteId = null;
+        }
+
+        async function confirmDelete() {
+            if (!fichaToDeleteId) return;
+            
+            try {
+                await db.collection('fichas').doc(fichaToDeleteId).delete();
+                showAlert('Ficha eliminada correctamente', 'success');
+                await loadFichas();
+                closeConfirmModal();
+            } catch (error) {
+                console.error('Error al eliminar ficha:', error);
+                showAlert('Error al eliminar la ficha', 'error');
+            }
+        }
+
+        function formatCurrency(amount) {
+            if (!amount) return 'N/A';
+            return new Intl.NumberFormat('es-MX', {
+                style: 'currency',
+                currency: 'MXN'
+            }).format(amount);
+        }
+
+        function showAlert(message, type = 'info') {
+            const alert = document.createElement('div');
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-yellow-500',
+                info: 'bg-blue-500'
+            };
+            
+            alert.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg text-white z-50 ${colors[type]}`;
+            alert.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid ${type === 'success' ? 'fa-check' : type === 'error' ? 'fa-exclamation-triangle' : 'fa-info'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+    </script>
+</body>
 </html>
+
