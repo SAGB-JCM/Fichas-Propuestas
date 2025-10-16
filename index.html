@@ -24,8 +24,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <style>
-        html { font-size: 60%; } /* Ajusta la escala base de la página para simular un zoom del 90% */
-        
+        body { zoom: 80%; }
+
         :root {
             --primary-color: #1E5B4F;
             --secondary-color: #A6802D;
@@ -384,7 +384,14 @@
 
     <!-- Modal para Agregar/Editar Ficha -->
     <div id="ficha-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative bg-white p-6 rounded-lg shadow-xl w-[90vw] max-w-6xl h-[90vh] mx-auto my-8 flex flex-col">
+        <!--
+            DOCUMENTACIÓN DE TAMAÑO DEL MODAL:
+            Para ajustar el tamaño del modal de "Agregar/Editar Ficha", modifica las siguientes clases de Tailwind CSS en el div de abajo:
+            - Ancho: `w-[95vw]` (actualmente 95% del ancho de la ventana). Puedes cambiar el valor (ej. `w-[80vw]`).
+            - Ancho Máximo: `max-w-7xl` (limita el ancho en pantallas grandes). Puedes usar otros valores como `max-w-6xl`, `max-w-full`, etc.
+            - Altura: `h-[95vh]` (actualmente 95% de la altura de la ventana). Puedes cambiar el valor (ej. `h-[90vh]`).
+        -->
+        <div class="relative bg-white p-6 rounded-lg shadow-xl w-[95vw] max-w-7xl h-[115vh] mx-auto my-4 flex flex-col">
             <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
                 <i class="fa-solid fa-times-circle fa-2x"></i>
             </button>
@@ -1008,7 +1015,7 @@
                     ['outdent', 'indent'],
                     ['table', 'link', 'image']
                 ],
-                height: '200px',
+                height: '170px',
                 placeholder: 'Escribe aquí...'
             };
 
