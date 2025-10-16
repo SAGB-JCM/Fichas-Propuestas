@@ -1836,31 +1836,31 @@
                     <h4 class="font-semibold text-primary mb-3">Ficha: Información Consolidada</h4>
                     <table class="details-table" style="table-layout: fixed;">
                         <tr>
-                            <th class="font-bold w-1/4">Ramo</th>
+                            <th class="font-bold w-1/4">Ramo:</th>
                             <td class="ramo-display w-1/4">${formatRamoDisplay(ficha.ramo) || 'N/A'}</td>
-                            <th class="font-bold w-1/4">Fecha de Actualización</th>
+                            <th class="font-bold w-1/4">Fecha de Actualización:</th>
                             <td class="w-1/4">${formatDate(ficha.fechaActualizacion)}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Entidad Responsable</th>
+                            <th class="font-bold">Entidad Responsable:</th>
                             <td colspan="1">${ficha.entidadResponsable || 'N/A'}</td>
-                            <th class="font-bold">Número de Cartera</th>
+                            <th class="font-bold">Número de Cartera:</th>
                             <td class="whitespace-nowrap">${ficha.numeroCartera || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Cobertura</th>
+                            <th class="font-bold">Cobertura:</th>
                             <td class="formatted-content" colspan="1">${ficha.cobertura || 'N/A'}</td>
-                            <th class="font-bold">Periodo Reportado</th>
+                            <th class="font-bold">Periodo Reportado:</th>
                             <td>${ficha.periodoReportado || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Avance Físico</th>
+                            <th class="font-bold">Avance físico</th>
                             <td class="formatted-content">${ficha.avanceFisico || 'N/A'}</td>
-                            <th class="font-bold">Avance Financiero</th>
+                            <th class="font-bold">Avance financiero</th>
                             <td class="formatted-content">${ficha.avanceFinanciero || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Objetivos</th>
+                            <th class="font-bold">Objetivo:</th>
                             <td class="formatted-content" colspan="3">${ficha.objetivos || 'N/A'}</td>
                         </tr>
                         <tr>
@@ -1868,60 +1868,19 @@
                             <td class="formatted-content" colspan="3">${ficha.descripcionProyecto || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Programa presupuestario</th>
+                            <th class="font-bold">Programa presupuestario:</th>
                             <td class="formatted-content" colspan="1">${ficha.programaPresupuestario || 'N/A'}</td>
-                            <th class="font-bold">Presupuesto aprobado</th>
+                            <th class="font-bold">Presupuesto aprobado:</th>
                             <td>${formatCurrency(ficha.presupuestoAprobado)}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Presupuesto modificado</th>
+                            <th class="font-bold">Presupuesto modificado:</th>
                             <td colspan="1">${formatCurrency(ficha.presupuestoModificado)}</td>
-                            <th class="font-bold">Presupuesto ejercido</th>
+                            <th class="font-bold">Presupuesto ejercido:</th>
                             <td>${formatCurrency(ficha.presupuestoEjercido)}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Licitaciones</th>
-                            <td class="formatted-content" colspan="3">
-                                ${ficha.licitaciones || 'N/A'}
-                                ${(() => {
-                                    if (ficha.licitacionesData && ficha.licitacionesData.length > 0) {
-                                        let licHTML = `
-                                            <div class="mt-4 text-sm">
-                                                <h4 class="font-semibold text-primary mb-3">Licitaciones Identificadas</h4>
-                                                <div class="bg-white p-2 rounded border">
-                                                    <table class="sub-table">
-                                                        <thead class="bg-primary text-white font-extrabold">
-                                                            <tr class="bg-primary text-white font-extrabold">
-                                                                <th>Concepto</th>
-                                                                <th>Programado</th>
-                                                                <th>Estatus</th>
-                                                                <th>No. de Oficio</th>
-                                                                <th>Fecha de Fallo</th>
-                                                                <th>Importe Adjudicado</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>`;
-                                        ficha.licitacionesData.forEach(licitacion => {
-                                            licHTML += `
-                                                <tr>
-                                                    <td class="text-left-important">${licitacion.concepto || ''}</td>
-                                                    <td>${licitacion.programado || ''}</td>
-                                                    <td>${licitacion.estatus || ''}</td>
-                                                    <td>${licitacion.numeroOficio || ''}</td>
-                                                    <td>${licitacion.fechaFallo || ''}</td>
-                                                    <td>${formatCurrency(licitacion.importeAdjudicado)}</td>
-                                                </tr>
-                                            `;
-                                        });
-                                        licHTML += `</tbody></table></div></div>`;
-                                        return licHTML;
-                                    }
-                                    return '';
-                                })()}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th class="font-bold">Indicadores</th>
+                            <th class="font-bold">Indicadores y metas:</th>
                             <td class="formatted-content" colspan="3">
                                 ${ficha.indicadores || 'N/A'}
                                 ${(() => {
@@ -1966,7 +1925,6 @@
                                     }
                                     return '';
                                 })()}
-                                <!-- START: Moved Transparencia Presupuestaria content -->
                                 <div class="mt-4 pt-4 border-t border-gray-200">
                                     <h5 class="font-semibold text-gray-800 mb-2">Transparencia Presupuestaria</h5>
                                     ${ficha.transparenciaPresupuestaria || 'N/A'}
@@ -2013,16 +1971,57 @@
                             </td>
                         </tr>
                         <tr>
+                            <th class="font-bold">Adjudicación (Licitaciones):</th>
+                            <td class="formatted-content" colspan="3">
+                                ${ficha.licitaciones || 'N/A'}
+                                ${(() => {
+                                    if (ficha.licitacionesData && ficha.licitacionesData.length > 0) {
+                                        let licHTML = `
+                                            <div class="mt-4 text-sm">
+                                                <h4 class="font-semibold text-primary mb-3">Licitaciones Identificadas</h4>
+                                                <div class="bg-white p-2 rounded border">
+                                                    <table class="sub-table">
+                                                        <thead class="bg-primary text-white font-extrabold">
+                                                            <tr class="bg-primary text-white font-extrabold">
+                                                                <th>Concepto</th>
+                                                                <th>Programado</th>
+                                                                <th>Estatus</th>
+                                                                <th>No. de Oficio</th>
+                                                                <th>Fecha de Fallo</th>
+                                                                <th>Importe Adjudicado</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>`;
+                                        ficha.licitacionesData.forEach(licitacion => {
+                                            licHTML += `
+                                                <tr>
+                                                    <td class="text-left-important">${licitacion.concepto || ''}</td>
+                                                    <td>${licitacion.programado || ''}</td>
+                                                    <td>${licitacion.estatus || ''}</td>
+                                                    <td>${licitacion.numeroOficio || ''}</td>
+                                                    <td>${licitacion.fechaFallo || ''}</td>
+                                                    <td>${formatCurrency(licitacion.importeAdjudicado)}</td>
+                                                </tr>
+                                            `;
+                                        });
+                                        licHTML += `</tbody></table></div></div>`;
+                                        return licHTML;
+                                    }
+                                    return '';
+                                })()}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="font-bold">Medios de Comunicación Notas relevantes:</th>
+                            <td class="formatted-content" colspan="3">${ficha.mediosComunicacion || 'N/A'}</td>
+                        </tr>
+                        <tr>
                             <th class="font-bold">Hitos del Programa</th>
                             <td class="formatted-content" colspan="3">${ficha.hitosPrograma || 'N/A'}</td>
                         </tr>
                         <tr>
                             <th class="font-bold">Seguimiento del programa</th>
                             <td class="formatted-content" colspan="3">${ficha.seguimientoPrograma || 'N/A'}</td>
-                        </tr>
-                        <tr>
-                            <th class="font-bold">Medios de Comunicación Relevantes</th>
-                            <td class="formatted-content" colspan="3">${ficha.mediosComunicacion || 'N/A'}</td>
                         </tr>
                     </table>
                 </div>
