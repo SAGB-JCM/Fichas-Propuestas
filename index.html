@@ -469,29 +469,29 @@
                                 <div id="cobertura-editor"></div>
                             </div>
 
-                            <!-- Objetivos, Metas y Líneas de Acción (con editor) -->
+                            <!-- Objetivos (con editor) -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">11. Objetivos, Metas y Líneas de Acción</label>
-                                <textarea id="objetivosMetas" name="objetivosMetas" rows="4"
+                                <label class="block text-sm font-medium text-gray-700 mb-2">11. Objetivos</label>
+                                <textarea id="objetivos" name="objetivos" rows="4"
                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
-                                <div id="objetivosMetas-editor"></div>
+                                <div id="objetivos-editor"></div>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                            <!-- Descripción de actividades (con editor) -->
+                            <!-- Descripción del Proyecto (con editor) -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">12. Descripción de actividades</label>
-                                <textarea id="descripcionActividades" name="descripcionActividades" rows="4"
+                                <label class="block text-sm font-medium text-gray-700 mb-2">12. Descripción del Proyecto</label>
+                                <textarea id="descripcionProyecto" name="descripcionProyecto" rows="4"
                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
-                                <div id="descripcionActividades-editor"></div>
+                                <div id="descripcionProyecto-editor"></div>
                             </div>
 
-                            <!-- Clasificación Funcional (con editor) -->
+                            <!-- Avance Físico (con editor) -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">13. Clasificación Funcional</label>
-                                <textarea id="clasificacionFuncional" name="clasificacionFuncional" rows="4"
+                                <label class="block text-sm font-medium text-gray-700 mb-2">13. Avance Físico</label>
+                                <textarea id="avanceFisico" name="avanceFisico" rows="4"
                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
-                                <div id="clasificacionFuncional-editor"></div>
+                                <div id="avanceFisico-editor"></div>
                             </div>
 
                             <!-- Programa Presupuestario (con editor) -->
@@ -631,12 +631,12 @@
                                 <div id="mediosComunicacion-editor"></div>
                             </div>
 
-                            <!-- Observaciones (con editor) -->
+                            <!-- Avance Financiero (con editor) -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">44. Observaciones</label>
-                                <textarea id="observaciones" name="observaciones" rows="4"
+                                <label class="block text-sm font-medium text-gray-700 mb-2">44. Avance Financiero</label>
+                                <textarea id="avanceFinanciero" name="avanceFinanciero" rows="4"
                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
-                                <div id="observaciones-editor"></div>
+                                <div id="avanceFinanciero-editor"></div>
                             </div>
 
                             <!-- Fuente (URL) - Múltiple como Ramo -->
@@ -987,10 +987,10 @@
 
             // Campos que requieren editor enriquecido
             const editorFields = [
-                'cobertura', 'objetivosMetas', 'descripcionActividades', 
-                'clasificacionFuncional', 'programaPresupuestario',
+                'cobertura', 'objetivos', 'descripcionProyecto', 
+                'avanceFisico', 'programaPresupuestario',
                 'transparenciaPresupuestaria', 'licitaciones', 'indicadores',
-                'hitosPrograma', 'seguimientoPrograma', 'mediosComunicacion', 'observaciones'
+                'hitosPrograma', 'seguimientoPrograma', 'mediosComunicacion', 'avanceFinanciero'
             ];
 
             editorFields.forEach(field => {
@@ -1183,10 +1183,10 @@
             
             // Campos con editores
             const editorFields = [
-                'cobertura', 'objetivosMetas', 'descripcionActividades', 
-                'clasificacionFuncional', 'programaPresupuestario',
+                'cobertura', 'objetivos', 'descripcionProyecto', 
+                'avanceFisico', 'programaPresupuestario',
                 'transparenciaPresupuestaria', 'licitaciones', 'indicadores',
-                'hitosPrograma', 'seguimientoPrograma', 'mediosComunicacion', 'observaciones'
+                'hitosPrograma', 'seguimientoPrograma', 'mediosComunicacion', 'avanceFinanciero'
             ];
             
             editorFields.forEach(field => {
@@ -1854,18 +1854,18 @@
                             <td>${ficha.periodoReportado || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Clasificación Funcional</th>
-                            <td class="formatted-content">${ficha.clasificacionFuncional || 'N/A'}</td>
-                            <th class="font-bold">Observaciones</th>
-                            <td class="formatted-content">${ficha.observaciones || 'N/A'}</td>
+                            <th class="font-bold">Avance Físico</th>
+                            <td class="formatted-content">${ficha.avanceFisico || 'N/A'}</td>
+                            <th class="font-bold">Avance Financiero</th>
+                            <td class="formatted-content">${ficha.avanceFinanciero || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Objetivos, Metas y Líneas de Acción</th>
-                            <td class="formatted-content" colspan="3">${ficha.objetivosMetas || 'N/A'}</td>
+                            <th class="font-bold">Objetivos</th>
+                            <td class="formatted-content" colspan="3">${ficha.objetivos || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Descripción de actividades</th>
-                            <td class="formatted-content" colspan="3">${ficha.descripcionActividades || 'N/A'}</td>
+                            <th class="font-bold">Descripción del Proyecto</th>
+                            <td class="formatted-content" colspan="3">${ficha.descripcionProyecto || 'N/A'}</td>
                         </tr>
                         <tr>
                             <th class="font-bold">Programa presupuestario</th>
