@@ -1880,50 +1880,6 @@
                             <td>${formatCurrency(ficha.presupuestoEjercido)}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Transparencia Presupuestaria</th>
-                            <td class="formatted-content" colspan="3">
-                                ${ficha.transparenciaPresupuestaria || 'N/A'}
-                                ${(() => {
-                                    if (ficha.programasPresupuestarios && ficha.programasPresupuestarios.length > 0) {
-                                        let mirHTML = `
-                                            <div class="mt-4 text-sm">
-                                                <h4 class="font-semibold text-primary mb-3">Tabla MIR - Programas Presupuestarios y Proyectos de Inversión</h4>
-                                                <div class="bg-white p-2 rounded border">
-                                                    <table class="sub-table">
-                                                        <thead>
-                                                            <tr class="bg-primary text-white font-extrabold">
-                                                                <th>Programas Presupuestarios /<br> Proyectos de Inversión</th>
-                                                                <th>Monto Aprobado (MDP)</th>
-                                                                <th>Monto Modificado (MDP)</th>
-                                                                <th>Monto Pagado (MDP)</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>`;
-                                        let granTotalAprobado = 0, granTotalModificado = 0, granTotalPagado = 0;
-                                        ficha.programasPresupuestarios.forEach(pp => {
-                                            let totalAprobado = 0, totalModificado = 0, totalPagado = 0;
-                                            pp.proyectos.forEach(proyecto => {
-                                                totalAprobado += parseFloat(proyecto.montoAprobado) || 0;
-                                                totalModificado += parseFloat(proyecto.montoModificado) || 0;
-                                                totalPagado += parseFloat(proyecto.montoPagado) || 0;
-                                            });
-                                            granTotalAprobado += totalAprobado;
-                                            granTotalModificado += totalModificado;
-                                            granTotalPagado += totalPagado;
-                                            mirHTML += `<tr class="font-bold bg-slate-100"><td class="text-center">${pp.nombre || 'Programa Presupuestario'}</td><td>${totalAprobado.toFixed(2)}</td><td>${totalModificado.toFixed(2)}</td><td>${totalPagado.toFixed(2)}</td></tr>`;
-                                            pp.proyectos.forEach(proyecto => {
-                                                mirHTML += `<tr class="hover:bg-gray-50"><td class="pl-8 text-left-important">${proyecto.nombre || ''}</td><td>${proyecto.montoAprobado || 0}</td><td>${proyecto.montoModificado || 0}</td><td>${proyecto.montoPagado || 0}</td></tr>`;
-                                            });
-                                        });
-                                        mirHTML += `<tr class="font-extrabold bg-primary text-white"><td class="text-center">TOTAL GENERAL</td><td>${granTotalAprobado.toFixed(2)}</td><td>${granTotalModificado.toFixed(2)}</td><td>${granTotalPagado.toFixed(2)}</td></tr>`;
-                                        mirHTML += `</tbody></table></div></div>`;
-                                        return mirHTML;
-                                    }
-                                    return '';
-                                })()}
-                            </td>
-                        </tr>
-                        <tr>
                             <th class="font-bold">Licitaciones</th>
                             <td class="formatted-content" colspan="3">
                                 ${ficha.licitaciones || 'N/A'}
@@ -2010,6 +1966,50 @@
                                     }
                                     return '';
                                 })()}
+                                <!-- START: Moved Transparencia Presupuestaria content -->
+                                <div class="mt-4 pt-4 border-t border-gray-200">
+                                    <h5 class="font-semibold text-gray-800 mb-2">Transparencia Presupuestaria</h5>
+                                    ${ficha.transparenciaPresupuestaria || 'N/A'}
+                                    ${(() => {
+                                        if (ficha.programasPresupuestarios && ficha.programasPresupuestarios.length > 0) {
+                                            let mirHTML = `
+                                                <div class="mt-4 text-sm">
+                                                    <h4 class="font-semibold text-primary mb-3">Tabla MIR - Programas Presupuestarios y Proyectos de Inversión</h4>
+                                                    <div class="bg-white p-2 rounded border">
+                                                        <table class="sub-table">
+                                                            <thead>
+                                                                <tr class="bg-primary text-white font-extrabold">
+                                                                    <th>Programas Presupuestarios /<br> Proyectos de Inversión</th>
+                                                                    <th>Monto Aprobado (MDP)</th>
+                                                                    <th>Monto Modificado (MDP)</th>
+                                                                    <th>Monto Pagado (MDP)</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>`;
+                                            let granTotalAprobado = 0, granTotalModificado = 0, granTotalPagado = 0;
+                                            ficha.programasPresupuestarios.forEach(pp => {
+                                                let totalAprobado = 0, totalModificado = 0, totalPagado = 0;
+                                                pp.proyectos.forEach(proyecto => {
+                                                    totalAprobado += parseFloat(proyecto.montoAprobado) || 0;
+                                                    totalModificado += parseFloat(proyecto.montoModificado) || 0;
+                                                    totalPagado += parseFloat(proyecto.montoPagado) || 0;
+                                                });
+                                                granTotalAprobado += totalAprobado;
+                                                granTotalModificado += totalModificado;
+                                                granTotalPagado += totalPagado;
+                                                mirHTML += `<tr class="font-bold bg-slate-100"><td class="text-center">${pp.nombre || 'Programa Presupuestario'}</td><td>${totalAprobado.toFixed(2)}</td><td>${totalModificado.toFixed(2)}</td><td>${totalPagado.toFixed(2)}</td></tr>`;
+                                                pp.proyectos.forEach(proyecto => {
+                                                    mirHTML += `<tr class="hover:bg-gray-50"><td class="pl-8 text-left-important">${proyecto.nombre || ''}</td><td>${proyecto.montoAprobado || 0}</td><td>${proyecto.montoModificado || 0}</td><td>${proyecto.montoPagado || 0}</td></tr>`;
+                                                });
+                                            });
+                                            mirHTML += `<tr class="font-extrabold bg-primary text-white"><td class="text-center">TOTAL GENERAL</td><td>${granTotalAprobado.toFixed(2)}</td><td>${granTotalModificado.toFixed(2)}</td><td>${granTotalPagado.toFixed(2)}</td></tr>`;
+                                            mirHTML += `</tbody></table></div></div>`;
+                                            return mirHTML;
+                                        }
+                                        return '';
+                                    })()}
+                                </div>
+                                <!-- END: Moved Transparencia Presupuestaria content -->
                             </td>
                         </tr>
                         <tr>
