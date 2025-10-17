@@ -2325,12 +2325,12 @@
             ficha.proyectosProgramados.forEach(tramo => {
                 html += `
                     <tr class="hover:bg-gray-50">
-                        <td class="font-bold">${tramo.fase || 'Programado'}</td>
+                        <td>${tramo.fase || 'Programado'}</td>
                         <td class="text-left-important">${tramo.tramo || 'N/A'}</td>
                         <td>${tramo.construccionDiseno || 'N/A'}</td>
                         <td>${tramo.estacionesParaderos || 'N/A'}</td>
                         <td>${tramo.programadoKm || 0}</td>
-                        <td class="font-bold">${tramo.adjudicadoKm || 0}</td>
+                        <td>${tramo.adjudicadoKm || 0}</td>
                     </tr>
                 `;
             });
@@ -2345,19 +2345,24 @@
                 if (tramo.subtramos && tramo.subtramos.length > 0) {
                     const totalAdjudicado = tramo.subtramos.reduce((acc, sub) => acc + (parseFloat(sub.adjudicadoKm) || 0), 0);
                     const subtramosLabel = ficha.proyectosProgramados.length > 1 
-                        ? `Subtramos del ${tramo.tramo}` 
+                        ? `Subtramos del "${tramo.tramo}"` 
                         : 'Subtramos';
+                    
+                    if (ficha.proyectosProgramados.length > 1) {
+                        html += `<tr><td></td><td class="text-left-important pl-4" colspan="4">${subtramosLabel}</td><td>${totalAdjudicado.toFixed(2)}</td></tr>`;
+                    } else {
+                        html += `<tr><td></td><td class="text-left-important pl-4">${subtramosLabel}</td><td></td><td></td><td></td><td>${totalAdjudicado.toFixed(2)}</td></tr>`;
+                    }
 
-                    html += `<tr class="font-bold bg-slate-100"><td colspan="5" class="text-left-important pl-4">${subtramosLabel}</td><td>${totalAdjudicado.toFixed(2)}</td></tr>`;
                     tramo.subtramos.forEach(sub => {
                         html += `
                             <tr class="hover:bg-gray-50">
-                                <td class="font-bold">${sub.fase || 'Adjudicado'}</td>
+                                <td>${sub.fase || 'Adjudicado'}</td>
                                 <td class="text-left-important pl-8">${sub.nombre || 'N/A'}</td>
                                 <td>${sub.construccionDiseno || 'N/A'}</td>
                                 <td>${sub.estacionesParaderos || 'N/A'}</td>
                                 <td>${sub.programadoKm || 0}</td>
-                                <td class="font-bold">${sub.adjudicadoKm || 0}</td>
+                                <td>${sub.adjudicadoKm || 0}</td>
                             </tr>`;
                     });
                 }
