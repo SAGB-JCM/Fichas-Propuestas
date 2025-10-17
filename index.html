@@ -2316,6 +2316,11 @@
                             <tbody>
             `;
 
+            // Fila de encabezado para "Programado"
+            html += `
+                <tr class="font-bold bg-slate-100"><td colspan="6" class="text-left-important pl-4">Programado:</td></tr>
+            `;
+
             // Sección Programado
             ficha.proyectosProgramados.forEach(tramo => {
                 html += `
@@ -2329,6 +2334,11 @@
                     </tr>
                 `;
             });
+
+            // Fila de encabezado para "Adjudicado"
+            html += `
+                <tr class="font-bold bg-slate-100"><td colspan="6" class="text-left-important pl-4">Adjudicado:</td></tr>
+            `;
 
             // Sección Adjudicado (Subtramos)
             ficha.proyectosProgramados.forEach(tramo => {
