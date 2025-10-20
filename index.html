@@ -2892,6 +2892,28 @@
                                                                 <td>${formatCurrency(totalMontoAdjudicado)}</td>
                                                                 <td></td>
                                                             </tr>
+                                                            <tr class="bg-white">
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td class="text-left-important">Subtotal tramos</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td>${formatCurrency(totalMontoAdjudicado)}</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr class="font-bold bg-white">
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td class="text-left-important">KM Pendientes</td>
+                                                                <td>${(totalKmProgramado - totalKmAdjudicados).toFixed(2)}</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                            </tr>
                                                         `;
                                         ficha.licitacionesData.forEach(licitacion => {
                                             licHTML += `
