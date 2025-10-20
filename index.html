@@ -823,6 +823,24 @@
             <h3 class="text-xl font-bold text-primary mb-6" id="licitacion-modal-title">Licitación</h3>
             <form id="licitacion-form" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
                 <input type="hidden" id="licitacion-id">
+                <!-- Selección de Tramo -->
+                <div class="md:col-span-2">
+                    <label for="licitacion-tramo-select" class="block text-sm font-medium text-gray-700 mb-1">Seleccionar Tramo Asociado</label>
+                    <select id="licitacion-tramo-select" class="w-full p-2 border border-gray-300 rounded-lg">
+                        <option value="">-- Seleccione un tramo --</option>
+                        <!-- Opciones de tramos se llenarán dinámicamente -->
+                    </select>
+                    <p id="licitacion-tramo-error" class="text-red-500 text-xs mt-1 hidden">Por favor, seleccione un tramo.</p>
+                </div>
+                <!-- Detalles del Tramo Seleccionado (solo lectura) -->
+                <div id="licitacion-tramo-details" class="bg-gray-100 p-3 rounded-lg border border-gray-200 hidden">
+                    <h4 class="font-semibold text-gray-700 mb-2">Detalles del Tramo Seleccionado:</h4>
+                    <p class="text-sm text-gray-600"><strong>Fase:</strong> <span id="licitacion-tramo-fase-display"></span></p>
+                    <p class="text-sm text-gray-600"><strong>Proyecto Ferroviario:</strong> <span id="licitacion-tramo-nombre-display"></span></p>
+                    <p class="text-sm text-gray-600"><strong>Programado Km:</strong> <span id="licitacion-tramo-programado-km-display"></span></p>
+                </div>
+
+                <!-- Campos de Licitación -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2">
                         <label for="licitacion-descripcion" class="block text-sm font-medium text-gray-700 mb-1">Descripción de la Licitación</label>
@@ -837,16 +855,16 @@
                         <input type="text" id="licitacion-empresaConstructora" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div>
-                        <label for="licitacion-numeroOficio" class="block text-sm font-medium text-gray-700 mb-1">No. de Oficio</label>
-                        <input type="text" id="licitacion-numeroOficio" class="w-full p-2 border border-gray-300 rounded-lg">
+                        <label for="licitacion-adjudicacion" class="block text-sm font-medium text-gray-700 mb-1">Adjudicación</label>
+                        <input type="text" id="licitacion-adjudicacion" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div>
                         <label for="licitacion-fechaFallo" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Fallo</label>
                         <input type="date" id="licitacion-fechaFallo" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div>
-                        <label for="licitacion-importeAdjudicado" class="block text-sm font-medium text-gray-700 mb-1">Importe Adjudicado</label>
-                        <input type="number" step="0.01" id="licitacion-importeAdjudicado" class="w-full p-2 border border-gray-300 rounded-lg">
+                        <label for="licitacion-montoAdjudicado" class="block text-sm font-medium text-gray-700 mb-1">Monto Adjudicado</label>
+                        <input type="number" step="0.01" id="licitacion-montoAdjudicado" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                 </div>
             </form>
@@ -1106,6 +1124,10 @@
             document.getElementById('add-licitacion-btn').addEventListener('click', addLicitacion);
 
             // Manejo de niveles de indicadores
+            document.getElementById('licitacion-tramo-select').addEventListener('change', (e) => {
+                displaySelectedTramoDetails(e.target.value);
+            });
+
             document.getElementById('add-nivel-btn').addEventListener('click', addNivelIndicador);
 
             // Modal de confirmación
@@ -1739,9 +1761,13 @@
                 descripcion: '',
                 kmAdjudicados: 0,
                 empresaConstructora: '',
-                numeroOficio: '',
+                adjudicacion: '',
                 fechaFallo: '',
-                importeAdjudicado: 0
+                tramoId: null,
+                tramoFase: '',
+                tramoNombre: '',
+                tramoProgramadoKm: 0,
+                montoAdjudicado: 0
             };
             
             licitacionesData.push(licitacion);
@@ -1763,6 +1789,9 @@
                 licElement.className = 'border border-gray-300 rounded-lg p-4 mb-4';
                 licElement.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
+                        <h5 class="font-semibold text-gray-700">Tramo: ${licitacion.tramoNombre || 'N/A'} (${licitacion.tramoFase || 'N/A'})</h5>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
                         <h4 class="font-semibold">Licitación ${index + 1}: ${licitacion.descripcion || 'Sin descripción'}</h4>
                         <div class="flex space-x-2">
                             <button type="button" class="edit-lic text-blue-600" data-id="${licitacion.id}">
@@ -1773,7 +1802,7 @@
                             </button>
                         </div>
                     </div>
-                    <p class="text-sm text-gray-600">Empresa: ${licitacion.empresaConstructora || 'N/A'} | Importe: ${formatCurrency(licitacion.importeAdjudicado)}</p>
+                    <p class="text-sm text-gray-600">Empresa: ${licitacion.empresaConstructora || 'N/A'} | Monto: ${formatCurrency(licitacion.montoAdjudicado)}</p>
                 `;
                 container.appendChild(licElement);
             });
@@ -1799,6 +1828,29 @@
             const licitacion = licitacionesData.find(l => l.id === licitacionId);
             const modal = document.getElementById('licitacion-modal');
             const title = document.getElementById('licitacion-modal-title');
+            const tramoSelect = document.getElementById('licitacion-tramo-select');
+            const tramoError = document.getElementById('licitacion-tramo-error');
+
+            // Limpiar errores
+            tramoError.classList.add('hidden');
+
+            // Populate tramo select
+            tramoSelect.innerHTML = '<option value="">-- Seleccione un tramo --</option>';
+            if (proyectosProgramados.length === 0) {
+                tramoSelect.innerHTML += '<option value="" disabled>No hay tramos disponibles. Agregue uno en la pestaña "Descripción".</option>';
+                tramoSelect.disabled = true;
+            } else {
+                tramoSelect.disabled = false;
+                proyectosProgramados.forEach(tramo => {
+                    const option = document.createElement('option');
+                    option.value = tramo.id;
+                    option.textContent = `${tramo.fase || 'Sin Fase'} - ${tramo.tramo || 'Sin Nombre'} (${tramo.programadoKm || 0} Km)`;
+                    tramoSelect.appendChild(option);
+                });
+            }
+
+            // Reset tramo details display
+            displaySelectedTramoDetails(null);
 
             if (licitacion) {
                 title.textContent = 'Editar Licitación';
@@ -1806,14 +1858,41 @@
                 document.getElementById('licitacion-descripcion').value = licitacion.descripcion || '';
                 document.getElementById('licitacion-kmAdjudicados').value = licitacion.kmAdjudicados || 0;
                 document.getElementById('licitacion-empresaConstructora').value = licitacion.empresaConstructora || '';
-                document.getElementById('licitacion-numeroOficio').value = licitacion.numeroOficio || '';
+                document.getElementById('licitacion-adjudicacion').value = licitacion.adjudicacion || '';
                 document.getElementById('licitacion-fechaFallo').value = licitacion.fechaFallo || '';
-                document.getElementById('licitacion-importeAdjudicado').value = licitacion.importeAdjudicado || 0;
+                document.getElementById('licitacion-montoAdjudicado').value = licitacion.montoAdjudicado || 0;
+                tramoSelect.value = licitacion.tramoId || '';
+                displaySelectedTramoDetails(licitacion.tramoId);
             } else {
                 title.textContent = 'Agregar Licitación';
                 document.getElementById('licitacion-form').reset();
             }
             modal.classList.remove('hidden');
+        }
+
+        function displaySelectedTramoDetails(tramoId) {
+            const tramoDetailsDiv = document.getElementById('licitacion-tramo-details');
+            const tramoFaseDisplay = document.getElementById('licitacion-tramo-fase-display');
+            const tramoNombreDisplay = document.getElementById('licitacion-tramo-nombre-display');
+            const tramoProgramadoKmDisplay = document.getElementById('licitacion-tramo-programado-km-display');
+
+            if (tramoId) {
+                const selectedTramo = proyectosProgramados.find(t => t.id == tramoId);
+                if (selectedTramo) {
+                    tramoFaseDisplay.textContent = selectedTramo.fase || 'N/A';
+                    tramoNombreDisplay.textContent = selectedTramo.tramo || 'N/A';
+                    tramoProgramadoKmDisplay.textContent = selectedTramo.programadoKm || 0;
+                    tramoDetailsDiv.classList.remove('hidden');
+                } else {
+                    tramoDetailsDiv.classList.add('hidden');
+                }
+            } else {
+                tramoFaseDisplay.textContent = '';
+                tramoNombreDisplay.textContent = '';
+                tramoProgramadoKmDisplay.textContent = '';
+                tramoDetailsDiv.classList.add('hidden');
+            }
+            document.getElementById('licitacion-tramo-error').classList.add('hidden');
         }
 
         function closeLicitacionModal() {
@@ -1826,13 +1905,28 @@
             const licitacion = licitacionesData.find(l => l.id === licitacionId);
             if (!licitacion) return;
 
+            const selectedTramoId = document.getElementById('licitacion-tramo-select').value;
+            if (!selectedTramoId) {
+                document.getElementById('licitacion-tramo-error').classList.remove('hidden');
+                return;
+            }
+
+            const selectedTramo = proyectosProgramados.find(t => t.id == selectedTramoId);
+            if (!selectedTramo) {
+                showAlert('Error: El tramo seleccionado no es válido.', 'error');
+                return;
+            }
+
             licitacion.descripcion = document.getElementById('licitacion-descripcion').value;
             licitacion.kmAdjudicados = parseFloat(document.getElementById('licitacion-kmAdjudicados').value) || 0;
             licitacion.empresaConstructora = document.getElementById('licitacion-empresaConstructora').value;
-            licitacion.numeroOficio = document.getElementById('licitacion-numeroOficio').value;
+            licitacion.adjudicacion = document.getElementById('licitacion-adjudicacion').value;
             licitacion.fechaFallo = document.getElementById('licitacion-fechaFallo').value;
-            licitacion.importeAdjudicado = parseFloat(document.getElementById('licitacion-importeAdjudicado').value) || 0;
-
+            licitacion.montoAdjudicado = parseFloat(document.getElementById('licitacion-montoAdjudicado').value) || 0;
+            licitacion.tramoId = selectedTramo.id;
+            licitacion.tramoFase = selectedTramo.fase;
+            licitacion.tramoNombre = selectedTramo.tramo;
+            licitacion.tramoProgramadoKm = selectedTramo.programadoKm;
             updateLicitacionesDisplay();
             closeLicitacionModal();
         }
@@ -2760,24 +2854,30 @@
                                                     <table class="sub-table">
                                                         <thead class="bg-primary text-white font-extrabold">
                                                             <tr class="bg-primary text-white font-extrabold">
+                                                                <th>Fase</th>
+                                                                <th>Proyecto Ferroviario</th>
+                                                                <th>Programado Km</th>
+                                                                <th>Adjudicación</th>
                                                                 <th>Descripción de la Licitación</th>
                                                                 <th>KM adjudicados</th>
-                                                                <th>Empresa/Constructora</th>
-                                                                <th>No. de Oficio</th>
                                                                 <th>Fecha de Fallo</th>
-                                                                <th>Importe Adjudicado</th>
+                                                                <th>Monto Adjudicado</th>
+                                                                <th>Empresa/Constructora</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>`;
                                         ficha.licitacionesData.forEach(licitacion => {
                                             licHTML += `
                                                 <tr>
+                                                    <td>${licitacion.tramoFase || ''}</td>
+                                                    <td class="text-left-important">${licitacion.tramoNombre || ''}</td>
+                                                    <td>${licitacion.tramoProgramadoKm || 0}</td>
+                                                    <td>${licitacion.adjudicacion || ''}</td>
                                                     <td class="text-left-important">${licitacion.descripcion || ''}</td>
                                                     <td>${licitacion.kmAdjudicados || 0}</td>
-                                                    <td>${licitacion.empresaConstructora || ''}</td>
-                                                    <td>${licitacion.numeroOficio || ''}</td>
                                                     <td>${licitacion.fechaFallo || ''}</td>
-                                                    <td>${formatCurrency(licitacion.importeAdjudicado)}</td>
+                                                    <td>${formatCurrency(licitacion.montoAdjudicado)}</td>
+                                                    <td>${licitacion.empresaConstructora || ''}</td>
                                                 </tr>
                                             `;
                                         });
@@ -3095,8 +3195,8 @@
         }
 
         function formatCurrency(amount) {
-            if (!amount) return 'N/A';
-            return new Intl.NumberFormat('es-MX', {
+            if (amount === null || amount === undefined) return 'N/A';
+            return new Intl.NumberFormat('es-MX', { // es-MX para formato mexicano
                 style: 'currency',
                 currency: 'MXN'
             }).format(amount);
