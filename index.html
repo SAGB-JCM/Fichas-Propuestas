@@ -2846,6 +2846,22 @@
                             <td class="formatted-content" colspan="3">
                                 ${ficha.licitaciones || 'N/A'}
                                 ${(() => {
+                                    // --- INICIO: Lógica para calcular totales de licitaciones ---
+                                    let totalKmProgramado = 0;
+                                    let totalKmAdjudicados = 0;
+                                    let totalMontoAdjudicado = 0;
+
+                                    if (ficha.licitacionesData && ficha.licitacionesData.length > 0) {
+                                        // Usar un Map para sumar los Km programados de tramos únicos
+                                        const tramosUnicos = new Map();
+                                        ficha.licitacionesData.forEach(lic => {
+                                            tramosUnicos.set(lic.tramoId, lic.tramoProgramadoKm || 0);
+                                            totalKmAdjudicados += parseFloat(lic.kmAdjudicados) || 0;
+                                            totalMontoAdjudicado += parseFloat(lic.montoAdjudicado) || 0;
+                                        });
+                                        totalKmProgramado = Array.from(tramosUnicos.values()).reduce((sum, km) => sum + km, 0);
+                                    }
+                                    // --- FIN: Lógica para calcular totales de licitaciones ---
                                     if (ficha.licitacionesData && ficha.licitacionesData.length > 0) {
                                         let licHTML = `
                                             <div class="mt-4 text-sm">
@@ -2865,7 +2881,18 @@
                                                                 <th>Empresa/Constructora</th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody>`;
+                                                        <tbody>
+                                                            <tr class="font-bold bg-slate-100">
+                                                                <td colspan="2">Totales</td>
+                                                                <td>${totalKmProgramado.toFixed(2)}</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td>${totalKmAdjudicados.toFixed(2)}</td>
+                                                                <td></td>
+                                                                <td>${formatCurrency(totalMontoAdjudicado)}</td>
+                                                                <td></td>
+                                                            </tr>
+                                                        `;
                                         ficha.licitacionesData.forEach(licitacion => {
                                             licHTML += `
                                                 <tr>
