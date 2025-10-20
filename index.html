@@ -824,25 +824,20 @@
             <form id="licitacion-form" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
                 <input type="hidden" id="licitacion-id">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="licitacion-concepto" class="block text-sm font-medium text-gray-700 mb-1">Concepto</label>
-                        <input type="text" id="licitacion-concepto" class="w-full p-2 border border-gray-300 rounded-lg">
+                    <div class="md:col-span-2">
+                        <label for="licitacion-descripcion" class="block text-sm font-medium text-gray-700 mb-1">Descripción de la Licitación</label>
+                        <input type="text" id="licitacion-descripcion" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div>
-                        <label for="licitacion-programado" class="block text-sm font-medium text-gray-700 mb-1">Programado</label>
-                        <input type="text" id="licitacion-programado" class="w-full p-2 border border-gray-300 rounded-lg">
+                        <label for="licitacion-kmAdjudicados" class="block text-sm font-medium text-gray-700 mb-1">KM adjudicados</label>
+                        <input type="number" step="0.01" id="licitacion-kmAdjudicados" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div>
-                        <label for="licitacion-estatus" class="block text-sm font-medium text-gray-700 mb-1">Estatus</label>
-                        <select id="licitacion-estatus" class="w-full p-2 border border-gray-300 rounded-lg">
-                            <option>Pendiente</option>
-                            <option>Adjudicada</option>
-                            <option>En Evaluación</option>
-                            <option>Cancelada</option>
-                        </select>
+                        <label for="licitacion-empresaConstructora" class="block text-sm font-medium text-gray-700 mb-1">Empresa/Constructora</label>
+                        <input type="text" id="licitacion-empresaConstructora" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div>
-                        <label for="licitacion-numeroOficio" class="block text-sm font-medium text-gray-700 mb-1">Número de Oficio</label>
+                        <label for="licitacion-numeroOficio" class="block text-sm font-medium text-gray-700 mb-1">No. de Oficio</label>
                         <input type="text" id="licitacion-numeroOficio" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div>
@@ -1741,9 +1736,9 @@
             const licitacionId = Date.now();
             const licitacion = {
                 id: licitacionId,
-                concepto: '',
-                programado: '',
-                estatus: 'Pendiente',
+                descripcion: '',
+                kmAdjudicados: 0,
+                empresaConstructora: '',
                 numeroOficio: '',
                 fechaFallo: '',
                 importeAdjudicado: 0
@@ -1768,7 +1763,7 @@
                 licElement.className = 'border border-gray-300 rounded-lg p-4 mb-4';
                 licElement.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
-                        <h4 class="font-semibold">Licitación ${index + 1}: ${licitacion.concepto || 'Sin concepto'}</h4>
+                        <h4 class="font-semibold">Licitación ${index + 1}: ${licitacion.descripcion || 'Sin descripción'}</h4>
                         <div class="flex space-x-2">
                             <button type="button" class="edit-lic text-blue-600" data-id="${licitacion.id}">
                                 <i class="fa-solid fa-edit"></i>
@@ -1778,7 +1773,7 @@
                             </button>
                         </div>
                     </div>
-                    <p class="text-sm text-gray-600">Estatus: ${licitacion.estatus} | Importe: ${formatCurrency(licitacion.importeAdjudicado)}</p>
+                    <p class="text-sm text-gray-600">Empresa: ${licitacion.empresaConstructora || 'N/A'} | Importe: ${formatCurrency(licitacion.importeAdjudicado)}</p>
                 `;
                 container.appendChild(licElement);
             });
@@ -1808,9 +1803,9 @@
             if (licitacion) {
                 title.textContent = 'Editar Licitación';
                 document.getElementById('licitacion-id').value = licitacion.id;
-                document.getElementById('licitacion-concepto').value = licitacion.concepto || '';
-                document.getElementById('licitacion-programado').value = licitacion.programado || '';
-                document.getElementById('licitacion-estatus').value = licitacion.estatus || 'Pendiente';
+                document.getElementById('licitacion-descripcion').value = licitacion.descripcion || '';
+                document.getElementById('licitacion-kmAdjudicados').value = licitacion.kmAdjudicados || 0;
+                document.getElementById('licitacion-empresaConstructora').value = licitacion.empresaConstructora || '';
                 document.getElementById('licitacion-numeroOficio').value = licitacion.numeroOficio || '';
                 document.getElementById('licitacion-fechaFallo').value = licitacion.fechaFallo || '';
                 document.getElementById('licitacion-importeAdjudicado').value = licitacion.importeAdjudicado || 0;
@@ -1831,9 +1826,9 @@
             const licitacion = licitacionesData.find(l => l.id === licitacionId);
             if (!licitacion) return;
 
-            licitacion.concepto = document.getElementById('licitacion-concepto').value;
-            licitacion.programado = document.getElementById('licitacion-programado').value;
-            licitacion.estatus = document.getElementById('licitacion-estatus').value;
+            licitacion.descripcion = document.getElementById('licitacion-descripcion').value;
+            licitacion.kmAdjudicados = parseFloat(document.getElementById('licitacion-kmAdjudicados').value) || 0;
+            licitacion.empresaConstructora = document.getElementById('licitacion-empresaConstructora').value;
             licitacion.numeroOficio = document.getElementById('licitacion-numeroOficio').value;
             licitacion.fechaFallo = document.getElementById('licitacion-fechaFallo').value;
             licitacion.importeAdjudicado = parseFloat(document.getElementById('licitacion-importeAdjudicado').value) || 0;
@@ -2765,9 +2760,9 @@
                                                     <table class="sub-table">
                                                         <thead class="bg-primary text-white font-extrabold">
                                                             <tr class="bg-primary text-white font-extrabold">
-                                                                <th>Concepto</th>
-                                                                <th>Programado</th>
-                                                                <th>Estatus</th>
+                                                                <th>Descripción de la Licitación</th>
+                                                                <th>KM adjudicados</th>
+                                                                <th>Empresa/Constructora</th>
                                                                 <th>No. de Oficio</th>
                                                                 <th>Fecha de Fallo</th>
                                                                 <th>Importe Adjudicado</th>
@@ -2777,9 +2772,9 @@
                                         ficha.licitacionesData.forEach(licitacion => {
                                             licHTML += `
                                                 <tr>
-                                                    <td class="text-left-important">${licitacion.concepto || ''}</td>
-                                                    <td>${licitacion.programado || ''}</td>
-                                                    <td>${licitacion.estatus || ''}</td>
+                                                    <td class="text-left-important">${licitacion.descripcion || ''}</td>
+                                                    <td>${licitacion.kmAdjudicados || 0}</td>
+                                                    <td>${licitacion.empresaConstructora || ''}</td>
                                                     <td>${licitacion.numeroOficio || ''}</td>
                                                     <td>${licitacion.fechaFallo || ''}</td>
                                                     <td>${formatCurrency(licitacion.importeAdjudicado)}</td>
