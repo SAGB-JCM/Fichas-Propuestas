@@ -576,6 +576,12 @@
                                         <!-- Los tramos se agregarán aquí dinámicamente -->
                                     </div>
                                 </div>
+                                <!-- Fuente para Descripción del Proyecto -->
+                                <div class="mt-4">
+                                    <label for="fuenteDescripcionProyecto" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla de Tramos</label>
+                                    <input type="text" id="fuenteDescripcionProyecto" name="fuenteDescripcionProyecto" placeholder="Ej: Reporte de Avance Trimestral"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -601,6 +607,12 @@
                                         <!-- Los niveles e indicadores se agregarán aquí dinámicamente -->
                                     </div>
                                 </div>
+                                <!-- Fuente para Indicadores -->
+                                <div class="mt-4">
+                                    <label for="fuenteIndicadores" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla de Indicadores</label>
+                                    <input type="text" id="fuenteIndicadores" name="fuenteIndicadores" placeholder="Ej: Matriz de Indicadores para Resultados (MIR)"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
                             </div>
                         </div>
 
@@ -624,6 +636,12 @@
                                         <!-- Los objetivos y metas se agregarán aquí dinámicamente -->
                                     </div>
                                 </div>
+                                <!-- Fuente para Metas -->
+                                <div class="mt-4">
+                                    <label for="fuenteMetas" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla de Metas</label>
+                                    <input type="text" id="fuenteMetas" name="fuenteMetas" placeholder="Ej: Plan Nacional de Desarrollo 2025-2030"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
                             </div>
                         </div>
                         <!-- Transparencia Presupuestaria movida aquí -->
@@ -646,6 +664,12 @@
                                         <!-- Los programas presupuestarios se agregarán aquí dinámicamente -->
                                     </div>
                                 </div>
+                                <!-- Fuente para Transparencia Presupuestaria -->
+                                <div class="mt-4">
+                                    <label for="fuenteTransparencia" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla MIR</label>
+                                    <input type="text" id="fuenteTransparencia" name="fuenteTransparencia" placeholder="Ej: Portal de Transparencia Presupuestaria"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
                             </div>
                         </div>
                         <!-- Programa Sectorial de Infraestructura -->
@@ -665,6 +689,12 @@
                                         </button>
                                     </div>
                                     <div id="programaSectorial-container"></div>
+                                </div>
+                                <!-- Fuente para Programa Sectorial -->
+                                <div class="mt-4">
+                                    <label for="fuenteProgramaSectorial" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla de Estrategias</label>
+                                    <input type="text" id="fuenteProgramaSectorial" name="fuenteProgramaSectorial" placeholder="Ej: Programa Sectorial de Infraestructura 2025-2030"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                                 </div>
                             </div>
                         </div>
@@ -690,6 +720,12 @@
                                     <div id="licitaciones-container">
                                         <!-- Las licitaciones se agregarán aquí dinámicamente -->
                                     </div>
+                                </div>
+                                <!-- Fuente para Licitaciones -->
+                                <div class="mt-4">
+                                    <label for="fuenteLicitaciones" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla de Licitaciones</label>
+                                    <input type="text" id="fuenteLicitaciones" name="fuenteLicitaciones" placeholder="Ej: Plataforma Compranet"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                                 </div>
                             </div>
                         </div>
@@ -831,6 +867,12 @@
                         <!-- Opciones de tramos se llenarán dinámicamente -->
                     </select>
                     <p id="licitacion-tramo-error" class="text-red-500 text-xs mt-1 hidden">Por favor, seleccione un tramo.</p>
+                </div>
+                <!-- Campo para categoría "Otro" -->
+                <div id="licitacion-otro-container" class="hidden">
+                    <label for="licitacion-otro-categoria" class="block text-sm font-medium text-gray-700 mb-1">Nombre de la Categoría (Otro)</label>
+                    <input type="text" id="licitacion-otro-categoria" placeholder="Ej: Supervisión y Asesoría" class="w-full p-2 border border-gray-300 rounded-lg">
+                    <p id="licitacion-otro-error" class="text-red-500 text-xs mt-1 hidden">Por favor, especifique el nombre de la categoría.</p>
                 </div>
                 <!-- Detalles del Tramo Seleccionado (solo lectura) -->
                 <div id="licitacion-tramo-details" class="bg-gray-100 p-3 rounded-lg border border-gray-200 hidden">
@@ -1380,7 +1422,9 @@
             // Campos simples
             const simpleFields = [
                 'proyecto', 'subproyecto', 'nombrePrograma', 'fechaActualizacion',
-                'entidadResponsable', 'numeroCartera', 'periodoReportado',
+                'entidadResponsable', 'numeroCartera', 'periodoReportado', 'fuenteDescripcionProyecto',
+                'fuenteIndicadores', 'fuenteMetas', 'fuenteTransparencia',
+                'fuenteProgramaSectorial', 'fuenteLicitaciones',
                 'presupuestoAprobado', 'presupuestoModificado', 'presupuestoEjercido'
             ];
             
@@ -1767,7 +1811,8 @@
                 tramoFase: '',
                 tramoNombre: '',
                 tramoProgramadoKm: 0,
-                montoAdjudicado: 0
+                montoAdjudicado: 0,
+                otroCategoria: null // Nuevo campo para la categoría "Otro"
             };
             
             licitacionesData.push(licitacion);
@@ -1787,9 +1832,17 @@
             licitacionesData.forEach((licitacion, index) => {
                 const licElement = document.createElement('div');
                 licElement.className = 'border border-gray-300 rounded-lg p-4 mb-4';
+                
+                let headerText;
+                if (licitacion.tramoId === 'otro' && licitacion.otroCategoria) {
+                    headerText = `Categoría: ${licitacion.otroCategoria}`;
+                } else {
+                    headerText = `Tramo: ${licitacion.tramoNombre || 'N/A'} (${licitacion.tramoFase || 'N/A'})`;
+                }
+
                 licElement.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
-                        <h5 class="font-semibold text-gray-700">Tramo: ${licitacion.tramoNombre || 'N/A'} (${licitacion.tramoFase || 'N/A'})</h5>
+                        <h5 class="font-semibold text-gray-700">${headerText}</h5>
                     </div>
                     <div class="flex justify-between items-center mb-2">
                         <h4 class="font-semibold">Licitación ${index + 1}: ${licitacion.descripcion || 'Sin descripción'}</h4>
@@ -1829,10 +1882,13 @@
             const modal = document.getElementById('licitacion-modal');
             const title = document.getElementById('licitacion-modal-title');
             const tramoSelect = document.getElementById('licitacion-tramo-select');
+            const otroContainer = document.getElementById('licitacion-otro-container');
             const tramoError = document.getElementById('licitacion-tramo-error');
+            const otroError = document.getElementById('licitacion-otro-error');
 
             // Limpiar errores
             tramoError.classList.add('hidden');
+            otroError.classList.add('hidden');
 
             // Populate tramo select
             tramoSelect.innerHTML = '<option value="">-- Seleccione un tramo --</option>';
@@ -1848,6 +1904,7 @@
                     tramoSelect.appendChild(option);
                 });
             }
+            tramoSelect.innerHTML += '<option value="otro">Otro...</option>';
 
             // Reset tramo details display
             displaySelectedTramoDetails(null);
@@ -1862,10 +1919,19 @@
                 document.getElementById('licitacion-fechaFallo').value = licitacion.fechaFallo || '';
                 document.getElementById('licitacion-montoAdjudicado').value = licitacion.montoAdjudicado || 0;
                 tramoSelect.value = licitacion.tramoId || '';
-                displaySelectedTramoDetails(licitacion.tramoId);
+
+                if (licitacion.tramoId === 'otro') {
+                    otroContainer.classList.remove('hidden');
+                    document.getElementById('licitacion-otro-categoria').value = licitacion.otroCategoria || '';
+                    displaySelectedTramoDetails('otro');
+                } else {
+                    otroContainer.classList.add('hidden');
+                    displaySelectedTramoDetails(licitacion.tramoId);
+                }
             } else {
                 title.textContent = 'Agregar Licitación';
                 document.getElementById('licitacion-form').reset();
+                otroContainer.classList.add('hidden');
             }
             modal.classList.remove('hidden');
         }
@@ -1875,8 +1941,13 @@
             const tramoFaseDisplay = document.getElementById('licitacion-tramo-fase-display');
             const tramoNombreDisplay = document.getElementById('licitacion-tramo-nombre-display');
             const tramoProgramadoKmDisplay = document.getElementById('licitacion-tramo-programado-km-display');
+            const otroContainer = document.getElementById('licitacion-otro-container');
 
-            if (tramoId) {
+            if (tramoId === 'otro') {
+                tramoDetailsDiv.classList.add('hidden');
+                otroContainer.classList.remove('hidden');
+            } else if (tramoId) {
+                otroContainer.classList.add('hidden');
                 const selectedTramo = proyectosProgramados.find(t => t.id == tramoId);
                 if (selectedTramo) {
                     tramoFaseDisplay.textContent = selectedTramo.fase || 'N/A';
@@ -1887,12 +1958,15 @@
                     tramoDetailsDiv.classList.add('hidden');
                 }
             } else {
+                otroContainer.classList.add('hidden');
                 tramoFaseDisplay.textContent = '';
                 tramoNombreDisplay.textContent = '';
                 tramoProgramadoKmDisplay.textContent = '';
                 tramoDetailsDiv.classList.add('hidden');
             }
             document.getElementById('licitacion-tramo-error').classList.add('hidden');
+            document.getElementById('licitacion-otro-error').classList.add('hidden');
+
         }
 
         function closeLicitacionModal() {
@@ -1906,14 +1980,10 @@
             if (!licitacion) return;
 
             const selectedTramoId = document.getElementById('licitacion-tramo-select').value;
+            const otroCategoriaInput = document.getElementById('licitacion-otro-categoria');
+
             if (!selectedTramoId) {
                 document.getElementById('licitacion-tramo-error').classList.remove('hidden');
-                return;
-            }
-
-            const selectedTramo = proyectosProgramados.find(t => t.id == selectedTramoId);
-            if (!selectedTramo) {
-                showAlert('Error: El tramo seleccionado no es válido.', 'error');
                 return;
             }
 
@@ -1923,10 +1993,31 @@
             licitacion.adjudicacion = document.getElementById('licitacion-adjudicacion').value;
             licitacion.fechaFallo = document.getElementById('licitacion-fechaFallo').value;
             licitacion.montoAdjudicado = parseFloat(document.getElementById('licitacion-montoAdjudicado').value) || 0;
-            licitacion.tramoId = selectedTramo.id;
-            licitacion.tramoFase = selectedTramo.fase;
-            licitacion.tramoNombre = selectedTramo.tramo;
-            licitacion.tramoProgramadoKm = selectedTramo.programadoKm;
+
+            if (selectedTramoId === 'otro') {
+                const otroCategoria = otroCategoriaInput.value.trim();
+                if (!otroCategoria) {
+                    document.getElementById('licitacion-otro-error').classList.remove('hidden');
+                    return;
+                }
+                licitacion.tramoId = 'otro';
+                licitacion.otroCategoria = otroCategoria;
+                licitacion.tramoFase = null;
+                licitacion.tramoNombre = null;
+                licitacion.tramoProgramadoKm = 0;
+            } else {
+                const selectedTramo = proyectosProgramados.find(t => t.id == selectedTramoId);
+                if (!selectedTramo) {
+                    showAlert('Error: El tramo seleccionado no es válido.', 'error');
+                    return;
+                }
+                licitacion.tramoId = selectedTramo.id;
+                licitacion.tramoFase = selectedTramo.fase;
+                licitacion.tramoNombre = selectedTramo.tramo;
+                licitacion.tramoProgramadoKm = selectedTramo.programadoKm;
+                licitacion.otroCategoria = null;
+            }
+
             updateLicitacionesDisplay();
             closeLicitacionModal();
         }
@@ -2755,7 +2846,7 @@
                                 ${renderMetasTable(ficha)}
                                 ${renderProgramaSectorialTable(ficha)}
                                 <div class="mt-4 pt-4 border-t border-gray-200">
-                                    ${ficha.indicadores || 'N/A'}
+                                    ${ficha.indicadores || ''}
                                 </div>
                                 ${(() => {
                                     if (ficha.nivelesIndicadores && ficha.nivelesIndicadores.length > 0) {
@@ -2793,13 +2884,17 @@
                                                 `;
                                             });
                                         });
-                                        indHTML += `</tbody></table></div></div>`;
+                                        indHTML += `</tbody></table>`;
+                                        if (ficha.fuenteIndicadores) {
+                                            indHTML += `<p class="text-xs text-gray-500 mt-2 text-left">Fuente: ${ficha.fuenteIndicadores}</p>`;
+                                        }
+                                        indHTML += `</div></div>`;
                                         return indHTML;
                                     }
-                                    return '';
+                                    return ficha.indicadores ? '' : 'N/A'; // Show N/A only if both are empty
                                 })()}
                                 <div class="mt-4 pt-4 border-t border-gray-200">
-                                    ${ficha.transparenciaPresupuestaria || 'N/A'}
+                                    ${ficha.transparenciaPresupuestaria || ''}
                                     ${(() => {
                                         if (ficha.programasPresupuestarios && ficha.programasPresupuestarios.length > 0) {
                                             let mirHTML = `
@@ -2833,36 +2928,56 @@
                                                 });
                                             });
                                             mirHTML += `<tr class="font-extrabold bg-primary text-white"><td class="text-center">TOTAL GENERAL</td><td>${granTotalAprobado.toFixed(2)}</td><td>${granTotalModificado.toFixed(2)}</td><td>${granTotalPagado.toFixed(2)}</td></tr>`;
-                                            mirHTML += `</tbody></table></div></div>`;
+                                            mirHTML += `</tbody></table>`;
+                                            if (ficha.fuenteTransparencia) {
+                                                mirHTML += `<p class="text-xs text-gray-500 mt-2 text-left">Fuente: ${ficha.fuenteTransparencia}</p>`;
+                                            }
+                                            mirHTML += `</div></div>`;
                                             return mirHTML;
                                         }
-                                        return '';
+                                        return ficha.transparenciaPresupuestaria ? '' : 'N/A';
                                     })()}
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <th class="font-bold">Adjudicación (Licitaciones):</th>
-                            <td class="formatted-content" colspan="3">
-                                ${ficha.licitaciones || 'N/A'}
+                            <td class="formatted-content" colspan="3" style="word-break: normal;">
+                                ${ficha.licitaciones || ''}
                                 ${(() => {
-                                    // --- INICIO: Lógica para calcular totales de licitaciones ---
+                                    // --- INICIO: Lógica para calcular totales y agrupar licitaciones ---
+                                    if (!ficha.licitacionesData || ficha.licitacionesData.length === 0) {
+                                        return ficha.licitaciones ? '' : 'N/A';
+                                    }
+
+                                    const licitacionesPorTramo = ficha.licitacionesData.filter(lic => lic.tramoId !== 'otro');
+                                    const licitacionesOtro = ficha.licitacionesData.filter(lic => lic.tramoId === 'otro');
+
+                                    const otrosAgrupados = licitacionesOtro.reduce((acc, lic) => {
+                                        const categoria = lic.otroCategoria || 'Sin Categoría';
+                                        if (!acc[categoria]) {
+                                            acc[categoria] = {
+                                                licitaciones: [],
+                                                totalMonto: 0
+                                            };
+                                        }
+                                        acc[categoria].licitaciones.push(lic);
+                                        acc[categoria].totalMonto += parseFloat(lic.montoAdjudicado) || 0;
+                                        return acc;
+                                    }, {});
+
                                     let totalKmProgramado = 0;
                                     let totalKmAdjudicados = 0;
                                     let totalMontoAdjudicado = 0;
 
-                                    if (ficha.licitacionesData && ficha.licitacionesData.length > 0) {
-                                        // Usar un Map para sumar los Km programados de tramos únicos
-                                        const tramosUnicos = new Map();
-                                        ficha.licitacionesData.forEach(lic => {
-                                            tramosUnicos.set(lic.tramoId, lic.tramoProgramadoKm || 0);
-                                            totalKmAdjudicados += parseFloat(lic.kmAdjudicados) || 0;
-                                            totalMontoAdjudicado += parseFloat(lic.montoAdjudicado) || 0;
-                                        });
-                                        totalKmProgramado = Array.from(tramosUnicos.values()).reduce((sum, km) => sum + km, 0);
-                                    }
-                                    // --- FIN: Lógica para calcular totales de licitaciones ---
-                                    if (ficha.licitacionesData && ficha.licitacionesData.length > 0) {
+                                    const tramosUnicos = new Map();
+                                    licitacionesPorTramo.forEach(lic => {
+                                        tramosUnicos.set(lic.tramoId, lic.tramoProgramadoKm || 0);
+                                        totalKmAdjudicados += parseFloat(lic.kmAdjudicados) || 0;
+                                        totalMontoAdjudicado += parseFloat(lic.montoAdjudicado) || 0;
+                                    });
+                                    totalKmProgramado = Array.from(tramosUnicos.values()).reduce((sum, km) => sum + km, 0);
+                                    // --- FIN: Lógica de cálculo ---
                                         let licHTML = `
                                             <div class="mt-4 text-sm">
                                                 <h4 class="font-semibold text-primary mb-3">Licitaciones Identificadas</h4>
@@ -2882,58 +2997,81 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr class="font-bold bg-slate-100">
-                                                                <td colspan="2">Totales</td>
-                                                                <td>${totalKmProgramado.toFixed(2)}</td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td>${totalKmAdjudicados.toFixed(2)}</td>
-                                                                <td></td>
-                                                                <td>${formatCurrency(totalMontoAdjudicado)}</td>
-                                                                <td></td>
-                                                            </tr>
-                                                            <tr class="bg-white">
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td class="text-left-important">Subtotal tramos</td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td>${formatCurrency(totalMontoAdjudicado)}</td>
-                                                                <td></td>
-                                                            </tr>
-                                                            <tr class="font-bold bg-white">
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td class="text-left-important">KM Pendientes</td>
-                                                                <td>${(totalKmProgramado - totalKmAdjudicados).toFixed(2)}</td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                            </tr>
                                                         `;
-                                        ficha.licitacionesData.forEach(licitacion => {
+                                        if (licitacionesPorTramo.length > 0) {
+                                            licHTML += `
+                                                <tr class="font-bold bg-slate-100">
+                                                    <td class="text-left-important" colspan="2">Totales Tramos</td>
+                                                    <td>${totalKmProgramado.toFixed(2)}</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td>${totalKmAdjudicados.toFixed(2)}</td>
+                                                    <td></td>
+                                                    <td>${formatCurrency(totalMontoAdjudicado)}</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr class="font-bold bg-white">
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="text-left-important">Subtotal tramos</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td>${formatCurrency(totalMontoAdjudicado)}</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr class="font-bold bg-white">
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="text-left-important">KM Pendientes</td>
+                                                    <td>${(totalKmProgramado - totalKmAdjudicados).toFixed(2)}</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            `;
+                                        }
+                                        licitacionesPorTramo.forEach(licitacion => {
                                             licHTML += `
                                                 <tr>
-                                                    <td>${licitacion.tramoFase || ''}</td>
+                                                    <td class="text-left-important">${licitacion.tramoFase || ''}</td>
                                                     <td class="text-left-important">${licitacion.tramoNombre || ''}</td>
                                                     <td>${licitacion.tramoProgramadoKm || 0}</td>
                                                     <td>${licitacion.adjudicacion || ''}</td>
                                                     <td class="text-left-important">${licitacion.descripcion || ''}</td>
                                                     <td>${licitacion.kmAdjudicados || 0}</td>
-                                                    <td>${licitacion.fechaFallo || ''}</td>
+                                                    <td>${formatDate(licitacion.fechaFallo) || ''}</td>
                                                     <td>${formatCurrency(licitacion.montoAdjudicado)}</td>
                                                     <td>${licitacion.empresaConstructora || ''}</td>
                                                 </tr>
                                             `;
                                         });
-                                        licHTML += `</tbody></table></div></div>`;
+                                        Object.keys(otrosAgrupados).forEach(categoria => {
+                                            const grupo = otrosAgrupados[categoria];
+                                            licHTML += `<tr class="font-bold bg-slate-100"><td></td><td></td><td></td><td></td><td class="text-left-important">${categoria}</td><td></td><td></td><td>${formatCurrency(grupo.totalMonto)}</td><td></td></tr>`;
+                                            grupo.licitaciones.forEach(licitacion => {
+                                                licHTML += `
+                                                <tr>
+                                                    <td></td><td></td><td></td>
+                                                    <td>${licitacion.adjudicacion || ''}</td>
+                                                    <td class="text-left-important">${licitacion.descripcion || ''}</td>
+                                                    <td>${licitacion.kmAdjudicados || 0}</td>
+                                                    <td>${formatDate(licitacion.fechaFallo) || ''}</td>
+                                                    <td>${formatCurrency(licitacion.montoAdjudicado)}</td>
+                                                    <td>${licitacion.empresaConstructora || ''}</td>
+                                                </tr>
+                                            `;
+                                        });
+                                        });
+                                        licHTML += `</tbody></table>`;
+                                        if (ficha.fuenteLicitaciones) {
+                                            licHTML += `<p class="text-xs text-gray-500 mt-2 text-left">Fuente: ${ficha.fuenteLicitaciones}</p>`;
+                                        }
+                                        licHTML += `</div></div>`;
                                         return licHTML;
-                                    }
-                                    return '';
                                 })()}
                             </td>
                         </tr>
@@ -3025,7 +3163,11 @@
                     });
                 }
             });
-            html += `</tbody></table></div></div>`;
+            html += `</tbody></table>`;
+            if (ficha.fuenteMetas) {
+                html += `<p class="text-xs text-gray-500 mt-2 text-left">Fuente: ${ficha.fuenteMetas}</p>`;
+            }
+            html += `</div></div>`;
             return html;
         }
 
@@ -3117,7 +3259,11 @@
                 });
             });
 
-            html += `</tbody></table></div></div>`;
+            html += `</tbody></table>`;
+            if (ficha.fuenteProgramaSectorial) {
+                html += `<p class="text-xs text-gray-500 mt-2 text-left">Fuente: ${ficha.fuenteProgramaSectorial}</p>`;
+            }
+            html += `</div></div>`;
             return html;
         }
 
@@ -3201,7 +3347,11 @@
                 }
             });
 
-            html += `</tbody></table></div></div>`;
+            html += `</tbody></table>`;
+            if (ficha.fuenteDescripcionProyecto) {
+                html += `<p class="text-xs text-gray-500 mt-2 text-left">Fuente: ${ficha.fuenteDescripcionProyecto}</p>`;
+            }
+            html += `</div></div>`;
             return html;
         }
 
