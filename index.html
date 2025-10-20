@@ -648,6 +648,26 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Programa Sectorial de Infraestructura -->
+                        <div class="section-card">
+                            <h4 class="section-title">Programa Sectorial de Infraestructura</h4>
+                            <textarea id="programaSectorialDescripcion" name="programaSectorialDescripcion" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                            <div id="programaSectorialDescripcion-editor"></div>
+
+                            <!-- Tabla de Estrategias -->
+                            <div class="mt-6">
+                                <h6 class="font-semibold text-gray-700 mb-3">Tabla de Estrategias y Objetivos</h6>
+                                <div id="programaSectorial-table-container" class="border border-gray-300 rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <span class="font-medium">Estrategias</span>
+                                        <button type="button" id="add-estrategia-btn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
+                                            <i class="fa-solid fa-plus mr-2"></i>Agregar Estrategia
+                                        </button>
+                                    </div>
+                                    <div id="programaSectorial-container"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Contenido Pestaña Licitaciones -->
@@ -896,6 +916,39 @@
         </div>
     </div>
 
+    <!-- Modal para Estrategia (Programa Sectorial) -->
+    <div id="estrategia-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-[60]">
+        <div class="relative bg-white p-6 rounded-lg shadow-xl w-full max-w-4xl mx-auto my-8">
+            <h3 class="text-xl font-bold text-primary mb-6" id="estrategia-modal-title">Agregar Estrategia</h3>
+            <form id="estrategia-form" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                <input type="hidden" id="estrategia-id">
+                <div>
+                    <label for="estrategia-objetivo-select" class="block text-sm font-medium text-gray-700 mb-1">Objetivo Principal (de Metas)</label>
+                    <select id="estrategia-objetivo-select" class="w-full p-2 border border-gray-300 rounded-lg">
+                        <!-- Opciones se llenarán dinámicamente -->
+                    </select>
+                </div>
+                <div>
+                    <label for="estrategia-texto" class="block text-sm font-medium text-gray-700 mb-1">Estrategia</label>
+                    <textarea id="estrategia-texto" rows="3" class="w-full p-2 border border-gray-300 rounded-lg"></textarea>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mt-4 mb-2">Objetivos Independientes</h4>
+                    <div id="estrategia-objetivos-independientes-container" class="space-y-3">
+                        <!-- Objetivos Independientes se agregarán aquí -->
+                    </div>
+                    <button type="button" id="add-objetivo-independiente-btn" class="mt-3 text-sm bg-green-100 text-green-800 px-3 py-1 rounded hover:bg-green-200">
+                        <i class="fa-solid fa-plus mr-1"></i> Agregar Objetivo Independiente
+                    </button>
+                </div>
+            </form>
+            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200 mt-6">
+                <button type="button" id="cancel-estrategia-btn" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg">Cancelar</button>
+                <button type="button" id="save-estrategia-btn" class="px-6 py-2 bg-primary text-white rounded-lg">Guardar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de Confirmación -->
     <div id="confirm-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
         <div class="relative bg-white p-8 rounded-lg shadow-xl w-full max-w-md mx-auto my-8">
@@ -943,6 +996,7 @@
         let licitacionesData = [];
         let nivelesIndicadores = [];
         let metasData = [];
+        let programaSectorialData = {};
         let proyectosProgramados = [];
         let fichaToDeleteId = null;
         // IDs para edición en sub-modales
@@ -950,6 +1004,7 @@
         let currentLicitacionId = null;
         let currentNivelId = null;
         let currentObjetivoId = null;
+        let currentEstrategiaId = null;
 
         // Referencias a elementos DOM
         const elements = {
@@ -1080,6 +1135,12 @@
             document.getElementById('save-objetivo-btn').addEventListener('click', saveObjetivo);
             document.getElementById('add-indicador-meta-btn').addEventListener('click', () => addIndicadorMetaRow());
 
+            // Manejo de Programa Sectorial (Estrategias)
+            document.getElementById('add-estrategia-btn').addEventListener('click', addEstrategia);
+            document.getElementById('cancel-estrategia-btn').addEventListener('click', closeEstrategiaModal);
+            document.getElementById('save-estrategia-btn').addEventListener('click', saveEstrategia);
+            document.getElementById('add-objetivo-independiente-btn').addEventListener('click', () => addObjetivoIndependienteRow());
+
             // Pestañas del modal de ficha
             document.querySelectorAll('.modal-tab-btn').forEach(btn => btn.addEventListener('click', handleModalTabClick));
 
@@ -1113,7 +1174,7 @@
             const editorFields = [
                 'cobertura', 'objetivos', 'descripcionProyecto', 
                 'avanceFisico', 'programaPresupuestario',
-                'transparenciaPresupuestaria', 'licitaciones', 'indicadores', 'metas',
+                'transparenciaPresupuestaria', 'licitaciones', 'indicadores', 'metas', 'programaSectorialDescripcion',
                 'hitosPrograma', 'seguimientoPrograma', 'mediosComunicacion', 'avanceFinanciero'
             ];
 
@@ -1282,6 +1343,7 @@
             licitacionesData = [];
             nivelesIndicadores = [];
             metasData = [];
+            programaSectorialData = { descripcion: '', estrategias: [] };
             proyectosProgramados = [];
             
             updateRamosDisplay();
@@ -1290,6 +1352,7 @@
             updateLicitacionesDisplay();
             updateMetasDisplay();
             updateNivelesIndicadoresDisplay();
+            updateProgramaSectorialDisplay();
             updateDescripcionProyectosDisplay();
         }
 
@@ -1314,7 +1377,7 @@
             // Campos con editores
             const editorFields = [
                 'cobertura', 'objetivos', 'descripcionProyecto', 
-                'avanceFisico', 'avanceFinanciero', 'programaPresupuestario', 'transparenciaPresupuestaria', 'licitaciones', 'indicadores', 'metas',
+                'avanceFisico', 'avanceFinanciero', 'programaPresupuestario', 'transparenciaPresupuestaria', 'licitaciones', 'indicadores', 'metas', 'programaSectorialDescripcion',
                 'hitosPrograma', 'seguimientoPrograma', 'mediosComunicacion', 'avanceFinanciero'
             ];
             
@@ -1323,7 +1386,12 @@
                 const editor = editors[field];
                 if (textarea && editor && ficha[field] !== undefined) {
                     textarea.value = ficha[field];
-                    editor.setContents(ficha[field]);
+                    // Special handling for programaSectorialDescripcion which is nested
+                    if (field === 'programaSectorialDescripcion' && ficha.programaSectorialData) {
+                         editor.setContents(ficha.programaSectorialData.descripcion || '');
+                    } else {
+                         editor.setContents(ficha[field]);
+                    }
                 }
             });
             
@@ -1358,6 +1426,11 @@
             if (ficha.nivelesIndicadores) {
                 nivelesIndicadores = ficha.nivelesIndicadores;
                 updateNivelesIndicadoresDisplay();
+            }
+
+            if (ficha.programaSectorialData) {
+                programaSectorialData = JSON.parse(JSON.stringify(ficha.programaSectorialData));
+                updateProgramaSectorialDisplay();
             }
 
             if (ficha.proyectosProgramados) {
@@ -1406,6 +1479,7 @@
                 fichaData.licitacionesData = licitacionesData;
                 fichaData.nivelesIndicadores = nivelesIndicadores;
                 fichaData.metasData = metasData;
+                fichaData.programaSectorialData = programaSectorialData;
                 fichaData.proyectosProgramados = proyectosProgramados;
                 
                 // Agregar timestamp
@@ -2109,6 +2183,242 @@
 
         // --- FIN METAS ---
 
+        // --- PROGRAMA SECTORIAL ---
+
+        function addEstrategia() {
+            const estrategiaId = Date.now();
+            const estrategia = {
+                id: estrategiaId,
+                objetivoMetaNombre: '',
+                estrategia: '',
+                objetivosIndependientes: []
+            };
+            if (!programaSectorialData.estrategias) {
+                programaSectorialData.estrategias = [];
+            }
+            programaSectorialData.estrategias.push(estrategia);
+            updateProgramaSectorialDisplay();
+            openEstrategiaModal(estrategiaId);
+        }
+
+        function updateProgramaSectorialDisplay() {
+            const container = document.getElementById('programaSectorial-container');
+            container.innerHTML = '';
+
+            // Update the rich text editor for the main description
+            const descEditor = editors['programaSectorialDescripcion'];
+            if (descEditor) {
+                const currentContent = descEditor.getContents();
+                const dataContent = programaSectorialData.descripcion || '';
+                if (currentContent !== dataContent) {
+                    descEditor.setContents(dataContent);
+                }
+            }
+
+            if (!programaSectorialData.estrategias || programaSectorialData.estrategias.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No hay estrategias agregadas</p>';
+                return;
+            }
+
+            programaSectorialData.estrategias.forEach((estrategia, index) => {
+                const el = document.createElement('div');
+                el.className = 'border border-gray-300 rounded-lg p-4 mb-4';
+                el.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <h4 class="font-semibold">Estrategia ${index + 1}</h4>
+                            <p class="text-sm text-gray-600"><b>Objetivo:</b> ${estrategia.objetivoMetaNombre || 'N/A'}</p>
+                            <p class="text-sm text-gray-600"><b>Estrategia:</b> ${estrategia.estrategia || 'N/A'}</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button type="button" class="edit-estrategia text-blue-600" data-id="${estrategia.id}"><i class="fa-solid fa-edit"></i></button>
+                            <button type="button" class="delete-estrategia text-red-600" data-id="${estrategia.id}"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2">Objetivos Independientes: ${estrategia.objetivosIndependientes.length}</p>
+                `;
+                container.appendChild(el);
+            });
+
+            // Add event listeners
+            container.querySelectorAll('.edit-estrategia').forEach(btn => {
+                btn.addEventListener('click', (e) => openEstrategiaModal(parseInt(e.currentTarget.dataset.id)));
+            });
+            container.querySelectorAll('.delete-estrategia').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.currentTarget.dataset.id);
+                    programaSectorialData.estrategias = programaSectorialData.estrategias.filter(est => est.id !== id);
+                    updateProgramaSectorialDisplay();
+                });
+            });
+        }
+
+        function openEstrategiaModal(estrategiaId) {
+            currentEstrategiaId = estrategiaId;
+            const estrategia = programaSectorialData.estrategias.find(e => e.id === estrategiaId);
+            const modal = document.getElementById('estrategia-modal');
+            const title = document.getElementById('estrategia-modal-title');
+            const objetivoSelect = document.getElementById('estrategia-objetivo-select');
+
+            // Populate objetivos from metasData
+            objetivoSelect.innerHTML = '<option value="">Seleccione un objetivo...</option>';
+            metasData.forEach(meta => {
+                objetivoSelect.innerHTML += `<option value="${meta.objetivo}">${meta.objetivo}</option>`;
+            });
+
+            if (estrategia) {
+                title.textContent = 'Editar Estrategia';
+                document.getElementById('estrategia-id').value = estrategia.id;
+                objetivoSelect.value = estrategia.objetivoMetaNombre || '';
+                document.getElementById('estrategia-texto').value = estrategia.estrategia || '';
+
+                const container = document.getElementById('estrategia-objetivos-independientes-container');
+                container.innerHTML = '';
+                estrategia.objetivosIndependientes.forEach(obj => addObjetivoIndependienteRow(obj));
+            } else {
+                // This case should not happen as we add to array first, but as a fallback
+                title.textContent = 'Agregar Estrategia';
+                document.getElementById('estrategia-form').reset();
+                document.getElementById('estrategia-objetivos-independientes-container').innerHTML = '';
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function closeEstrategiaModal() {
+            document.getElementById('estrategia-modal').classList.add('hidden');
+            currentEstrategiaId = null;
+        }
+
+        function addObjetivoIndependienteRow(objetivo = {}) {
+            const container = document.getElementById('estrategia-objetivos-independientes-container');
+            const div = document.createElement('div');
+            div.className = 'objetivo-independiente-card border p-3 rounded space-y-2';
+            const objetivoId = objetivo.id || Date.now();
+            div.dataset.id = objetivoId;
+            div.innerHTML = `
+                <input type="hidden" class="objetivo-independiente-id" value="${objetivoId}">
+                <div class="flex justify-between items-center">
+                    <input type="text" placeholder="Nombre del Objetivo Independiente" class="objetivo-independiente-nombre w-full p-1 border rounded" value="${objetivo.nombre || ''}">
+                    <button type="button" class="delete-objetivo-independiente-btn text-red-500 ml-2 flex-shrink-0"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                <div class="indicadores-container pl-4 space-y-2">
+                    ${(objetivo.indicadores || []).map(ind => getIndicadorProgramaSectorialRowHTML(ind)).join('')}
+                </div>
+                <button type="button" class="add-indicador-ps-btn mt-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Agregar Indicador</button>
+            `;
+            container.appendChild(div);
+
+            // Event delegation for new elements
+            div.querySelector('.delete-objetivo-independiente-btn').addEventListener('click', e => e.currentTarget.closest('.objetivo-independiente-card').remove());
+            div.querySelector('.add-indicador-ps-btn').addEventListener('click', e => {
+                const indicadoresContainer = e.currentTarget.previousElementSibling;
+                indicadoresContainer.insertAdjacentHTML('beforeend', getIndicadorProgramaSectorialRowHTML());
+            });
+            div.addEventListener('click', e => {
+                if (e.target.closest('.delete-indicador-ps-btn')) {
+                    e.target.closest('.indicador-ps-card').remove();
+                }
+                if (e.target.closest('.add-meta-ps-btn')) {
+                    const metasContainer = e.target.closest('.indicador-ps-card').querySelector('.metas-ps-container');
+                    metasContainer.insertAdjacentHTML('beforeend', getMetaProgramaSectorialRowHTML());
+                }
+                if (e.target.closest('.delete-meta-ps-btn')) {
+                    e.target.closest('.meta-ps-row').remove();
+                }
+            });
+        }
+
+        function getIndicadorProgramaSectorialRowHTML(indicador = {}) {
+            const indicadorId = indicador.id || Date.now();
+            return `
+                <div class="indicador-ps-card border p-2 rounded bg-gray-50" data-id="${indicadorId}">
+                    <input type="hidden" class="indicador-ps-id" value="${indicadorId}">
+                    <div class="flex justify-between items-center mb-2">
+                        <input type="text" placeholder="Nombre del Indicador" class="indicador-ps-nombre w-full p-1 border rounded" value="${indicador.nombre || ''}">
+                        <button type="button" class="delete-indicador-ps-btn text-red-500 ml-2 flex-shrink-0"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <input type="text" placeholder="Unidad Responsable" class="indicador-ps-unidad w-full p-1 border rounded mb-2" value="${indicador.unidadResponsable || ''}">
+                    <div class="metas-ps-container space-y-1">
+                         ${(indicador.metas || []).map(meta => getMetaProgramaSectorialRowHTML(meta)).join('')}
+                    </div>
+                    <button type="button" class="add-meta-ps-btn mt-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Agregar Meta</button>
+                </div>
+            `;
+        }
+
+        function getMetaProgramaSectorialRowHTML(meta = {}) {
+            const metaId = meta.id || Date.now();
+            const years = ['2025', '2026', '2027', '2028', '2029', '2030'];
+            return `
+                <div class="meta-ps-row border p-2 rounded bg-white" data-id="${metaId}">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-semibold text-sm text-gray-700">Meta Anual</span>
+                        <button type="button" class="delete-meta-ps-btn text-red-500 ml-2 flex-shrink-0"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <input type="hidden" class="meta-ps-id" value="${metaId}">
+                    <div class="text-xs font-semibold text-center">Meta</div>
+                    <div class="grid grid-cols-6 gap-1 mb-1">
+                        ${years.map(year => `<input type="number" step="0.01" placeholder="${year}" class="meta-ps-meta-${year} p-1 border rounded text-xs" value="${(meta.meta || {})[year] || ''}">`).join('')}
+                    </div>
+                    <div class="text-xs font-semibold text-center mt-2">Alcanzado</div>
+                    <div class="grid grid-cols-6 gap-1 mb-1">
+                        ${years.map(year => `<input type="number" step="0.01" placeholder="${year}" class="meta-ps-alcanzado-${year} p-1 border rounded text-xs" value="${(meta.alcanzado || {})[year] || ''}">`).join('')}
+                    </div>
+                    <div class="text-xs font-semibold text-center mt-2">Avance %</div>
+                    <div class="grid grid-cols-6 gap-1">
+                        ${years.map(year => `<input type="number" step="0.01" placeholder="${year}" class="meta-ps-avance-${year} p-1 border rounded text-xs" value="${(meta.avance || {})[year] || ''}">`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function saveEstrategia() {
+            const estrategia = programaSectorialData.estrategias.find(e => e.id === currentEstrategiaId);
+            if (!estrategia) return;
+
+            estrategia.objetivoMetaNombre = document.getElementById('estrategia-objetivo-select').value;
+            estrategia.estrategia = document.getElementById('estrategia-texto').value;
+            estrategia.objetivosIndependientes = [];
+
+            document.querySelectorAll('.objetivo-independiente-card').forEach(objCard => {
+                const objetivoInd = {
+                    id: parseInt(objCard.dataset.id),
+                    nombre: objCard.querySelector('.objetivo-independiente-nombre').value,
+                    indicadores: []
+                };
+                objCard.querySelectorAll('.indicador-ps-card').forEach(indCard => {
+                    const indicador = {
+                        id: parseInt(indCard.dataset.id),
+                        nombre: indCard.querySelector('.indicador-ps-nombre').value,
+                        unidadResponsable: indCard.querySelector('.indicador-ps-unidad').value,
+                        metas: []
+                    };
+                    indCard.querySelectorAll('.meta-ps-row').forEach(metaRow => {
+                        const meta = {
+                            id: parseInt(metaRow.dataset.id),
+                            meta: {},
+                            alcanzado: {},
+                            avance: {}
+                        };
+                        const years = ['2025', '2026', '2027', '2028', '2029', '2030'];
+                        years.forEach(year => {
+                            meta.meta[year] = parseFloat(metaRow.querySelector(`.meta-ps-meta-${year}`).value) || 0;
+                            meta.alcanzado[year] = parseFloat(metaRow.querySelector(`.meta-ps-alcanzado-${year}`).value) || 0;
+                            meta.avance[year] = parseFloat(metaRow.querySelector(`.meta-ps-avance-${year}`).value) || 0;
+                        });
+                        indicador.metas.push(meta);
+                    });
+                    objetivoInd.indicadores.push(indicador);
+                });
+                estrategia.objetivosIndependientes.push(objetivoInd);
+            });
+
+            updateProgramaSectorialDisplay();
+            closeEstrategiaModal();
+        }
+
+        // --- FIN PROGRAMA SECTORIAL ---
+
         // --- TRAMOS Y SUBTRAMOS ---
 
         function addTramo() {
@@ -2354,6 +2664,7 @@
                             <td class="formatted-content" colspan="3">
                                 ${ficha.metas || ''}
                                 ${renderMetasTable(ficha)}
+                                ${renderProgramaSectorialTable(ficha)}
                                 <div class="mt-4 pt-4 border-t border-gray-200">
                                     ${ficha.indicadores || 'N/A'}
                                 </div>
@@ -2574,6 +2885,98 @@
             return html;
         }
 
+        function renderProgramaSectorialTable(ficha) {
+            if (!ficha.programaSectorialData || !ficha.programaSectorialData.estrategias || ficha.programaSectorialData.estrategias.length === 0) {
+                return (ficha.programaSectorialData && ficha.programaSectorialData.descripcion) ? `<div class="mt-4 pt-4 border-t">${ficha.programaSectorialData.descripcion}</div>` : '';
+            }
+
+            let html = `
+                <div class="mt-4 pt-4 border-t text-sm">
+                    ${ficha.programaSectorialData.descripcion || ''}
+                    <div class="bg-white p-2 rounded border mt-4">
+                        <table class="sub-table">
+                            <thead class="bg-primary text-white font-extrabold">
+                                <tr class="bg-primary text-xs">
+                                    <th colspan="2" class="text-center">Programas derivados del Plan Nacional de Desarrollo 2025 - 2030</th>
+                                    <th colspan="4" class="text-center">Programa Sectorial de Infraestructura, Comunicaciones y Transportes 2025-2030</th>
+                                    <th rowspan="2">2025</th><th rowspan="2">2026</th><th rowspan="2">2027</th><th rowspan="2">2028</th><th rowspan="2">2029</th><th rowspan="2">2030</th>
+                                </tr>
+                                <tr class="bg-primary text-xs">
+                                    <th>Objetivo</th><th>Estrategia</th><th>Objetivo</th><th>Indicador</th><th>Unidad Responsable</th><th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+
+            const years = ['2025', '2026', '2027', '2028', '2029', '2030'];
+
+            ficha.programaSectorialData.estrategias.forEach(estrategia => {
+                const objetivosIndependientes = estrategia.objetivosIndependientes || [];
+                let estrategiaRowspan = 0;
+                objetivosIndependientes.forEach(objInd => {
+                    const indicadores = objInd.indicadores || [];
+                    indicadores.forEach(ind => {
+                        const metas = ind.metas || [];
+                        if (metas.length > 0) {
+                            estrategiaRowspan += metas.length * 3;
+                        }
+                    });
+                });
+
+                let isFirstRowOfEstrategia = true;
+                objetivosIndependientes.forEach(objInd => {
+                    const indicadores = objInd.indicadores || [];
+                    let objIndRowspan = 0;
+                    (indicadores || []).forEach(ind => {
+                        const metas = ind.metas || []; // Asegurarse de que metas es un array
+                        metas.forEach(meta => {
+                            objIndRowspan += 3;
+                        });
+                    });
+
+                    let isFirstRowOfObjInd = true;
+                    indicadores.forEach(ind => {
+                        const metas = ind.metas || [];
+                        let indRowspan = 0;
+                        (metas || []).forEach(meta => { // Asegurarse de que metas es un array
+                            indRowspan += 3;
+                        });
+
+                        let isFirstRowOfInd = true;
+                        metas.forEach(meta => {
+                            // --- Fila para Meta ---
+                            html += `<tr class="hover:bg-gray-50">`;
+                            if (isFirstRowOfEstrategia) html += `<td class="text-left-important" rowspan="${estrategiaRowspan}">${estrategia.objetivoMetaNombre || ''}</td><td class="text-left-important" rowspan="${estrategiaRowspan}">${estrategia.estrategia || ''}</td>`;
+                            if (isFirstRowOfObjInd) html += `<td class="text-left-important" rowspan="${objIndRowspan}">${objInd.nombre || ''}</td>`;
+                            if (isFirstRowOfInd) html += `<td class="text-left-important" rowspan="${indRowspan}">${ind.nombre || ''}</td><td rowspan="${indRowspan}">${ind.unidadResponsable || ''}</td>`;
+                            html += `<td class="text-left-important font-semibold">Meta</td>`;
+                            years.forEach(year => { html += `<td>${(meta.meta || {})[year] || 0}</td>`; });
+                            html += `</tr>`;
+
+                            // --- Fila para Alcanzado ---
+                            html += `<tr class="hover:bg-gray-50 bg-gray-50">`;
+                            html += `<td class="text-left-important pl-4">Alcanzado</td>`;
+                            years.forEach(year => { html += `<td>${(meta.alcanzado || {})[year] || 0}</td>`; });
+                            html += `</tr>`;
+
+                            // --- Fila para Avance ---
+                            html += `<tr class="hover:bg-gray-50 bg-gray-50">`;
+                            html += `<td class="text-left-important pl-4">Avance</td>`;
+                            years.forEach(year => { html += `<td>${(meta.avance || {})[year] || 0}%</td>`; });
+                            html += `</tr>`;
+
+                            isFirstRowOfEstrategia = false;
+                            isFirstRowOfObjInd = false;
+                            isFirstRowOfInd = false;
+                        });
+                    });
+                });
+            });
+
+            html += `</tbody></table></div></div>`;
+            return html;
+        }
+
         function renderDescripcionProyectoTable(ficha) {
             let html = '';
             // Renderizar descripción general si existe
@@ -2729,4 +3132,4 @@
         }
     </script>
 </body>
-</html>
+</html> 
