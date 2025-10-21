@@ -35,6 +35,7 @@
         .bg-primary { background-color: var(--primary-color); }
         .text-primary { color: var(--primary-color); }
         .border-primary { border-color: var(--primary-color); }
+        .bg-accent { background-color: var(--accent-color); }
 
         .loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -290,6 +291,33 @@
         .source-text {
             white-space: pre-line;
         }
+
+        /* ===== OVERRIDES PARA ENCABEZADOS EN MODAL DE DETALLES (ACENT) - REVISADO =====
+        Objetivo: sólo afectar las SUB-TABLAS que se generan dentro del modal de detalles
+        (indicadores, metas, descripción, MIR), **no** la tabla principal (.details-table).
+        */
+        #details-modal .sub-table th,
+        #details-modal .details-modal-content .formatted-content table th,
+        #details-modal .details-modal-content .formatted-content .sub-table th {
+        background-color: var(--accent-color) !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        }
+
+        /* Excepción explícita: mantener la tabla de LICITACIONES en primary */
+        #details-modal #licitaciones-table-container .sub-table th,
+        #details-modal #licitaciones-table-container .formatted-content table th {
+        background-color: #1E5B4F !important;
+        color: #ffffff !important;
+        }
+
+        /* Seguridad: preservar el estilo original de la tabla principal de detalles */
+        #details-modal .details-table th {
+        background-color: var(--primary-color) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        }
+        /* =================================================================== */
     </style>
 </head>
 <body class="antialiased text-slate-700 bg-gray-50">
@@ -2976,10 +3004,10 @@
                                     // --- FIN: Lógica de cálculo ---
                                     // nOTA: KM = Programado Km
                                         let licHTML = `
-                                            <div class="mt-4 text-sm">
+                                            <div id="licitaciones-table-container" class="mt-4 text-sm">
                                                 <div class="bg-white p-2 rounded border">
                                                     <table class="sub-table">
-                                                        <thead class="bg-primary text-white font-extrabold">
+                                                        <thead>
                                                             <tr class="bg-primary text-white font-extrabold">
                                                                 <th class="whitespace-nowrap">Fase</th>
                                                                 <th class="whitespace-nowrap">Proyecto<br>Ferroviario</th>
@@ -3269,8 +3297,8 @@
                 <div class="mt-4 text-sm">
                     <div class="bg-white p-2 rounded border overflow-x-auto">
                         <table class="sub-table">
-                            <thead class="bg-primary text-white font-extrabold">
-                                <tr class="bg-primary">
+                            <thead class="text-white font-extrabold ">
+                                <tr class="bg-accent">
                                     <th class="whitespace-nowrap">Fase</th>
                                     <th>Tramo</th>
                                     <th>Construcción y diseño</th>
