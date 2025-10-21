@@ -1422,12 +1422,7 @@
                 const editor = editors[field];
                 if (textarea && editor && ficha[field] !== undefined) {
                     textarea.value = ficha[field];
-                    // Special handling for programaSectorialDescripcion which is nested
-                    if (field === 'programaSectorialDescripcion' && ficha.programaSectorialData) {
-                         editor.setContents(ficha.programaSectorialData.descripcion || '');
-                    } else {
-                         editor.setContents(ficha[field]);
-                    }
+                    editor.setContents(ficha[field]);
                 }
             });
             
@@ -1466,6 +1461,9 @@
 
             if (ficha.programaSectorialData) {
                 programaSectorialData = JSON.parse(JSON.stringify(ficha.programaSectorialData));
+                // Cargar la descripción en el editor y el textarea correspondiente
+                editors['programaSectorialDescripcion'].setContents(programaSectorialData.descripcion || '');
+                document.getElementById('programaSectorialDescripcion').value = programaSectorialData.descripcion || '';
                 updateProgramaSectorialDisplay();
             }
 
@@ -1519,6 +1517,9 @@
                 fichaData.nivelesIndicadores = nivelesIndicadores;
                 fichaData.metasData = metasData;
                 fichaData.programaSectorialData = programaSectorialData;
+                // Asegurarse de que la descripción del editor se guarde en el objeto correcto
+                fichaData.programaSectorialData.descripcion = fichaData.programaSectorialDescripcion;
+
                 fichaData.proyectosProgramados = proyectosProgramados;
                 
                 // Agregar timestamp
