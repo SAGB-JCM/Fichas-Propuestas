@@ -241,6 +241,10 @@
             text-align: left !important;
         }
 
+        .text-justify {
+            text-align: justify;
+        }
+
         /* Aplica fondo gris a los TH de sub-table, excepto si el TR padre ya tiene un fondo primario */
         .sub-table tr:not(.bg-primary) th {
             background-color: #f3f4f6; 
@@ -2973,7 +2977,7 @@
                                                             <tr class="bg-primary text-white font-extrabold">
                                                                 <th class="whitespace-nowrap">Fase</th>
                                                                 <th class="whitespace-nowrap">Proyecto<br>Ferroviario</th>
-                                                                <th class="whitespace-nowrap">KM<br>Programados</th>
+                                                                <th class="whitespace-nowrap">KM</th>
                                                                 <th class="whitespace-nowrap">Adjudicación</th>
                                                                 <th class="whitespace-nowrap">Descripción</th>
                                                                 <th class="whitespace-nowrap">KM<br>Adjudicados</th>
@@ -3025,13 +3029,13 @@
                                                 <tr>
                                                     <td class="text-left-important">${licitacion.tramoFase || ''}</td>
                                                     <td class="text-left-important">${licitacion.tramoNombre || ''}</td>
-                                                    <td>${licitacion.tramoProgramadoKm || 0}</td>
+                                                    <td>${formatNumber(licitacion.tramoProgramadoKm)}</td>
                                                     <td>${licitacion.adjudicacion || ''}</td>
-                                                    <td class="text-left-important">${licitacion.descripcion || ''}</td>
+                                                    <td class="text-justify">${licitacion.descripcion || ''}</td>
                                                     <td>${licitacion.kmAdjudicados || 0}</td>
                                                     <td>${formatDate(licitacion.fechaFallo) || ''}</td>
                                                     <td>${formatCurrency(licitacion.montoAdjudicado)}</td>
-                                                    <td>${licitacion.empresaConstructora || ''}</td>
+                                                    <td class="text-justify">${licitacion.empresaConstructora || ''}</td>
                                                 </tr>
                                             `;
                                         });
@@ -3043,11 +3047,11 @@
                                                 <tr>
                                                     <td></td><td></td><td></td>
                                                     <td>${licitacion.adjudicacion || ''}</td>
-                                                    <td class="text-left-important">${licitacion.descripcion || ''}</td>
+                                                    <td class="text-justify">${licitacion.descripcion || ''}</td>
                                                     <td>${licitacion.kmAdjudicados || 0}</td>
                                                     <td>${formatDate(licitacion.fechaFallo) || ''}</td>
                                                     <td>${formatCurrency(licitacion.montoAdjudicado)}</td>
-                                                    <td>${licitacion.empresaConstructora || ''}</td>
+                                                    <td class="text-justify">${licitacion.empresaConstructora || ''}</td>
                                                 </tr>
                                             `;
                                         });
@@ -3373,10 +3377,10 @@
 
         function formatCurrency(amount) {
             if (amount === null || amount === undefined) return 'N/A';
-            return new Intl.NumberFormat('es-MX', { // es-MX para formato mexicano
-                style: 'currency',
-                currency: 'MXN'
-            }).format(amount);
+            return new Intl.NumberFormat('es-MX', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount || 0);
         }
 
         function formatNumber(num) {
