@@ -107,6 +107,11 @@
             line-height: 1.0; /* Mejora la legibilidad del texto */
         }
 
+        .formatted-content .text-justify {
+            text-align: justify;
+        }
+
+
         /* --- Párrafos y Encabezados --- */
         .formatted-content p {
             margin-bottom: 0.75rem; /* 12px */
@@ -228,6 +233,8 @@
             padding: 0.5rem;
             text-align: center; /* Centrado por defecto para las sub-tablas */
             vertical-align: middle;
+            word-break: normal; /* Evita que las palabras se corten */
+            overflow-wrap: break-word; /* Corta la palabra solo si es la única opción */
         }
 
         .text-left-important {
@@ -3277,7 +3284,7 @@
                     <tr class="hover:bg-gray-50">
                         <td>${tramo.fase || 'Programado'}</td>
                         <td class="text-left-important">${tramo.tramo || 'N/A'}</td>
-                        <td>${tramo.construccionDiseno || 'N/A'}</td>
+                        <td class="text-justify">${tramo.construccionDiseno || 'N/A'}</td>
                         <td>${tramo.estacionesParaderos || 'N/A'}</td>
                         <td>${tramo.programadoKm || 0}</td>
                         <td>${tramo.adjudicadoKm || 0}</td>
@@ -3309,7 +3316,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td>${sub.fase || ''}</td>
                                 <td class="text-left-important pl-8">${sub.nombre || 'N/A'}</td>
-                                <td>${sub.construccionDiseno || 'N/A'}</td>
+                                <td class="text-justify">${sub.construccionDiseno || 'N/A'}</td>
                                 <td>${sub.estacionesParaderos || 'N/A'}</td>
                                 <td>${sub.programadoKm || 0}</td>
                                 <td>${sub.adjudicadoKm || 0}</td>
