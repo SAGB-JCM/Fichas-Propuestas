@@ -234,15 +234,6 @@
             text-align: left !important;
         }
 
-        /* Evita que el texto en los encabezados de las sub-tablas se corte */
-        .sub-table th {
-            white-space: nowrap;
-        }
-        /* Permite el ajuste de texto en celdas específicas */
-        .sub-table .wrap-text {
-            white-space: normal;
-        }
-
         /* Aplica fondo gris a los TH de sub-table, excepto si el TR padre ya tiene un fondo primario */
         .sub-table tr:not(.bg-primary) th {
             background-color: #f3f4f6; 
@@ -400,7 +391,7 @@
             - Ancho Máximo: `max-w-7xl` (limita el ancho en pantallas grandes). Puedes usar otros valores como `max-w-6xl`, `max-w-full`, etc.
             - Altura: `h-[115vh]` Puedes cambiar el valor (ej. `h-[90vh]`).
         -->
-        <div class="relative bg-white p-6 rounded-lg shadow-xl w-[95vw] max-w-7xl h-[135vh] mx-auto my-4 flex flex-col">
+        <div class="relative bg-white p-6 rounded-lg shadow-xl w-[95vw] max-w-7xl h-[120vh] mx-auto my-4 flex flex-col">
             <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
                 <i class="fa-solid fa-times-circle fa-2x"></i>
             </button>
@@ -794,7 +785,7 @@
            `vh` es un porcentaje de la altura de la ventana (viewport height).
     -->
     <div id="details-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative bg-white p-8 rounded-lg shadow-xl w-[105vw] max-w-[115vw] mx-auto my-8">
+        <div class="relative bg-white p-8 rounded-lg shadow-xl w-[95vw] max-w-7xl mx-auto my-8">
             <button id="close-details-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
                 <i class="fa-solid fa-times-circle fa-2x"></i>
             </button>
@@ -804,7 +795,7 @@
                 <h3 class="text-2xl font-bold text-primary">Detalles de la Ficha</h3>
             </div>
 
-            <div class="max-h-[115vh] overflow-y-auto pr-2">
+            <div class="max-h-[97vh] overflow-y-auto pr-2">
                 <div id="details-content" class="details-modal-content space-y-6">
                     <!-- El contenido se generará dinámicamente -->
                 </div>
@@ -2861,7 +2852,7 @@
                                             nivel.indicadores.forEach(indicador => {
                                                 indHTML += `
                                                     <tr class="hover:bg-gray-50">
-                                                        <td class="wrap-text">${indicador.denominacion || ''}</td>
+                                                        <td class="text-left-important">${indicador.denominacion || ''}</td>
                                                         <td>${indicador.frecuencia || ''}</td>
                                                         <td>${indicador.metaAnualProgramada || ''}</td>
                                                         <td>${indicador.metaAnualAjustada || ''}</td>
@@ -2892,7 +2883,7 @@
                                                         <table class="sub-table">
                                                             <thead>
                                                                 <tr class="bg-primary text-white font-extrabold">
-                                                                    <th>Programas Presupuestarios /<br>Proyectos de Inversión</th>
+                                                                    <th>Programas Presupuestarios /<br> Proyectos de Inversión</th>
                                                                     <th>Monto Aprobado (MDP)</th>
                                                                     <th>Monto Modificado (MDP)</th>
                                                                     <th>Monto Pagado (MDP)</th>
@@ -2974,14 +2965,14 @@
                                                         <thead class="bg-primary text-white font-extrabold">
                                                             <tr class="bg-primary text-white font-extrabold">
                                                                 <th>Fase</th>
-                                                                <th>Proyecto<br>Ferroviario</th>
-                                                                <th>KM<br>Programados</th>
+                                                                <th>Proyecto Ferroviario</th>
+                                                                <th>KM</th>
                                                                 <th>Adjudicación</th>
-                                                                <th>Descripción<br>de la Licitación</th>
-                                                                <th>KM<br>Adjudicados</th>
-                                                                <th>Fecha<br>de Fallo</th>
-                                                                <th>Monto<br>Adjudicado</th>
-                                                                <th>Empresa /<br>Constructora</th>
+                                                                <th>Descripción de la Licitación</th>
+                                                                <th>KM Adjudicados</th>
+                                                                <th>Fecha de Fallo</th>
+                                                                <th>Monto Adjudicado</th>
+                                                                <th>Empresa/Constructora</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -2989,7 +2980,7 @@
                                         if (licitacionesPorTramo.length > 0) {
                                             licHTML += `
                                                 <tr class="font-bold bg-slate-100">
-                                                    <td colspan="2">Totales</td>
+                                                    <td class="text-left-important" colspan="2">Totales</td>
                                                     <td>${totalKmProgramado.toFixed(2)}</td>
                                                     <td></td>
                                                     <td></td>
@@ -3003,7 +2994,7 @@
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
-                                                    <td>Subtotal tramos</td>
+                                                    <td class="text-left-important">Subtotal tramos</td>
                                                     <td></td>
                                                     <td></td>
                                                     <td>${formatCurrency(totalMontoAdjudicado)}</td>
@@ -3014,7 +3005,7 @@
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
-                                                    <td>KM Pendientes</td>
+                                                    <td class="text-left-important">KM Pendientes</td>
                                                     <td>${(totalKmProgramado - totalKmAdjudicados).toFixed(2)}</td>
                                                     <td></td>
                                                     <td></td>
@@ -3025,15 +3016,15 @@
                                         licitacionesPorTramo.forEach(licitacion => {
                                             licHTML += `
                                                 <tr>
-                                                    <td>${licitacion.tramoFase || ''}</td>
-                                                    <td class="wrap-text">${licitacion.tramoNombre || ''}</td>
+                                                    <td class="text-left-important">${licitacion.tramoFase || ''}</td>
+                                                    <td class="text-left-important">${licitacion.tramoNombre || ''}</td>
                                                     <td>${licitacion.tramoProgramadoKm || 0}</td>
                                                     <td>${licitacion.adjudicacion || ''}</td>
-                                                    <td class="wrap-text">${licitacion.descripcion || ''}</td>
+                                                    <td class="text-left-important">${licitacion.descripcion || ''}</td>
                                                     <td>${licitacion.kmAdjudicados || 0}</td>
                                                     <td>${formatDate(licitacion.fechaFallo) || ''}</td>
                                                     <td>${formatCurrency(licitacion.montoAdjudicado)}</td>
-                                                    <td class="wrap-text">${licitacion.empresaConstructora || ''}</td>
+                                                    <td>${licitacion.empresaConstructora || ''}</td>
                                                 </tr>
                                             `;
                                         });
@@ -3045,11 +3036,11 @@
                                                 <tr>
                                                     <td></td><td></td><td></td>
                                                     <td>${licitacion.adjudicacion || ''}</td>
-                                                    <td class="wrap-text">${licitacion.descripcion || ''}</td>
+                                                    <td class="text-left-important">${licitacion.descripcion || ''}</td>
                                                     <td>${licitacion.kmAdjudicados || 0}</td>
                                                     <td>${formatDate(licitacion.fechaFallo) || ''}</td>
                                                     <td>${formatCurrency(licitacion.montoAdjudicado)}</td>
-                                                    <td class="wrap-text">${licitacion.empresaConstructora || ''}</td>
+                                                    <td>${licitacion.empresaConstructora || ''}</td>
                                                 </tr>
                                             `;
                                         });
@@ -3102,13 +3093,13 @@
                                     <th colspan="7" class="text-center">Programas derivados del Plan Nacional de Desarrollo 2025 - 2030</th>
                                 </tr>
                                 <tr class="bg-primary">
-                                    <th class="whitespace-nowrap">Objetivo</th>
-                                    <th class="whitespace-nowrap">Indicador</th>
-                                    <th class="whitespace-nowrap">Descripción</th>
-                                    <th class="whitespace-nowrap">Unidad<br>Responsable</th>
-                                    <th class="whitespace-nowrap w-40"></th>
-                                    <th class="whitespace-nowrap">Línea Base<br>2023</th>
-                                    <th class="whitespace-nowrap">Meta<br>(2030)</th>
+                                    <th>Objetivo</th>
+                                    <th>Indicador</th>
+                                    <th>Descripción</th>
+                                    <th class="whitespace-nowrap">Unidad Responsable</th>
+                                    <th></th>
+                                    <th class="whitespace-nowrap">Línea Base 2023</th>
+                                    <th class="whitespace-nowrap">Meta (2030)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -3121,21 +3112,21 @@
                         const isFirstIndicator = indIndex === 0;
                         html += `
                             <tr class="hover:bg-gray-50">
-                                ${isFirstIndicator ? `<td class="wrap-text" rowspan="${totalRowsForObjective}">${objetivo.objetivo || 'N/A'}</td>` : ''}
-                                <td class="wrap-text" rowspan="3">${ind.nombre || 'N/A'}</td>
-                                <td class="wrap-text" rowspan="3">${ind.descripcion || 'N/A'}</td>
+                                ${isFirstIndicator ? `<td class="text-left-important" rowspan="${totalRowsForObjective}">${objetivo.objetivo || 'N/A'}</td>` : ''}
+                                <td class="text-left-important" rowspan="3">${ind.nombre || 'N/A'}</td>
+                                <td rowspan="3">${ind.descripcion || 'N/A'}</td>
                                 <td rowspan="3">${ind.unidad || 'N/A'}</td>
-                                <td class="font-semibold wrap-text">${ind.nombreMeta || 'N/A'}</td>
+                                <td class="text-left-important font-semibold">${ind.nombreMeta || 'N/A'}</td>
                                 <td>${ind.lineaBase2023 || 0}</td>
                                 <td>${ind.meta2030 || 0}</td>
                             </tr>
                             <tr class="hover:bg-gray-50 bg-gray-50">
-                                <td>Alcanzado</td>
+                                <td class="text-left-important pl-4">Alcanzado</td>
                                 <td>${ind.alcanzadoLineaBase || 0}</td>
                                 <td>${ind.alcanzadoMeta2030 || 0}</td>
                             </tr>
                             <tr class="hover:bg-gray-50 bg-gray-50">
-                                <td>Avance</td>
+                                <td class="text-left-important pl-4">Avance</td>
                                 <td>${ind.avanceLineaBase || 0}%</td>
                                 <td>${ind.avanceMeta2030 || 0}%</td>
                             </tr>
@@ -3168,7 +3159,7 @@
                                     <th rowspan="2">2025</th><th rowspan="2">2026</th><th rowspan="2">2027</th><th rowspan="2">2028</th><th rowspan="2">2029</th><th rowspan="2">2030</th>
                                 </tr>
                                 <tr class="bg-primary text-xs">
-                                    <th>Objetivo</th><th>Estrategia</th><th>Objetivo</th><th>Indicador</th><th>Unidad<br>Responsable</th><th class="w-40"></th>
+                                    <th>Objetivo</th><th>Estrategia</th><th>Objetivo</th><th>Indicador</th><th>Unidad Responsable</th><th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -3212,22 +3203,22 @@
                         metas.forEach(meta => {
                             // --- Fila para Meta ---
                             html += `<tr class="hover:bg-gray-50">`;
-                            if (isFirstRowOfEstrategia) html += `<td class="wrap-text" rowspan="${estrategiaRowspan}">${estrategia.objetivoMetaNombre || ''}</td><td class="wrap-text" rowspan="${estrategiaRowspan}">${estrategia.estrategia || ''}</td>`;
-                            if (isFirstRowOfObjInd) html += `<td class="wrap-text" rowspan="${objIndRowspan}">${objInd.nombre || ''}</td>`;
-                            if (isFirstRowOfInd) html += `<td class="wrap-text" rowspan="${indRowspan}">${ind.nombre || ''}</td><td rowspan="${indRowspan}">${ind.unidadResponsable || ''}</td>`;
-                            html += `<td class="font-semibold">Meta</td>`;
+                            if (isFirstRowOfEstrategia) html += `<td class="text-left-important" rowspan="${estrategiaRowspan}">${estrategia.objetivoMetaNombre || ''}</td><td class="text-left-important" rowspan="${estrategiaRowspan}">${estrategia.estrategia || ''}</td>`;
+                            if (isFirstRowOfObjInd) html += `<td class="text-left-important" rowspan="${objIndRowspan}">${objInd.nombre || ''}</td>`;
+                            if (isFirstRowOfInd) html += `<td class="text-left-important" rowspan="${indRowspan}">${ind.nombre || ''}</td><td rowspan="${indRowspan}">${ind.unidadResponsable || ''}</td>`;
+                            html += `<td class="text-left-important font-semibold">Meta</td>`;
                             years.forEach(year => { html += `<td>${(meta.meta || {})[year] || 0}</td>`; });
                             html += `</tr>`;
 
                             // --- Fila para Alcanzado ---
                             html += `<tr class="hover:bg-gray-50 bg-gray-50">`;
-                            html += `<td>Alcanzado</td>`;
+                            html += `<td class="text-left-important pl-4">Alcanzado</td>`;
                             years.forEach(year => { html += `<td>${(meta.alcanzado || {})[year] || 0}</td>`; });
                             html += `</tr>`;
 
                             // --- Fila para Avance ---
                             html += `<tr class="hover:bg-gray-50 bg-gray-50">`;
-                            html += `<td>Avance</td>`;
+                            html += `<td class="text-left-important pl-4">Avance</td>`;
                             years.forEach(year => { html += `<td>${(meta.avance || {})[year] || 0}%</td>`; });
                             html += `</tr>`;
 
@@ -3264,12 +3255,12 @@
                         <table class="sub-table">
                             <thead class="bg-primary text-white font-extrabold">
                                 <tr class="bg-primary">
-                                    <th class="whitespace-nowrap">Fase</th>
+                                    <th>Fase</th>
                                     <th>Tramo</th>
                                     <th>Construcción y diseño</th>
                                     <th>Estaciones y Paraderos</th>
-                                    <th class="whitespace-nowrap">Programado<br>Km</th>
-                                    <th class="whitespace-nowrap">Adjudicado<br>Km</th>
+                                    <th>Programado Km</th>
+                                    <th>Adjudicado Km</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -3277,14 +3268,14 @@
 
             // Fila de encabezado para "Programado"
             html += `
-                <tr class="font-bold bg-slate-100"><td colspan="6" class="text-center">Programado:</td></tr>
+                <tr class="font-bold bg-slate-100"><td colspan="6" class="text-left-important pl-4">Programado:</td></tr>
             `;
 
             // Sección Programado
             ficha.proyectosProgramados.forEach(tramo => {
                 html += `
                     <tr class="hover:bg-gray-50">
-                        <td>${tramo.fase || ''}</td>
+                        <td>${tramo.fase || 'Programado'}</td>
                         <td class="text-left-important">${tramo.tramo || 'N/A'}</td>
                         <td>${tramo.construccionDiseno || 'N/A'}</td>
                         <td>${tramo.estacionesParaderos || 'N/A'}</td>
@@ -3296,7 +3287,7 @@
 
             // Fila de encabezado para "Adjudicado"
             html += `
-                <tr class="font-bold bg-slate-100"><td colspan="6" class="text-center">Adjudicado:</td></tr>
+                <tr class="font-bold bg-slate-100"><td colspan="6" class="text-left-important pl-4">Adjudicado:</td></tr>
             `;
 
             // Sección Adjudicado (Subtramos)
@@ -3308,9 +3299,9 @@
                         : 'Subtramos';
                     
                     if (ficha.proyectosProgramados.length > 1) {
-                        html += `<tr><td></td><td class="text-center" colspan="4">${subtramosLabel}</td><td>${totalAdjudicado.toFixed(2)}</td></tr>`;
+                        html += `<tr><td></td><td class="text-left-important pl-4" colspan="4">${subtramosLabel}</td><td>${totalAdjudicado.toFixed(2)}</td></tr>`;
                     } else {
-                        html += `<tr><td></td><td class="text-center">${subtramosLabel}</td><td></td><td></td><td></td><td>${totalAdjudicado.toFixed(2)}</td></tr>`;
+                        html += `<tr><td></td><td class="text-left-important pl-4">${subtramosLabel}</td><td></td><td></td><td></td><td>${totalAdjudicado.toFixed(2)}</td></tr>`;
                     }
 
                     tramo.subtramos.forEach(sub => {
