@@ -348,7 +348,7 @@
                                 <tr>
                                     <th class="py-3 px-6">No.</th>
                                     <th class="py-3 px-6">Proyecto</th>
-                                    <th class="py-3 px-6">Subproyecto</th>
+                                    <th class="py-3 px-6">Fase/Tramo</th>
                                     <th class="py-3 px-6">Programa Estratégico</th>
                                     <th class="py-3 px-6">Ramo</th>
                                     <th class="py-3 px-6">Fecha Actualización</th>
@@ -418,32 +418,28 @@
                     <div id="modal-tab-content-principal" class="modal-tab-content space-y-8">
                         <!-- Parte 1: Variables Principales -->
                         <div class="section-card">
-                            <h4 class="section-title">1. Variables Principales</h4>
+                            <h4 class="section-title">Detalles del Programa Estratégico</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Proyecto -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">2. Proyecto</label>
-                                    <input type="text" id="proyecto" name="proyecto" 
-                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-
-                                <!-- Subproyecto -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">3. Subproyecto</label>
-                                    <input type="text" id="subproyecto" name="subproyecto" 
-                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
+                                <!-- Proyecto (Oculto, valor por defecto) -->
+                                <input type="hidden" id="proyecto" name="proyecto" value="Programa Estratégico (PE)">
 
                                 <!-- Nombre del Programa Estratégico -->
-                                <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">4. Nombre del Programa Estratégico</label>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
                                     <input type="text" id="nombrePrograma" name="nombrePrograma" 
+                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+
+                                <!-- Fase/Tramo -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Fase/Tramo</label>
+                                    <input type="text" id="faseTramo" name="faseTramo" 
                                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                                 </div>
 
                                 <!-- Ramo (Múltiple) -->
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">5. Ramo</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Ramo</label>
                                     <div class="flex gap-2 mb-2">
                                         <input type="text" id="ramo-input" placeholder="Agregar ramo..." 
                                                class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
@@ -459,41 +455,41 @@
 
                                 <!-- Fecha de Actualización -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">6. Fecha de Actualización</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Actualización</label>
                                     <input type="date" id="fechaActualizacion" name="fechaActualizacion" 
                                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                                 </div>
 
                                 <!-- Entidad Responsable -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">7. Entidad Responsable</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Entidad Responsable</label>
                                     <input type="text" id="entidadResponsable" name="entidadResponsable" 
                                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                                 </div>
 
                                 <!-- Número de Cartera -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">8. Número de Cartera</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Número de Cartera</label>
                                     <input type="text" id="numeroCartera" name="numeroCartera" 
                                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                                 </div>
 
                                 <!-- Periodo Reportado -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">10. Periodo Reportado</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Periodo Reportado</label>
                                     <select id="periodoReportado" name="periodoReportado" 
                                             class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                                         <option value="">Seleccionar...</option>
-                                        <option value="Primer Trimestre">Primer Trimestre</option>
-                                        <option value="Segundo Trimestre">Segundo Trimestre</option>
-                                        <option value="Tercer Trimestre">Tercer Trimestre</option>
-                                        <option value="Cuarto Trimestre">Cuarto Trimestre</option>
+                                        <option value="Primer Trimestre">Primer trimestre</option>
+                                        <option value="Segundo Trimestre">Segundo trimestre</option>
+                                        <option value="Tercer Trimestre">Tercer trimestre</option>
+                                        <option value="Cuarto Trimestre">Cuarto trimestre</option>
                                     </select>
                                 </div>
 
                                 <!-- Cobertura (con editor enriquecido) -->
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">9. Cobertura</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Cobertura</label>
                                     <textarea id="cobertura" name="cobertura" rows="4"
                                               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
                                     <div id="cobertura-editor"></div>
@@ -501,50 +497,46 @@
 
                                 <!-- Objetivos (con editor) -->
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">11. Objetivos</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Objetivo</label>
                                     <textarea id="objetivos" name="objetivos" rows="4"
                                               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
                                     <div id="objetivos-editor"></div>
                                 </div>                                
                                 <!-- Avance Físico (con editor) -->
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">13. Avance Físico</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Avance Físico</label>
                                     <textarea id="avanceFisico" name="avanceFisico" rows="4"
                                               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
                                     <div id="avanceFisico-editor"></div>
                                 </div>
                                 <!-- Avance Financiero (con editor) -->
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">44. Avance Financiero</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Avance Financiero</label>
                                     <textarea id="avanceFinanciero" name="avanceFinanciero" rows="4"
                                               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
                                     <div id="avanceFinanciero-editor"></div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Parte 2: Montos Principales -->
-                        <div class="section-card">
-                            <h4 class="section-title">2. Montos Principales</h4>
-                            <div class="space-y-6">
                                 <!-- Programa Presupuestario (con editor) -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">14. Programa Presupuestario</label>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Programa Presupuestario</label>
                                     <textarea id="programaPresupuestario" name="programaPresupuestario" rows="4"
                                               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
                                     <div id="programaPresupuestario-editor"></div>
                                 </div>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t">
+
+                                <!-- Campos de Presupuesto -->
+                                <div class="md:col-span-2 pt-4 border-t grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">15. Presupuesto Aprobado</label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Presupuesto Aprobado</label>
                                         <input type="number" step="0.01" id="presupuestoAprobado" name="presupuestoAprobado" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">16. Presupuesto Modificado</label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Presupuesto Modificado</label>
                                         <input type="number" step="0.01" id="presupuestoModificado" name="presupuestoModificado" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">17. Presupuesto Ejercido</label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Presupuesto Ejercido</label>
                                         <input type="number" step="0.01" id="presupuestoEjercido" name="presupuestoEjercido" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                                     </div>
                                 </div>
@@ -552,20 +544,19 @@
                         </div>
                     </div>
 
-                    <!-- Contenido Pestaña Descripción -->
+                    <!-- Contenido Pestaña Descripción del Proyecto -->
                     <div id="modal-tab-content-descripcion" class="modal-tab-content hidden">
                         <div class="section-card">
-                            <h4 class="section-title">12. Descripción del Proyecto (Tramos y Subtramos)</h4>
                             <div class="mb-6">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Descripción General (Opcional)</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Descripción del Proyecto</label>
                                 <textarea id="descripcionProyecto" name="descripcionProyecto" rows="4"
                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
                                 <div id="descripcionProyecto-editor"></div>
                             </div>
 
-                            <!-- Tabla de Proyectos Programados (Tramos) -->
+                            <!-- Tabla de Tramos y Subtramos del Proyecto -->
                             <div class="mt-6 pt-6 border-t">
-                                <h6 class="font-semibold text-gray-700 mb-3">Proyectos Programados (Tramos)</h6>
+                                <h6 class="font-semibold text-gray-700 mb-3">Tramos Programados y Adjudicados</h6>
                                 <div id="descripcion-proyectos-container" class="border border-gray-300 rounded-lg p-4">
                                     <div class="flex justify-end items-center mb-4">
                                         <button type="button" id="add-tramo-btn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
@@ -586,39 +577,12 @@
                         </div>
                     </div>
 
-                    <!-- Contenido Pestaña Indicadores -->
+                    <!-- Contenido Pestaña Indicadores y Metas-->
                     <div id="modal-tab-content-indicadores" class="modal-tab-content hidden">
-                        <div class="section-card mb-8">
-                            <h4 class="section-title">31. Indicadores</h4>
-                            <textarea id="indicadores" name="indicadores" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
-                            <div id="indicadores-editor"></div>
-                            
-                            <!-- Tabla de Indicadores -->
-                            <div class="mt-6">
-                                <h6 class="font-semibold text-gray-700 mb-3">Tabla de Indicadores por Nivel</h6>
-                                <div id="indicadores-table-container" class="border border-gray-300 rounded-lg p-4">
-                                    <div class="flex justify-between items-center mb-4">
-                                        <span class="font-medium">Indicadores por Nivel</span>
-                                        <button type="button" id="add-nivel-btn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
-                                            <i class="fa-solid fa-plus mr-2"></i>Agregar Nivel
-                                        </button>
-                                    </div>
-                                    <div id="niveles-container">
-                                        <!-- Los niveles e indicadores se agregarán aquí dinámicamente -->
-                                    </div>
-                                </div>
-                                <!-- Fuente para Indicadores -->
-                                <div class="mt-4">
-                                    <label for="fuenteIndicadores" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla de Indicadores</label>
-                                    <input type="text" id="fuenteIndicadores" name="fuenteIndicadores" placeholder="Ej: Matriz de Indicadores para Resultados (MIR)"
-                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Metas -->
                         <div class="section-card">
                             <h4 class="section-title">Metas</h4>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Descripción de las Metas</label>
                             <textarea id="metas" name="metas" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
                             <div id="metas-editor"></div>
 
@@ -644,34 +608,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Transparencia Presupuestaria movida aquí -->
-                        <div class="section-card">
-                            <h4 class="section-title">18. Transparencia Presupuestaria</h4>
-                            <textarea id="transparenciaPresupuestaria" name="transparenciaPresupuestaria" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
-                            <div id="transparenciaPresupuestaria-editor"></div>
-                            
-                            <!-- Tabla MIR -->
-                            <div class="mt-6">
-                                <h6 class="font-semibold text-gray-700 mb-3">Tabla MIR - Programas Presupuestarios y Proyectos de Inversión</h6>
-                                <div id="mir-table-container" class="border border-gray-300 rounded-lg p-4">
-                                    <div class="flex justify-between items-center mb-4">
-                                        <span class="font-medium">Programas Presupuestarios</span>
-                                        <button type="button" id="add-pp-btn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
-                                            <i class="fa-solid fa-plus mr-2"></i>Agregar Programa
-                                        </button>
-                                    </div>
-                                    <div id="pp-container">
-                                        <!-- Los programas presupuestarios se agregarán aquí dinámicamente -->
-                                    </div>
-                                </div>
-                                <!-- Fuente para Transparencia Presupuestaria -->
-                                <div class="mt-4">
-                                    <label for="fuenteTransparencia" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla MIR</label>
-                                    <input type="text" id="fuenteTransparencia" name="fuenteTransparencia" placeholder="Ej: Portal de Transparencia Presupuestaria"
-                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                            </div>
-                        </div>
+
                         <!-- Programa Sectorial de Infraestructura -->
                         <div class="section-card">
                             <h4 class="section-title">Programa Sectorial de Infraestructura</h4>
@@ -698,18 +635,76 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Transparencia Presupuestaria movida aquí -->
+                        <div class="section-card">
+                            <h4 class="section-title">Transparencia Presupuestaria</h4>
+                            <textarea id="transparenciaPresupuestaria" name="transparenciaPresupuestaria" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                            <div id="transparenciaPresupuestaria-editor"></div>
+                            
+                            <!-- Tabla MIR -->
+                            <div class="mt-6">
+                                <h6 class="font-semibold text-gray-700 mb-3">Tabla MIR - Programas Presupuestarios y Proyectos de Inversión</h6>
+                                <div id="mir-table-container" class="border border-gray-300 rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <span class="font-medium">Programas Presupuestarios</span>
+                                        <button type="button" id="add-pp-btn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
+                                            <i class="fa-solid fa-plus mr-2"></i>Agregar Programa
+                                        </button>
+                                    </div>
+                                    <div id="pp-container">
+                                        <!-- Los programas presupuestarios se agregarán aquí dinámicamente -->
+                                    </div>
+                                </div>
+                                <!-- Fuente para Transparencia Presupuestaria -->
+                                <div class="mt-4">
+                                    <label for="fuenteTransparencia" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla MIR</label>
+                                    <input type="text" id="fuenteTransparencia" name="fuenteTransparencia" placeholder="Ej: Portal de Transparencia Presupuestaria"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Indicadores -->
+                        <div class="section-card mb-8">
+                            <h4 class="section-title">Indicadores</h4>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Descripción de los Indicadores</label>
+                            <textarea id="indicadores" name="indicadores" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                            <div id="indicadores-editor"></div>
+                            
+                            <!-- Tabla de Indicadores -->
+                            <div class="mt-6">
+                                <div id="indicadores-table-container" class="border border-gray-300 rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <span class="font-medium">Indicadores por Nivel</span>
+                                        <button type="button" id="add-nivel-btn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
+                                            <i class="fa-solid fa-plus mr-2"></i>Agregar Nivel
+                                        </button>
+                                    </div>
+                                    <div id="niveles-container">
+                                        <!-- Los niveles e indicadores se agregarán aquí dinámicamente -->
+                                    </div>
+                                </div>
+                                <!-- Fuente para Indicadores -->
+                                <div class="mt-4">
+                                    <label for="fuenteIndicadores" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla de Indicadores</label>
+                                    <input type="text" id="fuenteIndicadores" name="fuenteIndicadores" placeholder="Ej: Matriz de Indicadores para Resultados (MIR)"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Contenido Pestaña Licitaciones -->
                     <div id="modal-tab-content-licitaciones" class="modal-tab-content hidden">
                         <div class="section-card">
-                            <h4 class="section-title">24. Licitaciones</h4>
+                            <h4 class="section-title">Licitaciones</h4>
                             <textarea id="licitaciones" name="licitaciones" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
                             <div id="licitaciones-editor"></div>
                             
                             <!-- Tabla de Licitaciones -->
                             <div class="mt-6">
-                                <h6 class="font-semibold text-gray-700 mb-3">Lista de Licitaciones</h6>
+                                <h6 class="font-semibold text-gray-700 mb-3">Tabla de Licitaciones</h6>
                                 <div id="licitaciones-table-container" class="border border-gray-300 rounded-lg p-4">
                                     <div class="flex justify-between items-center mb-4">
                                         <span class="font-medium">Licitaciones Registradas</span>
@@ -736,9 +731,18 @@
                         <div class="section-card">
                             <h4 class="section-title">Notas Relevantes</h4>
                             <div class="space-y-6">
+
+                                <!-- Medios de Comunicación (con editor) -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Medios de Comunicación Notas Relevantes</label>
+                                    <textarea id="mediosComunicacion" name="mediosComunicacion" rows="4"
+                                              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
+                                    <div id="mediosComunicacion-editor"></div>
+                                </div>
+
                                 <!-- Hitos del Programa (con editor) -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">41. Hitos del Programa</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Hitos del Programa</label>
                                     <textarea id="hitosPrograma" name="hitosPrograma" rows="4"
                                               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
                                     <div id="hitosPrograma-editor"></div>
@@ -746,18 +750,10 @@
 
                                 <!-- Seguimiento del Programa (con editor) -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">42. Seguimiento del Programa</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Seguimiento del Programa</label>
                                     <textarea id="seguimientoPrograma" name="seguimientoPrograma" rows="4"
                                               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
                                     <div id="seguimientoPrograma-editor"></div>
-                                </div>
-
-                                <!-- Medios de Comunicación (con editor) -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">43. Medios de Comunicación Notas Relevantes</label>
-                                    <textarea id="mediosComunicacion" name="mediosComunicacion" rows="4"
-                                              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
-                                    <div id="mediosComunicacion-editor"></div>
                                 </div>
                             </div>
                         </div>
@@ -1284,7 +1280,7 @@
                 row.innerHTML = `
                     <td class="py-4 px-6">${index + 1}</td>
                     <td class="py-4 px-6">${ficha.proyecto || 'N/A'}</td>
-                    <td class="py-4 px-6">${ficha.subproyecto || 'N/A'}</td>
+                    <td class="py-4 px-6">${ficha.faseTramo || 'N/A'}</td>
                     <td class="py-4 px-6">${ficha.nombrePrograma || 'N/A'}</td>
                     <td class="py-4 px-6 ramo-display">${formatRamoDisplay(ficha.ramo)}</td>
                     <td class="py-4 px-6">${formatDate(ficha.fechaActualizacion)}</td>
@@ -1421,7 +1417,7 @@
             
             // Campos simples
             const simpleFields = [
-                'proyecto', 'subproyecto', 'nombrePrograma', 'fechaActualizacion',
+                'proyecto', 'faseTramo', 'nombrePrograma', 'fechaActualizacion',
                 'entidadResponsable', 'numeroCartera', 'periodoReportado', 'fuenteDescripcionProyecto',
                 'fuenteIndicadores', 'fuenteMetas', 'fuenteTransparencia',
                 'fuenteProgramaSectorial', 'fuenteLicitaciones',
@@ -1533,6 +1529,9 @@
                     }
                 }
                 
+                // 1. Forzar el valor del campo 'proyecto'
+                fichaData.proyecto = "Programa Estratégico (PE)";
+
                 // Agregar datos dinámicos
                 fichaData.ramo = ramos.join('; ');
                 fichaData.fuente = fuentes.join('; ');
@@ -2766,7 +2765,7 @@
             
             const filteredFichas = fichas.filter(ficha => 
                 (ficha.proyecto && ficha.proyecto.toLowerCase().includes(searchTerm)) ||
-                (ficha.subproyecto && ficha.subproyecto.toLowerCase().includes(searchTerm)) ||
+                (ficha.faseTramo && ficha.faseTramo.toLowerCase().includes(searchTerm)) ||
                 (ficha.nombrePrograma && ficha.nombrePrograma.toLowerCase().includes(searchTerm)) ||
                 (ficha.ramo && ficha.ramo.toLowerCase().includes(searchTerm)) ||
                 (ficha.entidadResponsable && ficha.entidadResponsable.toLowerCase().includes(searchTerm))
@@ -2788,8 +2787,8 @@
             let detailsHTML = `
                 <div class="details-header border-b border-gray-200 pb-4 mb-6">
                     <h3 class="text-xl font-bold text-primary">${ficha.proyecto || 'Sin nombre'}</h3>
-                    <h3 class="text-xl font-bold text-primary">${ficha.subproyecto || 'Sin nombre'}</h3>
                     <h3 class="text-xl font-bold text-primary">${ficha.nombrePrograma || 'Sin nombre'}</h3>
+                    <h3 class="text-xl font-bold text-primary">${ficha.faseTramo || 'Sin nombre'}</h3>
                 </div>
 
                 <div class="bg-gray-50 p-4 rounded-lg">
@@ -3336,7 +3335,7 @@
                     tramo.subtramos.forEach(sub => {
                         html += `
                             <tr class="hover:bg-gray-50">
-                                <td>${sub.fase || 'Adjudicado'}</td>
+                                <td>${sub.fase || ''}</td>
                                 <td class="text-left-important pl-8">${sub.nombre || 'N/A'}</td>
                                 <td>${sub.construccionDiseno || 'N/A'}</td>
                                 <td>${sub.estacionesParaderos || 'N/A'}</td>
