@@ -3104,7 +3104,7 @@
                                     <th>Indicador</th>
                                     <th>Descripción</th>
                                     <th class="whitespace-nowrap">Unidad <br>Responsable</th>
-                                    <th class="whitespace-nowrap w-40">&nbsp;</th>
+                                    <th class="whitespace-nowrap">&nbsp;</th>
                                     <th class="whitespace-nowrap">Línea Base<br> 2023</th>
                                     <th class="whitespace-nowrap">Meta <br>(2030)</th>
                                 </tr>
@@ -3119,23 +3119,23 @@
                         const isFirstIndicator = indIndex === 0;
                         html += `
                             <tr class="hover:bg-gray-50">
-                                ${isFirstIndicator ? `<td class="text-left-important" rowspan="${totalRowsForObjective}">${objetivo.objetivo || 'N/A'}</td>` : ''}
-                                <td class="text-left-important" rowspan="3">${ind.nombre || 'N/A'}</td>
+                                ${isFirstIndicator ? `<td class="text-justify" rowspan="${totalRowsForObjective}">${objetivo.objetivo || 'N/A'}</td>` : ''}
+                                <td class="text-center" rowspan="3">${ind.nombre || 'N/A'}</td>
                                 <td rowspan="3">${ind.descripcion || 'N/A'}</td>
                                 <td rowspan="3">${ind.unidad || 'N/A'}</td>
-                                <td class="text-left-important font-semibold">${ind.nombreMeta || 'N/A'}</td>
-                                <td>${ind.lineaBase2023 || 0}</td>
-                                <td>${ind.meta2030 || 0}</td>
+                                <td class="text-center font-semibold">${ind.nombreMeta || 'N/A'}</td>
+                                <td class="text-right">${formatNumber(ind.lineaBase2023)}</td>
+                                <td class="text-right">${formatNumber(ind.meta2030)}</td>
                             </tr>
                             <tr class="hover:bg-gray-50 bg-gray-50">
-                                <td class="text-left-important pl-4">Alcanzado</td>
-                                <td>${ind.alcanzadoLineaBase || 0}</td>
-                                <td>${ind.alcanzadoMeta2030 || 0}</td>
+                                <td class="text-center pl-4">Alcanzado</td>
+                                <td class="text-right">${formatNumber(ind.alcanzadoLineaBase)}</td>
+                                <td class="text-right">${formatNumber(ind.alcanzadoMeta2030)}</td>
                             </tr>
                             <tr class="hover:bg-gray-50 bg-gray-50">
-                                <td class="text-left-important pl-4">Avance</td>
-                                <td>${ind.avanceLineaBase || 0}%</td>
-                                <td>${ind.avanceMeta2030 || 0}%</td>
+                                <td class="text-center pl-4">Avance</td>
+                                <td class="text-right">${formatNumber(ind.avanceLineaBase)}%</td>
+                                <td class="text-right">${formatNumber(ind.avanceMeta2030)}%</td>
                             </tr>
                         `;
                     });
@@ -3166,7 +3166,7 @@
                                     <th rowspan="2" class="whitespace-nowrap">2025</th><th rowspan="2" class="whitespace-nowrap">2026</th><th rowspan="2" class="whitespace-nowrap">2027</th><th rowspan="2" class="whitespace-nowrap">2028</th><th rowspan="2" class="whitespace-nowrap">2029</th><th rowspan="2" class="whitespace-nowrap">2030</th>
                                 </tr>
                                 <tr class="bg-primary text-xs">
-                                    <th>Objetivo</th><th>Estrategia</th><th>Objetivo</th><th>Indicador</th> <th class="whitespace-nowrap">Unidad<br> Responsable</th><th class="whitespace-nowrap w-40">&nbsp;</th>
+                                    <th>Objetivo</th><th>Estrategia</th><th>Objetivo</th><th>Indicador</th> <th class="whitespace-nowrap">Unidad<br> Responsable</th><th class="whitespace-nowrap">&nbsp;</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -3210,22 +3210,22 @@
                         metas.forEach(meta => {
                             // --- Fila para Meta ---
                             html += `<tr class="hover:bg-gray-50">`;
-                            if (isFirstRowOfEstrategia) html += `<td class="text-left-important" rowspan="${estrategiaRowspan}">${estrategia.objetivoMetaNombre || ''}</td><td class="text-left-important" rowspan="${estrategiaRowspan}">${estrategia.estrategia || ''}</td>`;
-                            if (isFirstRowOfObjInd) html += `<td class="text-left-important" rowspan="${objIndRowspan}">${objInd.nombre || ''}</td>`;
-                            if (isFirstRowOfInd) html += `<td class="text-left-important" rowspan="${indRowspan}">${ind.nombre || ''}</td><td rowspan="${indRowspan}">${ind.unidadResponsable || ''}</td>`;
-                            html += `<td class="text-left-important font-semibold">Meta</td>`;
+                            if (isFirstRowOfEstrategia) html += `<td class="text-justify" rowspan="${estrategiaRowspan}">${estrategia.objetivoMetaNombre || ''}</td><td class="text-justify" rowspan="${estrategiaRowspan}">${estrategia.estrategia || ''}</td>`;
+                            if (isFirstRowOfObjInd) html += `<td class="text-justify" rowspan="${objIndRowspan}">${objInd.nombre || ''}</td>`;
+                            if (isFirstRowOfInd) html += `<td class="text-justify" rowspan="${indRowspan}">${ind.nombre || ''}</td><td rowspan="${indRowspan}">${ind.unidadResponsable || ''}</td>`;
+                            html += `<td class="text-center font-semibold">Meta</td>`;
                             years.forEach(year => { html += `<td>${(meta.meta || {})[year] || 0}</td>`; });
                             html += `</tr>`;
 
                             // --- Fila para Alcanzado ---
                             html += `<tr class="hover:bg-gray-50 bg-gray-50">`;
-                            html += `<td class="text-left-important pl-4">Alcanzado</td>`;
+                            html += `<td class="text-center pl-4">Alcanzado</td>`;
                             years.forEach(year => { html += `<td>${(meta.alcanzado || {})[year] || 0}</td>`; });
                             html += `</tr>`;
 
                             // --- Fila para Avance ---
                             html += `<tr class="hover:bg-gray-50 bg-gray-50">`;
-                            html += `<td class="text-left-important pl-4">Avance</td>`;
+                            html += `<td class="text-center pl-4">Avance</td>`;
                             years.forEach(year => { html += `<td>${(meta.avance || {})[year] || 0}%</td>`; });
                             html += `</tr>`;
 
@@ -3377,6 +3377,11 @@
                 style: 'currency',
                 currency: 'MXN'
             }).format(amount);
+        }
+
+        function formatNumber(num) {
+            if (num === null || num === undefined) return '0';
+            return new Intl.NumberFormat('es-MX').format(num);
         }
 
         function showAlert(message, type = 'info') {
