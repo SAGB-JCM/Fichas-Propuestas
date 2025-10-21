@@ -729,11 +729,10 @@
                     <!-- Contenido Pestaña Notas Relevantes -->
                     <div id="modal-tab-content-notas" class="modal-tab-content hidden">
                         <div class="section-card">
-                            <h4 class="section-title">Notas Relevantes</h4>
+                            <h4 class="section-title">Medios de Comunicación Notas Relevantes</h4>
                             <div class="space-y-6">
                                 <!-- Medios de Comunicación (con editor) -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Medios de Comunicación Notas Relevantes</label>
                                     <textarea id="mediosComunicacion" name="mediosComunicacion" rows="4"
                                               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hidden"></textarea>
                                     <div id="mediosComunicacion-editor"></div>
@@ -757,9 +756,6 @@
                                 <!-- Las fuentes se agregarán aquí dinámicamente -->
                             </div>
                             <input type="hidden" id="fuente" name="fuente">
-                            <p class="text-sm text-gray-500 mt-2">
-                                Agrega los enlaces a las fuentes de información relevantes para esta ficha.
-                            </p>
                         </div>
                     </div>
                 </form>
@@ -2775,7 +2771,6 @@
                 </div>
 
                 <div class="bg-gray-50 p-4 rounded-lg">
-                    <h4 class="font-semibold text-primary mb-3">Ficha: Información Consolidada</h4>
                     <table class="details-table" style="table-layout: fixed;">
                         <tr>
                             <th class="font-bold w-1/4">Ramo:</th>
@@ -2796,9 +2791,9 @@
                             <td>${ficha.periodoReportado || 'N/A'}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Avance físico</th>
+                            <th class="font-bold">Avance Físico</th>
                             <td class="formatted-content">${ficha.avanceFisico || 'N/A'}</td>
-                            <th class="font-bold">Avance financiero</th>
+                            <th class="font-bold">Avance Financiero</th>
                             <td class="formatted-content">${ficha.avanceFinanciero || 'N/A'}</td>
                         </tr>
                         <tr>
@@ -2810,19 +2805,19 @@
                             <td class="formatted-content" colspan="3">${renderDescripcionProyectoTable(ficha)}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Programa presupuestario</th>
+                            <th class="font-bold">Programa Presupuestario</th>
                             <td class="formatted-content" colspan="1">${ficha.programaPresupuestario || 'N/A'}</td>
-                            <th class="font-bold">Presupuesto aprobado:</th>
+                            <th class="font-bold">Presupuesto Aprobado:</th>
                             <td>${formatCurrency(ficha.presupuestoAprobado)}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Presupuesto modificado:</th>
+                            <th class="font-bold">Presupuesto Modificado:</th>
                             <td colspan="1">${formatCurrency(ficha.presupuestoModificado)}</td>
-                            <th class="font-bold">Presupuesto ejercido:</th>
+                            <th class="font-bold">Presupuesto Ejercido:</th>
                             <td>${formatCurrency(ficha.presupuestoEjercido)}</td>
                         </tr>
                         <tr>
-                            <th class="font-bold">Indicadores y metas:</th>
+                            <th class="font-bold">Indicadores y Metas:</th>
                             <td class="formatted-content" colspan="3">
                                 ${ficha.metas || ''}
                                 ${renderMetasTable(ficha)}
@@ -2841,9 +2836,9 @@
                                                                 <th>Denominación</th>
                                                                 <th>Frecuencia</th>
                                                                 <th>Meta Anual Prog.</th>
-                                                                <th>Meta Anual Aj.</th>
+                                                                <th>Meta Anual Ajustada</th>
                                                                 <th>Meta al Periodo</th>
-                                                                <th>Meta Aj. Periodo</th>
+                                                                <th>Meta Ajustada al Periodo</th>
                                                                 <th>Realizado</th>
                                                                 <th>Avance %</th>
                                                             </tr>
@@ -2881,7 +2876,6 @@
                                         if (ficha.programasPresupuestarios && ficha.programasPresupuestarios.length > 0) {
                                             let mirHTML = `
                                                 <div class="mt-4 text-sm">
-                                                    <h4 class="font-semibold text-primary mb-3">Tabla MIR - Programas Presupuestarios y Proyectos de Inversión</h4>
                                                     <div class="bg-white p-2 rounded border">
                                                         <table class="sub-table">
                                                             <thead>
@@ -2924,7 +2918,7 @@
                         </tr>
                         <tr>
                             <th class="font-bold">Adjudicación (Licitaciones):</th>
-                            <td class="formatted-content" colspan="3" style="word-break: normal;">
+                            <td class="formatted-content" colspan="3" style="word-break: break-word;">
                                 ${ficha.licitaciones || ''}
                                 ${(() => {
                                     // --- INICIO: Lógica para calcular totales y agrupar licitaciones ---
@@ -2960,19 +2954,19 @@
                                     });
                                     totalKmProgramado = Array.from(tramosUnicos.values()).reduce((sum, km) => sum + km, 0);
                                     // --- FIN: Lógica de cálculo ---
+                                    // nOTA: KM = Programado Km
                                         let licHTML = `
                                             <div class="mt-4 text-sm">
-                                                <h4 class="font-semibold text-primary mb-3">Licitaciones Identificadas</h4>
                                                 <div class="bg-white p-2 rounded border">
                                                     <table class="sub-table">
                                                         <thead class="bg-primary text-white font-extrabold">
                                                             <tr class="bg-primary text-white font-extrabold">
                                                                 <th>Fase</th>
                                                                 <th>Proyecto Ferroviario</th>
-                                                                <th>Programado Km</th>
+                                                                <th>KM</th>
                                                                 <th>Adjudicación</th>
                                                                 <th>Descripción de la Licitación</th>
-                                                                <th>KM adjudicados</th>
+                                                                <th>KM Adjudicados</th>
                                                                 <th>Fecha de Fallo</th>
                                                                 <th>Monto Adjudicado</th>
                                                                 <th>Empresa/Constructora</th>
@@ -2983,7 +2977,7 @@
                                         if (licitacionesPorTramo.length > 0) {
                                             licHTML += `
                                                 <tr class="font-bold bg-slate-100">
-                                                    <td class="text-left-important" colspan="2">Totales Tramos</td>
+                                                    <td class="text-left-important" colspan="2">Totales</td>
                                                     <td>${totalKmProgramado.toFixed(2)}</td>
                                                     <td></td>
                                                     <td></td>
@@ -3100,7 +3094,7 @@
                                     <th>Indicador</th>
                                     <th>Descripción</th>
                                     <th class="whitespace-nowrap">Unidad Responsable</th>
-                                    <th>Meta</th>
+                                    <th></th>
                                     <th class="whitespace-nowrap">Línea Base 2023</th>
                                     <th class="whitespace-nowrap">Meta (2030)</th>
                                 </tr>
