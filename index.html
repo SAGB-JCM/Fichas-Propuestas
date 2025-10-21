@@ -17,6 +17,11 @@
     <!-- SunEditor (Rich Text Editor) -->
     <link href="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/css/suneditor.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/suneditor.min.js"></script>
+
+    <!-- Librerías para manipulación de .docx -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.34.1/docxtemplater.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -415,7 +420,12 @@
             <!-- Reportes Tab Content -->
             <div id="tab-content-reportes" class="tab-content hidden">
                 <section class="bg-white p-8 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-primary mb-6">Reportes y Estadísticas</h2>
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-primary">Reportes y Estadísticas</h2>
+                        <button id="report-settings-btn" class="text-slate-500 hover:text-primary p-2 rounded-lg transition-colors" title="Configuración de Reportes">
+                            <i class="fa-solid fa-cog fa-lg"></i>
+                        </button>
+                    </div>
                     <div class="text-center py-12">
                         <i class="fa-solid fa-chart-bar text-6xl text-gray-300 mb-4"></i>
                         <p class="text-gray-500 text-lg">Módulo de reportes en desarrollo</p>
@@ -874,6 +884,20 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONTRASEÑA: Requiere autenticación para acciones críticas. -->
+    <div id="password-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-[55] flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm mx-4 text-center">
+            <h3 class="text-xl font-bold text-primary mb-4">Verificación de Seguridad</h3>
+            <p class="text-slate-600 mb-4">Esta acción requiere autenticación. Por favor, ingrese la contraseña.</p>
+            <input type="password" id="password-input" placeholder="Contraseña" class="w-full p-2 border border-gray-300 rounded-md mb-4">
+            <div class="flex justify-center space-x-4">
+                <button id="cancel-password-btn" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg">Cancelar</button>
+                <button id="confirm-password-btn" class="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-lg">Verificar</button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Modal para Licitación -->
     <div id="licitacion-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-[60]">
         <div class="relative bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl mx-auto my-8">
@@ -1025,6 +1049,44 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONFIGURACIÓN DE REPORTES -->
+    <div id="report-settings-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-primary">Configuración de Reportes</h3>
+                <button id="close-report-settings-modal-btn" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fa-solid fa-times-circle fa-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-6">
+                <!-- Sección para cargar plantillas de Word -->
+                <div>
+                    <h4 class="text-md font-semibold text-slate-700 mb-2">Plantillas</h4>
+                    <button id="open-template-uploader-btn" class="w-full bg-secondary hover:bg-secondary-dark text-white font-bold py-3 px-4 rounded-lg shadow transition-all duration-200 ease-in-out flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-upload"></i>
+                        <span>Cargar Plantilla Word</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CARGA DE PLANTILLAS -->
+    <div id="template-upload-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-primary">Seleccionar Plantilla para Cargar</h3>
+                <button id="close-template-upload-modal-btn" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fa-solid fa-times-circle fa-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <button data-template-type="default" class="upload-template-type-btn w-full bg-secondary hover:bg-secondary-dark text-white font-bold py-3 px-4 rounded-lg shadow transition-all duration-200 ease-in-out flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-file-word"></i><span>Plantilla de Ficha (Default)</span></button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de Confirmación -->
     <div id="confirm-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
         <div class="relative bg-white p-8 rounded-lg shadow-xl w-full max-w-md mx-auto my-8">
@@ -1108,6 +1170,19 @@
             confirmDeleteBtn: document.getElementById('confirm-delete-btn')
         };
 
+        // Referencias a elementos de la nueva funcionalidad de plantillas
+        const templateElements = {
+            reportSettingsBtn: document.getElementById('report-settings-btn'),
+            reportSettingsModal: document.getElementById('report-settings-modal'),
+            closeReportSettingsModalBtn: document.getElementById('close-report-settings-modal-btn'),
+            openTemplateUploaderBtn: document.getElementById('open-template-uploader-btn'),
+            templateUploadModal: document.getElementById('template-upload-modal'),
+            closeTemplateUploadModalBtn: document.getElementById('close-template-upload-modal-btn')
+        };
+
+        // Variable para la acción pendiente de contraseña
+        let pendingAction = null;
+
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
@@ -1127,6 +1202,9 @@
                 // Inicializar editores de texto enriquecido
                 initializeEditors();
                 
+                // Configurar la lógica del modal de contraseña
+                setupPasswordVerification();
+
                 // Mostrar aplicación
                 elements.loader.classList.add('hidden');
                 elements.app.classList.remove('hidden');
@@ -1233,6 +1311,66 @@
             document.getElementById('add-tramo-btn').addEventListener('click', addTramo);
             document.getElementById('tramos-container').addEventListener('click', handleTramosContainerClick);
             document.getElementById('tramos-container').addEventListener('change', handleTramosContainerChange);
+
+            // --- Listeners para la funcionalidad de carga de plantillas ---
+
+            // Abrir modal de configuración de reportes
+            if (templateElements.reportSettingsBtn) {
+                templateElements.reportSettingsBtn.addEventListener('click', () => {
+                    templateElements.reportSettingsModal.classList.remove('hidden');
+                });
+            }
+
+            // Cerrar modal de configuración de reportes
+            if (templateElements.closeReportSettingsModalBtn) {
+                templateElements.closeReportSettingsModalBtn.addEventListener('click', () => {
+                    templateElements.reportSettingsModal.classList.add('hidden');
+                });
+            }
+
+            // Abrir modal para seleccionar tipo de plantilla a subir
+            if (templateElements.openTemplateUploaderBtn) {
+                templateElements.openTemplateUploaderBtn.addEventListener('click', () => {
+                    requirePassword(() => {
+                        templateElements.reportSettingsModal.classList.add('hidden');
+                        templateElements.templateUploadModal.classList.remove('hidden');
+                    });
+                });
+            }
+
+            // Cerrar modal de carga de plantillas
+            if (templateElements.closeTemplateUploadModalBtn) {
+                templateElements.closeTemplateUploadModalBtn.addEventListener('click', () => {
+                    templateElements.templateUploadModal.classList.add('hidden');
+                });
+            }
+
+            // Botones para iniciar la carga de un tipo específico de plantilla
+            document.querySelectorAll('.upload-template-type-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const templateType = e.currentTarget.dataset.templateType;
+                    // La contraseña ya fue verificada para abrir este modal.
+                    uploadTemplateFile(templateType);
+                });
+            });
+        }
+
+        function setupPasswordVerification() {
+            document.getElementById('confirm-password-btn').addEventListener('click', verifyPassword);
+            document.getElementById('cancel-password-btn').addEventListener('click', () => {
+                document.getElementById('password-modal').classList.add('hidden');
+                pendingAction = null;
+            });
+            document.getElementById('password-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    verifyPassword();
+                }
+            });
+        }
+
+        function requirePassword(action) {
+            pendingAction = action;
+            document.getElementById('password-modal').classList.remove('hidden');
         }
 
         function initializeEditors() {
@@ -1405,14 +1543,85 @@
             
             // Mostrar modal
             elements.fichaModal.classList.remove('hidden');
+            elements.fichaModal.classList.remove('modal-leave');
+            elements.fichaModal.classList.add('modal-enter');
             // Asegurarse de que la primera pestaña esté activa al abrir
             switchModalTab('principal');
             document.body.classList.add('modal-open');
         }
 
+        function getTemplateDocRef(templateType = 'default') {
+            return {
+                ref: db.collection('configFichas').doc(`wordTemplate_${templateType}`),
+                type: templateType
+            };
+        }
+
+        function uploadTemplateFile(templateType) {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.docx';
+            fileInput.style.display = 'none';
+
+            fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    // Aquí no se requiere contraseña porque la acción principal (abrir el modal) ya la pidió.
+                    showAlert(`Subiendo plantilla para '${templateType}'...`, "info");
+                    const reader = new FileReader();
+                    reader.onload = async (event) => {
+                        const base64String = event.target.result;
+                        try {
+                            const { ref: docRef } = getTemplateDocRef(templateType);
+                            await docRef.set({ templateData: base64String, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                            showAlert(`¡Plantilla para '${templateType}' actualizada con éxito!`, "success");
+                            document.getElementById('template-upload-modal').classList.add('hidden');
+                        } catch (dbError) {
+                            console.error("Error al guardar plantilla en Firestore:", dbError);
+                            showAlert("Error al guardar la plantilla.", "error");
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            document.body.appendChild(fileInput);
+            fileInput.click();
+            document.body.removeChild(fileInput);
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const base64Data = base64.substring(base64.indexOf(',') + 1);
+            const binary_string = window.atob(base64Data);
+            const len = binary_string.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binary_string.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function verifyPassword() {
+            const passwordInput = document.getElementById('password-input');
+            const password = passwordInput.value;
+            
+            if (password === 'admin') { // Contraseña hardcodeada como en la app de licitaciones
+                closeModal(document.getElementById('password-modal'));
+                passwordInput.value = '';
+                if (pendingAction) {
+                    // Ejecutar la acción pendiente. Si es asíncrona, se manejará correctamente.
+                    const actionToRun = pendingAction;
+                    pendingAction = null;
+                    // Usamos un micro-timeout para asegurar que el modal se cierre visualmente antes de ejecutar acciones pesadas.
+                    setTimeout(() => actionToRun(), 50);
+                }
+            } else {
+                showAlert("Contraseña incorrecta", "error");
+                passwordInput.value = '';
+            }
+        }
+
         function closeFichaModal() {
-            elements.fichaModal.classList.add('hidden');
-            document.body.classList.remove('modal-open');
+            closeModal(elements.fichaModal);
             currentEditingId = null;
         }
 
@@ -3122,6 +3331,7 @@
             elements.detailsContent.innerHTML = detailsHTML;
             elements.detailsModal.classList.remove('hidden');
             document.body.classList.add('modal-open');
+            openModal(elements.detailsModal);
         }
 
         function renderMetasTable(ficha) {
@@ -3371,8 +3581,7 @@
         }
 
         function closeDetailsModal() {
-            elements.detailsModal.classList.add('hidden');
-            document.body.classList.remove('modal-open');
+            closeModal(elements.detailsModal);
         }
 
         function editFicha(id) {
@@ -3384,14 +3593,12 @@
 
         function confirmDeleteFicha(id) {
             fichaToDeleteId = id;
-            elements.confirmModal.classList.remove('hidden');
-            document.body.classList.add('modal-open');
+            openModal(elements.confirmModal);
         }
 
         function closeConfirmModal() {
-            elements.confirmModal.classList.add('hidden');
-            document.body.classList.remove('modal-open');
             fichaToDeleteId = null;
+            closeModal(elements.confirmModal);
         }
 
         async function confirmDelete() {
@@ -3444,6 +3651,36 @@
                 alert.remove();
             }, 3000);
         }
+
+        // --- Funciones de utilidad para modales (traídas de LICITACIONES.html) ---
+        let openModalCount = 0;
+
+        function openModal(modal) {
+            modal.classList.remove('hidden', 'modal-leave');
+            modal.classList.add('modal-enter');
+            if (openModalCount === 0) {
+                document.body.classList.add('modal-open');
+            }
+            openModalCount++;
+        }
+
+        function closeModal(modal) {
+            if (!modal || modal.classList.contains('hidden')) {
+                return; // No hacer nada si el modal ya está oculto
+            }
+            modal.classList.remove('modal-enter');
+            modal.classList.add('modal-leave');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                openModalCount--;
+                if (openModalCount <= 0) {
+                    document.body.classList.remove('modal-open');
+                    openModalCount = 0; // Resetear por seguridad
+                }
+            }, 300); // Coincide con la duración de la animación
+        }
+
+
     </script>
 </body>
 </html> 
