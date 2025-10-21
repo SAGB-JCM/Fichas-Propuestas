@@ -285,6 +285,11 @@
             border-bottom: 2px solid var(--primary-color);
             padding-bottom: 0.5rem;
         }
+
+        /* Da salto de línea en las fuentes de las tablas */
+        .source-text {
+            white-space: pre-line;
+        }
     </style>
 </head>
 <body class="antialiased text-slate-700 bg-gray-50">
@@ -581,8 +586,8 @@
                                 <!-- Fuente para Descripción del Proyecto -->
                                 <div class="mt-4">
                                     <label for="fuenteDescripcionProyecto" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla de Tramos</label>
-                                    <input type="text" id="fuenteDescripcionProyecto" name="fuenteDescripcionProyecto" placeholder="Ej: Reporte de Avance Trimestral"
-                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <textarea id="fuenteDescripcionProyecto" name="fuenteDescripcionProyecto" rows="3" placeholder="Ej: Reporte de Avance Trimestral"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -614,8 +619,8 @@
                                 <!-- Fuente para Metas -->
                                 <div class="mt-4">
                                     <label for="fuenteMetas" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla de Metas</label>
-                                    <input type="text" id="fuenteMetas" name="fuenteMetas" placeholder="Ej: Plan Nacional de Desarrollo 2025-2030"
-                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <textarea id="fuenteMetas" name="fuenteMetas" rows="3" placeholder="Ej: Plan Nacional de Desarrollo 2025-2030"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -641,8 +646,8 @@
                                 <!-- Fuente para Programa Sectorial -->
                                 <div class="mt-4">
                                     <label for="fuenteProgramaSectorial" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla de Estrategias</label>
-                                    <input type="text" id="fuenteProgramaSectorial" name="fuenteProgramaSectorial" placeholder="Ej: Programa Sectorial de Infraestructura 2025-2030"
-                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <textarea id="fuenteProgramaSectorial" name="fuenteProgramaSectorial" rows="3" placeholder="Ej: Programa Sectorial de Infraestructura 2025-2030"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -670,8 +675,8 @@
                                 <!-- Fuente para Transparencia Presupuestaria -->
                                 <div class="mt-4">
                                     <label for="fuenteTransparencia" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla MIR</label>
-                                    <input type="text" id="fuenteTransparencia" name="fuenteTransparencia" placeholder="Ej: Portal de Transparencia Presupuestaria"
-                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <textarea id="fuenteTransparencia" name="fuenteTransparencia" rows="3" placeholder="Ej: Portal de Transparencia Presupuestaria"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -699,8 +704,8 @@
                                 <!-- Fuente para Indicadores -->
                                 <div class="mt-4">
                                     <label for="fuenteIndicadores" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla de Indicadores</label>
-                                    <input type="text" id="fuenteIndicadores" name="fuenteIndicadores" placeholder="Ej: Matriz de Indicadores para Resultados (MIR)"
-                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <textarea id="fuenteIndicadores" name="fuenteIndicadores" rows="3" placeholder="Ej: Matriz de Indicadores para Resultados (MIR)"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -730,8 +735,8 @@
                                 <!-- Fuente para Licitaciones -->
                                 <div class="mt-4">
                                     <label for="fuenteLicitaciones" class="block text-sm font-medium text-gray-700 mb-1">Fuente de la tabla de Licitaciones</label>
-                                    <input type="text" id="fuenteLicitaciones" name="fuenteLicitaciones" placeholder="Ej: Plataforma Compranet"
-                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <textarea id="fuenteLicitaciones" name="fuenteLicitaciones" rows="3" placeholder="Ej: Plataforma Compranet"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -2878,7 +2883,7 @@
                                         });
                                         indHTML += `</tbody></table>`;
                                         if (ficha.fuenteIndicadores) {
-                                            indHTML += `<p class="text-xs text-gray-500 mt-2 text-left">Fuente: ${ficha.fuenteIndicadores}</p>`;
+                                            indHTML += `<p class="text-xs text-gray-500 mt-2 text-left">${ficha.fuenteIndicadores}</p>`;
                                         }
                                         indHTML += `</div></div>`;
                                         return indHTML;
@@ -2921,7 +2926,7 @@
                                             mirHTML += `<tr class="font-extrabold bg-primary text-white"><td class="text-center">TOTAL GENERAL</td><td>${granTotalAprobado.toFixed(2)}</td><td>${granTotalModificado.toFixed(2)}</td><td>${granTotalPagado.toFixed(2)}</td></tr>`;
                                             mirHTML += `</tbody></table>`;
                                             if (ficha.fuenteTransparencia) {
-                                                mirHTML += `<p class="text-xs text-gray-500 mt-2 text-left">Fuente: ${ficha.fuenteTransparencia}</p>`;
+                                                mirHTML += `<p class="text-xs text-gray-500 mt-2 text-left">${ficha.fuenteTransparencia}</p>`;
                                             }
                                             mirHTML += `</div></div>`;
                                             return mirHTML;
@@ -3059,7 +3064,7 @@
                                         });
                                         licHTML += `</tbody></table>`;
                                         if (ficha.fuenteLicitaciones) {
-                                            licHTML += `<p class="text-xs text-gray-500 mt-2 text-left">Fuente: ${ficha.fuenteLicitaciones}</p>`;
+                                            licHTML += `<p class="text-xs text-gray-500 mt-2 text-left source-text">${ficha.fuenteLicitaciones}</p>`;
                                         }
                                         licHTML += `</div></div>`;
                                         return licHTML;
@@ -3148,7 +3153,7 @@
             });
             html += `</tbody></table>`;
             if (ficha.fuenteMetas) {
-                html += `<p class="text-xs text-gray-500 mt-2 text-left">Fuente: ${ficha.fuenteMetas}</p>`;
+                html += `<p class="text-xs text-gray-500 mt-2 text-left source-text">${ficha.fuenteMetas}</p>`;
             }
             html += `</div></div>`;
             return html;
@@ -3243,7 +3248,7 @@
 
             html += `</tbody></table>`;
             if (ficha.fuenteProgramaSectorial) {
-                html += `<p class="text-xs text-gray-500 mt-2 text-left">Fuente: ${ficha.fuenteProgramaSectorial}</p>`;
+                html += `<p class="text-xs text-gray-500 mt-2 text-left source-text">${ficha.fuenteProgramaSectorial}</p>`;
             }
             html += `</div></div>`;
             return html;
@@ -3331,7 +3336,7 @@
 
             html += `</tbody></table>`;
             if (ficha.fuenteDescripcionProyecto) {
-                html += `<p class="text-xs text-gray-500 mt-2 text-left">Fuente: ${ficha.fuenteDescripcionProyecto}</p>`;
+                html += `<p class="text-xs text-gray-500 mt-2 text-left source-text">${ficha.fuenteDescripcionProyecto}</p>`;
             }
             html += `</div></div>`;
             return html;
