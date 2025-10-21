@@ -2771,12 +2771,12 @@
                 </div>
 
                 <div class="bg-gray-50 p-4 rounded-lg">
-                    <table class="details-table" style="table-layout: fixed;">
+                    <table class="details-table">
                         <tr>
-                            <th class="font-bold w-1/4">Ramo:</th>
-                            <td class="ramo-display w-1/4">${formatRamoDisplay(ficha.ramo) || 'N/A'}</td>
-                            <th class="font-bold w-1/4">Fecha de Actualización:</th>
-                            <td class="w-1/4">${formatDate(ficha.fechaActualizacion)}</td>
+                            <th class="font-bold">Ramo:</th>
+                            <td class="ramo-display">${formatRamoDisplay(ficha.ramo) || 'N/A'}</td>
+                            <th class="font-bold">Fecha de Actualización:</th>
+                            <td>${formatDate(ficha.fechaActualizacion)}</td>
                         </tr>
                         <tr>
                             <th class="font-bold">Entidad Responsable:</th>
