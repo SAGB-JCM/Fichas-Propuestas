@@ -1212,8 +1212,8 @@
             const editorFields = [
                 'cobertura', 'objetivos', 'descripcionProyecto', 
                 'avanceFisico', 'programaPresupuestario',
-                'transparenciaPresupuestaria', 'licitaciones', 'indicadores', 'metas', 'programaSectorialDescripcion',
-                'hitosPrograma', 'seguimientoPrograma', 'mediosComunicacion', 'avanceFinanciero'
+                'transparenciaPresupuestaria', 'licitaciones', 'indicadores', 'metas', 'programaSectorialDescripcion', 'mediosComunicacion',
+                'avanceFinanciero'
             ];
 
             editorFields.forEach(field => {
@@ -1417,8 +1417,8 @@
             // Campos con editores
             const editorFields = [
                 'cobertura', 'objetivos', 'descripcionProyecto', 
-                'avanceFisico', 'avanceFinanciero', 'programaPresupuestario', 'transparenciaPresupuestaria', 'licitaciones', 'indicadores', 'metas', 'programaSectorialDescripcion',
-                'hitosPrograma', 'seguimientoPrograma', 'mediosComunicacion', 'avanceFinanciero'
+                'avanceFisico', 'avanceFinanciero', 'programaPresupuestario', 'transparenciaPresupuestaria', 'licitaciones', 'indicadores', 'metas', 'programaSectorialDescripcion', 'mediosComunicacion',
+                'avanceFinanciero'
             ];
             
             editorFields.forEach(field => {
@@ -3060,14 +3060,6 @@
                         <tr>
                             <th class="font-bold">Medios de Comunicación Notas relevantes:</th>
                             <td class="formatted-content" colspan="3">${ficha.mediosComunicacion || 'N/A'}</td>
-                        </tr>
-                        <tr>
-                            <th class="font-bold">Hitos del Programa</th>
-                            <td class="formatted-content" colspan="3">${ficha.hitosPrograma || 'N/A'}</td>
-                        </tr>
-                        <tr>
-                            <th class="font-bold">Seguimiento del programa</th>
-                            <td class="formatted-content" colspan="3">${ficha.seguimientoPrograma || 'N/A'}</td>
                         </tr>
                     </table>
                 </div>
