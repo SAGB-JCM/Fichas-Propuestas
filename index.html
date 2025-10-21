@@ -24,7 +24,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <style>
-        body { zoom: 70%; }
+        body { zoom: 80%; }
 
         :root {
             --primary-color: #1E5B4F;
@@ -776,14 +776,16 @@
     <!-- Modal de Detalles -->
     <!--
         DOCUMENTACIÓN DE TAMAÑO DEL MODAL DE DETALLES:
-        Para ajustar el tamaño del modal de "Detalles", modifica las siguientes clases de Tailwind CSS:
-        1. Ancho: En el `div` con la clase `relative`, puedes cambiar `max-w-7xl` por otros valores como `max-w-6xl`, `max-w-full`, etc.
-        2. Altura del contenido: En el `div` que contiene el `id="details-content"`, puedes cambiar la clase `max-h-[90vh]`
-           para ajustar la altura máxima del área de desplazamiento. Por ejemplo, `max-h-[80vh]` para hacerlo más pequeño.
+        Para ajustar el tamaño del modal de "Detalles", modifica las siguientes clases de Tailwind CSS en el `div` con la clase `relative`:
+        1. Ancho:
+           - `w-[90vw]`: Establece el ancho del modal al 90% del ancho de la ventana (`vw` = viewport width). Puedes cambiar el valor (ej. `w-[80vw]`).
+           - `max-w-7xl`: Limita el ancho máximo en pantallas grandes para evitar que se estire demasiado. Puedes usar otros valores como `max-w-6xl`, `max-w-full`, etc.
+        2. Altura del contenido: En el `div` que contiene el `id="details-content"`, puedes cambiar la clase `max-h-[115vh]`
+           para ajustar la altura máxima del área de desplazamiento. Por ejemplo, `max-h-[90vh]` para hacerlo más pequeño.
            `vh` es un porcentaje de la altura de la ventana (viewport height).
     -->
     <div id="details-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative bg-white p-8 rounded-lg shadow-xl w-full max-w-7xl mx-auto my-8">
+        <div class="relative bg-white p-8 rounded-lg shadow-xl w-[105vw] max-w-[115vw] mx-auto my-8">
             <button id="close-details-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
                 <i class="fa-solid fa-times-circle fa-2x"></i>
             </button>
