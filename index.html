@@ -3212,15 +3212,24 @@
 
                                     let totalKmProgramado = 0;
                                     let totalKmAdjudicados = 0;
-                                    let totalMontoAdjudicado = 0;
+                                    let subtotalMontoTramos = 0; // Solo para licitaciones con tramo
+                                    let totalMontoAdjudicado = 0; // Gran total (tramos + otros)
 
                                     const tramosUnicos = new Map();
                                     licitacionesPorTramo.forEach(lic => {
                                         tramosUnicos.set(lic.tramoId, lic.tramoProgramadoKm || 0);
                                         totalKmAdjudicados += parseFloat(lic.kmAdjudicados) || 0;
-                                        totalMontoAdjudicado += parseFloat(lic.montoAdjudicado) || 0;
+                                        subtotalMontoTramos += parseFloat(lic.montoAdjudicado) || 0;
                                     });
+
                                     totalKmProgramado = Array.from(tramosUnicos.values()).reduce((sum, km) => sum + km, 0);
+
+                                    // Calcular el gran total sumando el subtotal de tramos y el total de "Otros"
+                                    totalMontoAdjudicado = subtotalMontoTramos;
+                                    Object.values(otrosAgrupados).forEach(grupo => {
+                                        totalMontoAdjudicado += grupo.totalMonto;
+                                    });
+
                                     // --- FIN: Lógica de cálculo ---
                                     // nOTA: KM = Programado Km
                                         let licHTML = `
@@ -3262,7 +3271,7 @@
                                                     <td class="text-left-important">Subtotal tramos</td>
                                                     <td></td>
                                                     <td></td>
-                                                    <td>${formatCurrency(totalMontoAdjudicado)}</td>
+                                                    <td>${formatCurrency(subtotalMontoTramos)}</td>
                                                     <td></td>
                                                 </tr>
                                                 <tr class="font-bold bg-white">
