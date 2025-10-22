@@ -844,12 +844,6 @@
                 <i class="fa-solid fa-times-circle fa-2x"></i>
             </button>
 
-            <!-- Botón para generar DOCX -->
-            <button id="generate-docx-btn" class="absolute top-4 right-16 text-gray-400 hover:text-primary transition-colors" title="Generar Reporte en Word">
-                <i class="fa-solid fa-file-word fa-2x"></i>
-            </button>
-
-
             <div class="flex items-center space-x-4 mb-6">
                 <i class="fa-solid fa-file-invoice text-primary text-4xl"></i>
                 <h3 class="text-2xl font-bold text-primary">Detalles de la Ficha</h3>
@@ -1240,12 +1234,6 @@
             elements.closeDetailsBtn.addEventListener('click', () => closeDetailsModal());
 
             // Formulario
-            const generateDocxBtn = document.getElementById('generate-docx-btn');
-            if (generateDocxBtn) {
-                generateDocxBtn.addEventListener('click', () => {
-                    handleGenerateDocClick(generateDocxBtn);
-                });
-            }
             elements.fichaForm.addEventListener('submit', handleFormSubmit);
 
             // Búsqueda
@@ -1461,6 +1449,9 @@
                     <td class="py-4 px-6">${formatDate(ficha.fechaActualizacion)}</td>
                     <td class="py-4 px-6">
                         <div class="flex space-x-2">
+                            <button class="generate-doc-btn text-blue-600 hover:text-blue-800" data-id="${ficha.id}" title="Generar Documento">
+                                <i class="fa-solid fa-file-word"></i>
+                            </button>
                             <button class="edit-btn text-green-600 hover:text-green-800" data-id="${ficha.id}">
                                 <i class="fa-solid fa-edit"></i>
                             </button>
@@ -1478,6 +1469,14 @@
                 row.addEventListener('dblclick', (e) => {
                     const id = e.currentTarget.getAttribute('data-id');
                     viewFicha(id);
+                });
+            });
+
+            // Agregar event listeners a los botones de generar doc
+            document.querySelectorAll('.generate-doc-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    generateDoc(e.currentTarget.dataset.id);
                 });
             });
             
@@ -3031,20 +3030,6 @@
             if (!ficha) return;
 
             // Generar contenido del modal de detalles
-            // Guardar el ID de la ficha actual en el botón de descarga
-            const generateBtn = document.getElementById('generate-docx-btn');
-            if (generateBtn) {
-                generateBtn.dataset.id = id;
-            }
-
-            // --- Lógica para el botón de descarga ---
-            const downloadButtonHTML = `
-                <button data-id="${ficha.id}" class="generate-doc-btn text-slate-400 hover:text-primary p-2 rounded-lg transition-colors" title="Descargar reporte DOCX">
-                    <i class="fa-solid fa-file-word fa-lg"></i>
-                </button>
-            `;
-
-
             let detailsHTML = `
                 <div class="details-header border-b border-gray-200 pb-4 mb-6">
                     <h3 class="text-xl font-bold text-primary">${ficha.proyecto || 'Sin nombre'}</h3>
@@ -3358,250 +3343,6 @@
             elements.detailsModal.classList.remove('hidden');
             document.body.classList.add('modal-open');
             openModal(elements.detailsModal);
-        }
-
-        /**
-         * @summary Manejador de clic para los botones de generar documento (.docx).
-         * @description Muestra un spinner en el botón mientras se genera el documento para evitar clics múltiples.
-         * @param {HTMLButtonElement} button - El botón que fue presionado.
-         */
-        async function handleGenerateDocClick(button) {
-            const fichaId = button.dataset.id;
-            if (!fichaId) {
-                showAlert("No se pudo encontrar el ID de la ficha.", "error");
-                return;
-            }
-            
-            // Deshabilitar el botón para evitar múltiples clics
-            button.disabled = true;
-            const originalIcon = button.innerHTML;
-            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin fa-2x"></i>';
-
-            try {
-                // Llamada a la función de generación de documento
-                await generateDoc(fichaId);
-            } finally {
-                // Rehabilitar el botón y restaurar su ícono original
-                button.innerHTML = originalIcon;
-                button.disabled = false;
-            }
-        }
-
-        /**
-         * @summary Genera y descarga un documento .docx para un registro específico usando una plantilla.
-         * @description Selecciona la plantilla, convierte el contenido HTML a formato OpenXML y lo inserta.
-         * @param {string} fichaId - El ID del registro de la ficha.
-         */
-        async function generateDoc(fichaId) {
-            // 1. Verificar que las librerías necesarias estén cargadas
-            if (typeof PizZip === 'undefined' || typeof docxtemplater === 'undefined' || typeof saveAs === 'undefined') {
-                return showAlert("Librerías para generar documentos no están cargadas.", "error");
-            }
-
-            showAlert("Generando reporte...", "info");
-            const record = fichas.find(item => item.id === fichaId);
-
-            if (!record) {
-                return showAlert("No se encontró el registro de la ficha.", "error");
-            }
-
-            try {
-                // 2. Obtener la plantilla desde Firestore
-                const { ref: templateDocRef } = getTemplateDocRef('default');
-                const templateDoc = await templateDocRef.get();
-
-                if (!templateDoc.exists || !templateDoc.data().templateData) {
-                    return showAlert("No se encontró la plantilla de ficha. Por favor, cárguela en la pestaña de Reportes.", "error");
-                }
-                const base64String = templateDoc.data().templateData;
-                const templateBlob = base64ToArrayBuffer(base64String);
-
-                // 3. Procesar la plantilla con docxtemplater
-                const zip = new PizZip(templateBlob);
-                const doc = new window.docxtemplater(zip, {
-                    paragraphLoop: true,
-                    linebreaks: true,
-                    // El parser es la clave para la conversión de HTML
-                    parser: (tag) => ({
-                        get(scope) {
-                            const value = scope[tag];
-                            if (tag.startsWith('html_')) {
-                                return { _type: "html", value: htmlToOpenXml(value) };
-                            }
-                            return value;
-                        }
-                    })
-                });
-
-                // 4. Preparar el objeto de datos para la plantilla
-                const dataForTemplate = {
-                    // Usamos un prefijo 'html_' para los campos que necesitan conversión
-                    'palabra_clave_1': record.nombrePrograma || '',
-                    'palabra_clave_2': record.faseTramo || '',
-                    'palabra_clave_3': (record.ramo || '').replace(/;/g, ', '),
-                    'palabra_clave_4': formatDate(record.fechaActualizacion),
-                    'palabra_clave_5': record.entidadResponsable || '',
-                    'palabra_clave_6': record.numeroCartera || '',
-                    'html_palabra_clave_7': record.cobertura || '',
-                    'palabra_clave_8': record.periodoReportado || '',
-                    'html_palabra_clave_9': record.avanceFisico || '',
-                    'html_palabra_clave_10': record.avanceFinanciero || '',
-                    'html_palabra_clave_11': record.objetivos || '',
-                    'html_palabra_clave_12': record.descripcionProyecto || '',
-                    'html_palabra_clave_13': record.programaPresupuestario || '',
-                    'palabra_clave_14': formatCurrency(record.presupuestoAprobado),
-                    'palabra_clave_15': formatCurrency(record.presupuestoModificado),
-                    'palabra_clave_16': formatCurrency(record.presupuestoEjercido),
-                    'html_palabra_clave_17': record.metas || '',
-                    'html_palabra_clave_18': record.programaSectorialData?.descripcion || '',
-                    'html_palabra_clave_19': record.transparenciaPresupuestaria || '',
-                    'html_palabra_clave_20': record.indicadores || '',
-                    'html_palabra_clave_21': record.licitaciones || '',
-                    'html_palabra_clave_22': record.mediosComunicacion || '',
-                    'palabra_clave_23': (record.fuente || '').replace(/;/g, '\n'),
-                };
-
-                doc.render(dataForTemplate);
-
-                // 5. Generar y descargar el archivo
-                const out = doc.getZip().generate({
-                    type: "blob",
-                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                });
-
-                const sanitize = (str) => (str || '').replace(/[^a-z0-9 -]/gi, '').replace(/\s+/g, '_');
-                const fileName = `Ficha_${sanitize(record.nombrePrograma)}_${record.fechaActualizacion}.docx`;
-                saveAs(out, fileName);
-                showAlert("¡Reporte generado con éxito!", "success");
-
-            } catch (error) {
-                console.error("Error en docxtemplater:", error);
-                if (error.properties && error.properties.errors) {
-                    showAlert("Error en la plantilla: " + error.properties.errors[0].message, "error");
-                } else {
-                    showAlert("Error al generar el reporte. Revise la consola.", "error");
-                }
-            }
-        }
-
-        /**
-         * @summary Convierte un fragmento de HTML a formato OpenXML para ser usado en plantillas de Word (.docx).
-         * @description Maneja párrafos, listas (incluyendo las de Word), formato de texto (negrita, cursiva),
-         * enlaces y tablas, traduciéndolos a sus equivalentes en la especificación de Word.
-         * @param {string} html - El contenido HTML a convertir.
-         * @returns {string} Una cadena de texto que representa el fragmento en formato OpenXML.
-         */
-        function htmlToOpenXml(html) {
-            if (!html) return '';
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = html;
-            let xml = '';
-
-            function processNode(node) {
-                let nodeXml = '';
-                switch (node.nodeName) {
-                    case '#text':
-                        return `<w:r><w:t xml:space="preserve">${escapeXml(node.textContent)}</w:t></w:r>`;
-                    case 'P':
-                        let pPr = '';
-                        if (node.style.textAlign) {
-                            pPr += `<w:jc w:val="${node.style.textAlign}"/>`;
-                        }
-                        nodeXml += `<w:p><w:pPr>${pPr}</w:pPr>`;
-                        node.childNodes.forEach(child => nodeXml += processNode(child));
-                        nodeXml += '</w:p>';
-                        return nodeXml;
-                    case 'STRONG':
-                    case 'B':
-                        return `<w:r><w:rPr><w:b/></w:rPr><w:t xml:space="preserve">${escapeXml(node.textContent)}</w:t></w:r>`;
-                    case 'EM':
-                    case 'I':
-                        return `<w:r><w:rPr><w:i/></w:rPr><w:t xml:space="preserve">${escapeXml(node.textContent)}</w:t></w:r>`;
-                    case 'U':
-                        return `<w:r><w:rPr><w:u w:val="single"/></w:rPr><w:t xml:space="preserve">${escapeXml(node.textContent)}</w:t></w:r>`;
-                    case 'DEL':
-                        return `<w:r><w:rPr><w:strike/></w:rPr><w:t xml:space="preserve">${escapeXml(node.textContent)}</w:t></w:r>`;
-                    case 'SUP':
-                        return `<w:r><w:rPr><w:vertAlign w:val="superscript"/></w:rPr><w:t xml:space="preserve">${escapeXml(node.textContent)}</w:t></w:r>`;
-                    case 'SUB':
-                        return `<w:r><w:rPr><w:vertAlign w:val="subscript"/></w:rPr><w:t xml:space="preserve">${escapeXml(node.textContent)}</w:t></w:r>`;
-                    case 'BR':
-                        return '<w:r><w:br/></w:r>';
-                    case 'UL':
-                    case 'OL':
-                        const isOrdered = node.nodeName === 'OL';
-                        Array.from(node.children).forEach(li => {
-                            if (li.nodeName === 'LI') {
-                                let level = 0;
-                                let parent = li.parentNode;
-                                while (parent && (parent.nodeName === 'UL' || parent.nodeName === 'OL')) {
-                                    level++;
-                                    parent = parent.parentNode.closest('li')?.parentNode;
-                                }
-                                nodeXml += `<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="${level - 1}"/><w:numId w:val="${isOrdered ? '2' : '1'}"/></w:numPr></w:pPr>`;
-                                li.childNodes.forEach(child => nodeXml += processNode(child));
-                                nodeXml += '</w:p>';
-                            }
-                        });
-                        return nodeXml;
-                    case 'SPAN':
-                        let rPr = '';
-                        if (node.style.color) rPr += `<w:color w:val="${node.style.color.replace(/rgb\(|\)| /g, '').split(',').map(c => parseInt(c).toString(16).padStart(2, '0')).join('')}"/>`;
-                        if (node.style.backgroundColor) rPr += `<w:highlight w:val="yellow"/>`; // Simplificado a amarillo
-                        if (node.style.fontSize) rPr += `<w:sz w:val="${parseInt(node.style.fontSize) * 2}"/>`;
-                        if (node.style.fontFamily) rPr += `<w:rFonts w:ascii="${node.style.fontFamily}" w:hAnsi="${node.style.fontFamily}"/>`;
-                        
-                        nodeXml += `<w:r><w:rPr>${rPr}</w:rPr>`;
-                        node.childNodes.forEach(child => nodeXml += processNode(child));
-                        nodeXml += `</w:r>`;
-                        return nodeXml;
-                    case 'A':
-                         return `<w:r><w:rPr><w:rStyle w:val="Hyperlink"/></w:rPr><w:t xml:space="preserve">${escapeXml(node.textContent)}</w:t></w:r>`;
-                    case 'TABLE':
-                        nodeXml += '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="0" w:type="auto"/></w:tblPr>';
-                        node.childNodes.forEach(child => nodeXml += processNode(child));
-                        nodeXml += '</w:tbl>';
-                        return nodeXml;
-                    case 'TBODY':
-                    case 'THEAD':
-                    case 'TFOOT':
-                        node.childNodes.forEach(child => nodeXml += processNode(child));
-                        return nodeXml;
-                    case 'TR':
-                        nodeXml += '<w:tr>';
-                        node.childNodes.forEach(child => nodeXml += processNode(child));
-                        nodeXml += '</w:tr>';
-                        return nodeXml;
-                    case 'TD':
-                    case 'TH':
-                        nodeXml += '<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>';
-                        node.childNodes.forEach(child => nodeXml += processNode(child));
-                        nodeXml += '</w:tc>';
-                        return nodeXml;
-                    default:
-                        if (node.childNodes) {
-                            node.childNodes.forEach(child => nodeXml += processNode(child));
-                        }
-                        return nodeXml;
-                }
-            }
-
-            tempDiv.childNodes.forEach(node => {
-                xml += processNode(node);
-            });
-
-            return xml;
-        }
-
-        function escapeXml(str) {
-            if (typeof str !== 'string') return '';
-            return str.replace(/[<>&'"]/g, c => ({
-                '<': '&lt;',
-                '>': '&gt;',
-                '&': '&amp;',
-                '\'': '&apos;',
-                '"': '&quot;'
-            }[c]));
         }
 
         function renderMetasTable(ficha) {
@@ -3950,6 +3691,136 @@
             }, 300); // Coincide con la duración de la animación
         }
 
+        // --- INICIO: FUNCIONES PARA GENERAR DOCUMENTO DOCX ---
+
+        function checkRequiredLibraries() {
+            // Si PizZip no está definido pero PizZipUtils sí, crea un alias para compatibilidad.
+            if (typeof PizZip === 'undefined' && typeof PizZipUtils !== 'undefined') {
+                window.PizZip = PizZipUtils;
+            }
+
+            const missing = [];
+            if (typeof PizZip === 'undefined') missing.push('PizZip');
+            if (typeof window.docxtemplater === 'undefined') missing.push('docxtemplater');
+            if (typeof saveAs === 'undefined') missing.push('saveAs');
+            return missing;
+        }
+
+        async function loadFallbackLibraries() {
+            // Esta función podría cargar las librerías desde un CDN alternativo o local si fallan las principales.
+            // Por ahora, solo mostramos una alerta.
+            showAlert("No se pudieron cargar algunas librerías necesarias.", "error");
+        }
+
+        function htmlToOpenXml(htmlString) {
+            // Por ahora, esta función no convierte a OpenXML.
+            // Simplemente limpia el HTML de sus etiquetas para obtener texto plano.
+            if (!htmlString) return "";
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlString;
+            return tempDiv.textContent || tempDiv.innerText || "";
+        }
+
+        async function generateDoc(fichaId) {
+            showAlert("Generando reporte, por favor espera...", "info");
+
+            // 1. Comprobación de librerías
+            let missingLibs = checkRequiredLibraries();
+            if (missingLibs.length > 0) {
+                if (missingLibs.includes('PizZip') || missingLibs.includes('docxtemplater')) {
+                    await loadFallbackLibraries();
+                    missingLibs = checkRequiredLibraries(); // Re-verificar
+                    if (missingLibs.length > 0) {
+                        showAlert(`Faltan librerías críticas: ${missingLibs.join(', ')}`, "error");
+                        return;
+                    }
+                } else if (missingLibs.includes('saveAs')) {
+                    showAlert("La librería para guardar archivos (FileSaver.js) no está disponible.", "error");
+                    return;
+                }
+            }
+
+            try {
+                // 2. Buscar registro
+                const record = fichas.find(f => f.id === fichaId);
+                if (!record) {
+                    showAlert("No se encontró la ficha seleccionada.", "error");
+                    return;
+                }
+
+                // 3. Seleccionar la plantilla en Firestore
+                const { ref: templateRef } = getTemplateDocRef('default');
+                const templateDoc = await templateRef.get();
+                if (!templateDoc.exists || !templateDoc.data().templateData) {
+                    showAlert("No se encontró la plantilla de Word en la base de datos.", "error");
+                    return;
+                }
+                const templateBase64 = templateDoc.data().templateData;
+
+                // 4. Preparar plantilla para docxtemplater
+                const templateBlob = base64ToArrayBuffer(templateBase64);
+                const zip = new PizZip(templateBlob);
+                const doc = new window.docxtemplater(zip, {
+                    paragraphLoop: true,
+                    linebreaks: true,
+                    nullGetter: () => "" // Importante para evitar errores con datos nulos
+                });
+
+                // 5. Mapeo de palabras clave (placeholders)
+                const dataForTemplate = {
+                    palabra_clave_1: record.proyecto || '',
+                    palabra_clave_2: record.faseTramo || '',
+                    palabra_clave_3: (record.ramo || '').replace(/;/g, '\n'),
+                    palabra_clave_4: formatDate(record.fechaActualizacion) || '',
+                    palabra_clave_5: record.entidadResponsable || '',
+                    palabra_clave_6: record.numeroCartera || '',
+                    palabra_clave_7: htmlToOpenXml(record.cobertura),
+                    palabra_clave_8: record.periodoReportado || '',
+                    palabra_clave_9: htmlToOpenXml(record.avanceFisico),
+                    palabra_clave_10: htmlToOpenXml(record.avanceFinanciero),
+                    palabra_clave_11: htmlToOpenXml(record.objetivos),
+                    palabra_clave_12: htmlToOpenXml(record.descripcionProyecto),
+                    palabra_clave_tabla_1: { _type: "html", data: renderDescripcionProyectoTable(record) },
+                    palabra_clave_fuente_1: record.fuenteDescripcionProyecto || '',
+                    palabra_clave_13: htmlToOpenXml(record.programaPresupuestario),
+                    palabra_clave_14: formatCurrency(record.presupuestoAprobado),
+                    palabra_clave_15: formatCurrency(record.presupuestoModificado),
+                    palabra_clave_16: formatCurrency(record.presupuestoEjercido),
+                    palabra_clave_17: htmlToOpenXml(record.metas),
+                    palabra_clave_tabla_2: { _type: "html", data: renderMetasTable(record) },
+                    palabra_clave_fuente_2: record.fuenteMetas || '',
+                    palabra_clave_18: htmlToOpenXml(record.programaSectorialData ? record.programaSectorialData.descripcion : ''),
+                    palabra_clave_tabla_3: { _type: "html", data: renderProgramaSectorialTable(record) },
+                    palabra_clave_fuente_3: record.fuenteProgramaSectorial || '',
+                    palabra_clave_19: htmlToOpenXml(record.transparenciaPresupuestaria),
+                    palabra_clave_tabla_4: { _type: "html", data: document.getElementById('details-content').innerHTML }, // Placeholder, needs specific render function
+                    palabra_clave_fuente_4: record.fuenteTransparencia || '',
+                    palabra_clave_20: htmlToOpenXml(record.indicadores),
+                    palabra_clave_tabla_5: { _type: "html", data: document.getElementById('details-content').innerHTML }, // Placeholder, needs specific render function
+                    palabra_clave_fuente_5: record.fuenteIndicadores || '',
+                    palabra_clave_21: htmlToOpenXml(record.licitaciones),
+                    palabra_clave_tabla_6: { _type: "html", data: document.getElementById('details-content').innerHTML }, // Placeholder, needs specific render function
+                    palabra_clave_fuente_6: record.fuenteLicitaciones || '',
+                    palabra_clave_22: htmlToOpenXml(record.mediosComunicacion),
+                    palabra_clave_23: (record.fuente || '').replace(/;/g, '\n'),
+                };
+
+                // 6. Renderizado y generación del .docx
+                doc.setData(dataForTemplate);
+                doc.render();
+                const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+
+                // 7. Nombrado y descarga del archivo
+                const filename = `Ficha_${record.nombrePrograma || 'SinNombre'}_${new Date().toISOString().slice(0, 10)}.docx`;
+                saveAs(out, filename);
+                showAlert("¡Reporte generado con éxito!", "success");
+
+            } catch (error) {
+                console.error("Error al generar el documento:", error);
+                showAlert("Ocurrió un error al generar el documento.", "error");
+            }
+        }
+        // --- FIN: FUNCIONES PARA GENERAR DOCUMENTO DOCX ---
 
     </script>
 </body>
