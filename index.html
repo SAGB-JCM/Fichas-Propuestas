@@ -3795,7 +3795,7 @@
 
                 // 5. Mapeo de palabras clave (placeholders)
                 const dataForTemplate = {
-                    palabra_clave_1: record.proyecto || '',
+                    palabra_clave_1: record.nombrePrograma || '',
                     palabra_clave_2: record.faseTramo || '',
                     palabra_clave_3: (record.ramo || '').replace(/;/g, '\n'),
                     palabra_clave_4: formatDate(record.fechaActualizacion) || '',
