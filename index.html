@@ -11,7 +11,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Font Awesome -->
+    <!-- Font Awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- SunEditor (Rich Text Editor) -->
@@ -3693,25 +3693,6 @@
 
         // --- INICIO: FUNCIONES PARA GENERAR DOCUMENTO DOCX ---
 
-        function checkRequiredLibraries() {
-            // Si PizZip no está definido pero PizZipUtils sí, crea un alias para compatibilidad.
-            if (typeof PizZip === 'undefined' && typeof PizZipUtils !== 'undefined') {
-                window.PizZip = PizZipUtils;
-            }
-
-            const missing = [];
-            if (typeof PizZip === 'undefined') missing.push('PizZip');
-            if (typeof window.docxtemplater === 'undefined') missing.push('docxtemplater');
-            if (typeof saveAs === 'undefined') missing.push('saveAs');
-            return missing;
-        }
-
-        async function loadFallbackLibraries() {
-            // Esta función podría cargar las librerías desde un CDN alternativo o local si fallan las principales.
-            // Por ahora, solo mostramos una alerta.
-            showAlert("No se pudieron cargar algunas librerías necesarias.", "error");
-        }
-
         function htmlToOpenXml(htmlString) {
             // Por ahora, esta función no convierte a OpenXML.
             // Simplemente limpia el HTML de sus etiquetas para obtener texto plano.
@@ -3721,49 +3702,95 @@
             return tempDiv.textContent || tempDiv.innerText || "";
         }
 
+        function checkRequiredLibraries() {
+            // Retrocompatibilidad: si PizZip se carga como PizZipUtils, asignarlo.
+            if (typeof window.PizZip === 'undefined' && typeof window.PizZipUtils !== 'undefined') {
+                window.PizZip = window.PizZipUtils;
+            }
+
+            const libraries = {
+                'PizZip': typeof window.PizZip,
+                'docxtemplater': typeof window.docxtemplater,
+                'saveAs': typeof window.saveAs,
+            };
+            
+            const missing = Object.entries(libraries)
+                .filter(([lib, type]) => type === 'undefined')
+                .map(([lib]) => lib);
+            
+            return missing;
+        }
+
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+                document.head.appendChild(script);
+            });
+        }
+
+        function loadFallbackLibraries(missingLibs) {
+            const fallbacks = {
+                'PizZip': 'https://cdn.jsdelivr.net/npm/pizzip@3.1.4/dist/pizzip.min.js',
+                'docxtemplater': 'https://cdn.jsdelivr.net/npm/docxtemplater@3.34.1/build/docxtemplater.min.js'
+            };
+            return Promise.all(missingLibs.filter(lib => fallbacks[lib]).map(lib => loadScript(fallbacks[lib])));
+        }
+
         async function generateDoc(fichaId) {
             showAlert("Generando reporte, por favor espera...", "info");
 
-            // 1. Comprobación de librerías
+            // 1. Verificar que las librerías necesarias estén cargadas y cargar fallbacks si es necesario
             let missingLibs = checkRequiredLibraries();
-            if (missingLibs.length > 0) {
-                if (missingLibs.includes('PizZip') || missingLibs.includes('docxtemplater')) {
-                    await loadFallbackLibraries();
-                    missingLibs = checkRequiredLibraries(); // Re-verificar
-                    if (missingLibs.length > 0) {
-                        showAlert(`Faltan librerías críticas: ${missingLibs.join(', ')}`, "error");
-                        return;
+            if (missingLibs.includes('PizZip') || missingLibs.includes('docxtemplater')) {
+                showAlert("Cargando librerías necesarias...", "info");
+                try {
+                    await loadFallbackLibraries(missingLibs);
+                    // Verificar nuevamente después de cargar los fallbacks
+                    missingLibs = checkRequiredLibraries();
+                    if (missingLibs.includes('PizZip') || missingLibs.includes('docxtemplater')) {
+                        const errorMessage = `No se pudieron cargar las librerías: ${missingLibs.join(', ')}. Verifique su conexión.`;
+                        console.error(errorMessage);
+                        return showAlert(errorMessage, "error");
                     }
-                } else if (missingLibs.includes('saveAs')) {
-                    showAlert("La librería para guardar archivos (FileSaver.js) no está disponible.", "error");
-                    return;
+                } catch (error) {
+                    const errorMessage = "Error al cargar librerías para generar documentos.";
+                    console.error(errorMessage, error);
+                    return showAlert(errorMessage, "error");
                 }
+            } else if (missingLibs.includes('saveAs')) {
+                 return showAlert("Error: La librería FileSaver.js no se cargó correctamente.", "error");
+            }
+
+            showAlert("Generando reporte...", "info");
+
+            // 2. Buscar registro
+            const record = fichas.find(f => f.id === fichaId);
+            if (!record) {
+                return showAlert("No se encontró el registro de la noticia.", "error");
             }
 
             try {
-                // 2. Buscar registro
-                const record = fichas.find(f => f.id === fichaId);
-                if (!record) {
-                    showAlert("No se encontró la ficha seleccionada.", "error");
-                    return;
-                }
-
-                // 3. Seleccionar la plantilla en Firestore
+                // 3. Obtener la plantilla en Firestore
                 const { ref: templateRef } = getTemplateDocRef('default');
                 const templateDoc = await templateRef.get();
+
                 if (!templateDoc.exists || !templateDoc.data().templateData) {
-                    showAlert("No se encontró la plantilla de Word en la base de datos.", "error");
-                    return;
+                    return showAlert("No se encontró la plantilla de medios por defecto. Por favor, cárguela en la pestaña de Reportes.", "error");
                 }
                 const templateBase64 = templateDoc.data().templateData;
 
-                // 4. Preparar plantilla para docxtemplater
+                // 4. Convertir la plantilla de Base64 a un formato que docxtemplater pueda usar
                 const templateBlob = base64ToArrayBuffer(templateBase64);
+
+                // Procesar la plantilla con docxtemplater
                 const zip = new PizZip(templateBlob);
                 const doc = new window.docxtemplater(zip, {
                     paragraphLoop: true,
                     linebreaks: true,
-                    nullGetter: () => "" // Importante para evitar errores con datos nulos
+                    nullGetter: () => ""  // Trata los valores null y undefined como una cadena vacía.
                 });
 
                 // 5. Mapeo de palabras clave (placeholders)
@@ -3808,9 +3835,14 @@
                 // 6. Renderizado y generación del .docx
                 doc.setData(dataForTemplate);
                 doc.render();
-                const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+                
+                // Generar y descargar el archivo
+                const out = doc.getZip().generate({
+                    type: "blob",
+                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                });
 
-                // 7. Nombrado y descarga del archivo
+                // 7. Lógica para generar el nombre del archivo
                 const filename = `Ficha_${record.nombrePrograma || 'SinNombre'}_${new Date().toISOString().slice(0, 10)}.docx`;
                 saveAs(out, filename);
                 showAlert("¡Reporte generado con éxito!", "success");
