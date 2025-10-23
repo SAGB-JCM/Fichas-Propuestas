@@ -2855,7 +2855,8 @@
                 estacionesParaderos: '',
                 programadoKm: 0,
                 adjudicadoKm: 0,
-                subtramos: []
+                subtramos: [],
+                childType: 'subtramo' // 'subtramo' o 'segmento'
             };
             proyectosProgramados.push(tramo);
             updateDescripcionProyectosDisplay();
@@ -2871,21 +2872,34 @@
             }
 
             proyectosProgramados.forEach((tramo, index) => {
-                // Determinar dinámicamente la etiqueta para los subtramos.
-                // Si hay más de un tramo, se especifica a cuál pertenecen los subtramos.
-                // Si solo hay uno, la etiqueta general "Subtramos" es suficiente.
-                const subtramosLabel = proyectosProgramados.length > 1 
-                    ? `Subtramos del ${tramo.tramo ? `"${tramo.tramo}"` : `Tramo ${index + 1}`}`
-                    : 'Subtramos';
+                const childTypeName = tramo.childType === 'segmento' ? 'Segmento' : 'Subtramo';
+                const childTypeNamePlural = tramo.childType === 'segmento' ? 'Segmentos' : 'Subtramos';
+
+                const childLabel = proyectosProgramados.length > 1 
+                    ? `${childTypeNamePlural} del ${tramo.tramo ? `"${tramo.tramo}"` : `Tramo ${index + 1}`}`
+                    : childTypeNamePlural;
+
                 const tramoElement = document.createElement('div');
                 tramoElement.className = 'tramo-card border border-gray-300 rounded-lg p-4';
                 tramoElement.dataset.id = tramo.id;
                 tramoElement.innerHTML = `
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="font-semibold text-primary">Tramo ${index + 1}</h4>
-                        <button type="button" class="delete-tramo text-red-600 hover:text-red-800" data-id="${tramo.id}">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-2 text-sm">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="childType-${tramo.id}" value="subtramo" class="child-type-radio" ${tramo.childType === 'subtramo' ? 'checked' : ''}>
+                                    Subtramos
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="childType-${tramo.id}" value="segmento" class="child-type-radio" ${tramo.childType === 'segmento' ? 'checked' : ''}>
+                                    Segmentos
+                                </label>
+                            </div>
+                            <button type="button" class="delete-tramo text-red-600 hover:text-red-800" data-id="${tramo.id}">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
@@ -2911,9 +2925,9 @@
                     </div>
                     <div class="mt-6 pt-4 border-t">
                         <div class="flex justify-between items-center mb-2">
-                            <h5 class="font-semibold text-gray-700">${subtramosLabel}</h5>
-                            <button type="button" class="add-subtramo-btn text-sm bg-green-100 text-green-800 px-3 py-1 rounded hover:bg-green-200" data-tramo-id="${tramo.id}" title="Agregar Subtramo">
-                                <i class="fa-solid fa-plus mr-1"></i> Agregar Subtramo
+                            <h5 class="font-semibold text-gray-700">${childLabel}</h5>
+                            <button type="button" class="add-subtramo-btn text-sm bg-green-100 text-green-800 px-3 py-1 rounded hover:bg-green-200" data-tramo-id="${tramo.id}" title="Agregar ${childTypeName}">
+                                <i class="fa-solid fa-plus mr-1"></i> Agregar ${childTypeName}
                             </button>
                         </div>
                         <div class="subtramos-container space-y-2">
@@ -2977,6 +2991,12 @@
                 if (tramo) {
                     tramo.subtramos = tramo.subtramos.filter(s => s.id !== subtramoId);
                     subtramoRow.remove();
+                }
+            } else if (e.target.classList.contains('child-type-radio')) {
+                const tramo = proyectosProgramados.find(t => t.id === tramoId);
+                if (tramo) {
+                    tramo.childType = e.target.value;
+                    updateDescripcionProyectosDisplay(); // Redibujar para actualizar etiquetas y botones
                 }
             }
         }
@@ -3245,7 +3265,7 @@
                                                                 <th class="whitespace-nowrap">Descripción</th>
                                                                 <th class="whitespace-nowrap">KM<br>Adjudicados</th>
                                                                 <th class="whitespace-nowrap">Fallo</th>
-                                                                <th class="whitespace-nowrap">Monto</th>
+                                                                <th class="whitespace-nowrap">Monto<br>(mdp)</th>
                                                                 <th class="whitespace-nowrap">Empresa/<br>Constructora</th>
                                                             </tr>
                                                         </thead>
@@ -3567,15 +3587,16 @@
             // Sección Adjudicado (Subtramos)
             ficha.proyectosProgramados.forEach(tramo => {
                 if (tramo.subtramos && tramo.subtramos.length > 0) {
+                    const childTypeNamePlural = tramo.childType === 'segmento' ? 'Segmentos' : 'Subtramos';
                     const totalAdjudicado = tramo.subtramos.reduce((acc, sub) => acc + (parseFloat(sub.adjudicadoKm) || 0), 0);
-                    const subtramosLabel = ficha.proyectosProgramados.length > 1 
-                        ? `Subtramos del "${tramo.tramo}"` 
-                        : 'Subtramos';
+                    const childLabel = ficha.proyectosProgramados.length > 1 
+                        ? `${childTypeNamePlural} del "${tramo.tramo}"` 
+                        : childTypeNamePlural;
                     
                     if (ficha.proyectosProgramados.length > 1) {
-                        html += `<tr><td></td><td class="text-left-important pl-4" colspan="4">${subtramosLabel}</td><td>${totalAdjudicado.toFixed(2)}</td></tr>`;
+                        html += `<tr><td></td><td class="text-left-important pl-4" colspan="4">${childLabel}</td><td>${totalAdjudicado.toFixed(2)}</td></tr>`;
                     } else {
-                        html += `<tr><td></td><td class="text-left-important pl-4">${subtramosLabel}</td><td></td><td></td><td></td><td>${totalAdjudicado.toFixed(2)}</td></tr>`;
+                        html += `<tr><td></td><td class="text-left-important pl-4">${childLabel}</td><td></td><td></td><td></td><td>${totalAdjudicado.toFixed(2)}</td></tr>`;
                     }
 
                     tramo.subtramos.forEach(sub => {
