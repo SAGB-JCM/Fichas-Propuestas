@@ -1442,9 +1442,9 @@
                 row.setAttribute('data-id', ficha.id);
                 row.innerHTML = `
                     <td class="py-4 px-6">${index + 1}</td>
-                    <td class="py-4 px-6">${ficha.proyecto || 'N/A'}</td>
-                    <td class="py-4 px-6">${ficha.faseTramo || 'N/A'}</td>
-                    <td class="py-4 px-6">${ficha.nombrePrograma || 'N/A'}</td>
+                    <td class="py-4 px-6">${ficha.proyecto || ''}</td>
+                    <td class="py-4 px-6">${ficha.faseTramo || ''}</td>
+                    <td class="py-4 px-6">${ficha.nombrePrograma || ''}</td>
                     <td class="py-4 px-6 ramo-display">${formatRamoDisplay(ficha.ramo)}</td>
                     <td class="py-4 px-6">${formatDate(ficha.fechaActualizacion)}</td>
                     <td class="py-4 px-6">
@@ -1499,12 +1499,12 @@
         }
 
         function formatRamoDisplay(ramo) {
-            if (!ramo) return 'N/A';
+            if (!ramo) return '';
             return ramo.split(';').map(r => r.trim()).join('\n');
         }
 
         function formatFuenteDisplay(fuente) {
-            if (!fuente) return 'N/A';
+            if (!fuente) return '';
             return fuente.split(';').map(f => {
                 const url = f.trim();
                 return `<a href="${url}" target="_blank" class="text-blue-600 hover:underline">${url}</a>`;
@@ -1512,7 +1512,7 @@
         }
 
         function formatDate(dateString) {
-            if (!dateString) return 'N/A';
+            if (!dateString) return '';
             // El formato YYYY-MM-DD es interpretado como UTC.
             // Reemplazar guiones con diagonales lo fuerza a ser interpretado como hora local,
             // evitando el problema del día anterior por la conversión de zona horaria.
@@ -2082,7 +2082,7 @@
                 if (licitacion.tramoId === 'otro' && licitacion.otroCategoria) {
                     headerText = `Categoría: ${licitacion.otroCategoria}`;
                 } else {
-                    headerText = `Tramo: ${licitacion.tramoNombre || 'N/A'} (${licitacion.tramoFase || 'N/A'})`;
+                    headerText = `Tramo: ${licitacion.tramoNombre || ''} (${licitacion.tramoFase || ''})`;
                 }
 
                 licElement.innerHTML = `
@@ -2100,7 +2100,7 @@
                             </button>
                         </div>
                     </div>
-                    <p class="text-sm text-gray-600">Empresa: ${licitacion.empresaConstructora || 'N/A'} | Monto: ${formatCurrency(licitacion.montoAdjudicado)}</p>
+                    <p class="text-sm text-gray-600">Empresa: ${licitacion.empresaConstructora || ''} | Monto: ${formatCurrency(licitacion.montoAdjudicado)}</p>
                 `;
                 container.appendChild(licElement);
             });
@@ -2195,8 +2195,8 @@
                 otroContainer.classList.add('hidden');
                 const selectedTramo = proyectosProgramados.find(t => t.id == tramoId);
                 if (selectedTramo) {
-                    tramoFaseDisplay.textContent = selectedTramo.fase || 'N/A';
-                    tramoNombreDisplay.textContent = selectedTramo.tramo || 'N/A';
+                    tramoFaseDisplay.textContent = selectedTramo.fase || '';
+                    tramoNombreDisplay.textContent = selectedTramo.tramo || '';
                     tramoProgramadoKmDisplay.textContent = selectedTramo.programadoKm || 0;
                     tramoDetailsDiv.classList.remove('hidden');
                 } else {
@@ -2652,8 +2652,8 @@
                     <div class="flex justify-between items-center mb-2">
                         <div>
                             <h4 class="font-semibold">Estrategia ${index + 1}</h4>
-                            <p class="text-sm text-gray-600"><b>Objetivo:</b> ${estrategia.objetivoMetaNombre || 'N/A'}</p>
-                            <p class="text-sm text-gray-600"><b>Estrategia:</b> ${estrategia.estrategia || 'N/A'}</p>
+                            <p class="text-sm text-gray-600"><b>Objetivo:</b> ${estrategia.objetivoMetaNombre || ''}</p>
+                            <p class="text-sm text-gray-600"><b>Estrategia:</b> ${estrategia.estrategia || ''}</p>
                         </div>
                         <div class="flex space-x-2">
                             <button type="button" class="edit-estrategia text-blue-600" data-id="${estrategia.id}"><i class="fa-solid fa-edit"></i></button>
@@ -3061,31 +3061,31 @@
                     <table class="details-table">
                         <tr>
                             <th class="font-bold">Ramo:</th>
-                            <td class="ramo-display">${formatRamoDisplay(ficha.ramo) || 'N/A'}</td>
+                            <td class="ramo-display">${formatRamoDisplay(ficha.ramo) || ''}</td>
                             <th class="font-bold">Fecha de Actualización:</th>
                             <td>${formatDate(ficha.fechaActualizacion)}</td>
                         </tr>
                         <tr>
                             <th class="font-bold">Entidad Responsable:</th>
-                            <td colspan="1">${ficha.entidadResponsable || 'N/A'}</td>
+                            <td colspan="1">${ficha.entidadResponsable || ''}</td>
                             <th class="font-bold">Número de Cartera:</th>
-                            <td class="whitespace-nowrap">${ficha.numeroCartera || 'N/A'}</td>
+                            <td class="whitespace-nowrap">${ficha.numeroCartera || ''}</td>
                         </tr>
                         <tr>
                             <th class="font-bold">Cobertura:</th>
-                            <td class="formatted-content" colspan="1">${ficha.cobertura || 'N/A'}</td>
+                            <td class="formatted-content" colspan="1">${ficha.cobertura || ''}</td>
                             <th class="font-bold">Periodo Reportado:</th>
-                            <td>${ficha.periodoReportado || 'N/A'}</td>
+                            <td>${ficha.periodoReportado || ''}</td>
                         </tr>
                         <tr>
                             <th class="font-bold">Avance Físico</th>
-                            <td class="formatted-content">${ficha.avanceFisico || 'N/A'}</td>
+                            <td class="formatted-content">${ficha.avanceFisico || ''}</td>
                             <th class="font-bold">Avance Financiero</th>
-                            <td class="formatted-content">${ficha.avanceFinanciero || 'N/A'}</td>
+                            <td class="formatted-content">${ficha.avanceFinanciero || ''}</td>
                         </tr>
                         <tr>
                             <th class="font-bold">Objetivo:</th>
-                            <td class="formatted-content" colspan="3">${ficha.objetivos || 'N/A'}</td>
+                            <td class="formatted-content" colspan="3">${ficha.objetivos || ''}</td>
                         </tr>
                         <tr>
                             <th class="font-bold">Descripción del Proyecto:</th>
@@ -3093,7 +3093,7 @@
                         </tr>
                         <tr>
                             <th class="font-bold">Programa Presupuestario</th>
-                            <td class="formatted-content" colspan="1">${ficha.programaPresupuestario || 'N/A'}</td>
+                            <td class="formatted-content" colspan="1">${ficha.programaPresupuestario || ''}</td>
                             <th class="font-bold">Presupuesto Aprobado:</th>
                             <td>${formatCurrency(ficha.presupuestoAprobado)} mdp</td>
                         </tr>
@@ -3156,7 +3156,7 @@
                                         indHTML += `</div></div>`;
                                         return indHTML;
                                     }
-                                    return ficha.indicadores ? '' : 'N/A'; // Show N/A only if both are empty
+                                    return ficha.indicadores ? '' : '';
                                 })()}
                                 <div class="mt-4 pt-4 border-t border-gray-200">
                                     ${ficha.transparenciaPresupuestaria || ''}
@@ -3199,7 +3199,7 @@
                                             mirHTML += `</div></div>`;
                                             return mirHTML;
                                         }
-                                        return ficha.transparenciaPresupuestaria ? '' : 'N/A';
+                                        return ficha.transparenciaPresupuestaria ? '' : '';
                                     })()}
                                 </div>
                             </td>
@@ -3207,11 +3207,11 @@
                         <tr>
                             <th class="font-bold">Adjudicación (Licitaciones):</th>
                             <td class="formatted-content" colspan="3" style="word-break: break-word;">
-                                ${ficha.licitaciones || ''}
                                 ${(() => {
+                                    let licitacionesTexto = ficha.licitaciones || '';
                                     // --- INICIO: Lógica para calcular totales y agrupar licitaciones ---
                                     if (!ficha.licitacionesData || ficha.licitacionesData.length === 0) {
-                                        return ficha.licitaciones ? '' : 'N/A';
+                                        return ficha.licitaciones ? '' : '';
                                     }
 
                                     const licitacionesPorTramo = ficha.licitacionesData.filter(lic => lic.tramoId !== 'otro');
@@ -3343,14 +3343,14 @@
                                         if (ficha.fuenteLicitaciones) {
                                             licHTML += `<p class="text-xs text-gray-500 mt-2 text-left source-text">${ficha.fuenteLicitaciones}</p>`;
                                         }
-                                        licHTML += `</div></div>`;
+                                        licHTML += `</div></div>${licitacionesTexto ? `<div class="mt-4">${licitacionesTexto}</div>` : ''}`; // Mover el texto al final con margen
                                         return licHTML;
                                 })()}
                             </td>
                         </tr>
                         <tr>
                             <th class="font-bold">Medios de Comunicación Notas relevantes:</th>
-                            <td class="formatted-content" colspan="3">${ficha.mediosComunicacion || 'N/A'}</td>
+                            <td class="formatted-content" colspan="3">${ficha.mediosComunicacion || ''}</td>
                         </tr>
                     </table>
                 </div>
@@ -3407,11 +3407,11 @@
                         const isFirstIndicator = indIndex === 0;
                         html += `
                             <tr class="hover:bg-gray-50">
-                                ${isFirstIndicator ? `<td class="text-justify" rowspan="${totalRowsForObjective}">${objetivo.objetivo || 'N/A'}</td>` : ''}
-                                <td class="text-center" rowspan="3">${ind.nombre || 'N/A'}</td>
-                                <td rowspan="3">${ind.descripcion || 'N/A'}</td>
-                                <td rowspan="3">${ind.unidad || 'N/A'}</td>
-                                <td class="text-center font-semibold">${ind.nombreMeta || 'N/A'}</td>
+                                ${isFirstIndicator ? `<td class="text-justify" rowspan="${totalRowsForObjective}">${objetivo.objetivo || ''}</td>` : ''}
+                                <td class="text-center" rowspan="3">${ind.nombre || ''}</td>
+                                <td rowspan="3">${ind.descripcion || ''}</td>
+                                <td rowspan="3">${ind.unidad || ''}</td>
+                                <td class="text-center font-semibold">${ind.nombreMeta || ''}</td>
                                 <td class="text-right">${formatNumber(ind.lineaBase2023)}</td>
                                 <td class="text-right">${formatNumber(ind.meta2030)}</td>
                             </tr>
@@ -3533,14 +3533,9 @@
         }
 
         function renderDescripcionProyectoTable(ficha) {
-            let html = '';
-            // Renderizar descripción general si existe
-            if (ficha.descripcionProyecto) {
-                html += `<div class="mb-4">${ficha.descripcionProyecto}</div>`;
-            };
-
+            let html = ''; 
             if (!ficha.proyectosProgramados || ficha.proyectosProgramados.length === 0) {
-                return html || 'N/A'; // Devuelve la descripción o N/A si no hay nada
+                return ficha.descripcionProyecto || ''; 
             }
 
             html += `
@@ -3570,9 +3565,9 @@
                 html += `
                     <tr class="hover:bg-gray-50">
                         <td>${tramo.fase || 'Programado'}</td>
-                        <td class="text-left-important">${tramo.tramo || 'N/A'}</td>
-                        <td class="text-justify">${tramo.construccionDiseno || 'N/A'}</td>
-                        <td>${tramo.estacionesParaderos || 'N/A'}</td>
+                        <td class="text-left-important">${tramo.tramo || ''}</td>
+                        <td class="text-justify">${tramo.construccionDiseno || ''}</td>
+                        <td>${tramo.estacionesParaderos || ''}</td>
                         <td>${tramo.programadoKm || 0}</td>
                         <td>${tramo.adjudicadoKm || 0}</td>
                     </tr>
@@ -3603,9 +3598,9 @@
                         html += `
                             <tr class="hover:bg-gray-50">
                                 <td>${sub.fase || ''}</td>
-                                <td class="text-left-important pl-8">${sub.nombre || 'N/A'}</td>
-                                <td class="text-justify">${sub.construccionDiseno || 'N/A'}</td>
-                                <td>${sub.estacionesParaderos || 'N/A'}</td>
+                                <td class="text-left-important pl-8">${sub.nombre || ''}</td>
+                                <td class="text-justify">${sub.construccionDiseno || ''}</td>
+                                <td>${sub.estacionesParaderos || ''}</td>
                                 <td>${sub.programadoKm || 0}</td>
                                 <td>${sub.adjudicadoKm || 0}</td>
                             </tr>`;
@@ -3618,6 +3613,12 @@
                 html += `<p class="text-xs text-gray-500 mt-2 text-left source-text">${ficha.fuenteDescripcionProyecto}</p>`;
             }
             html += `</div></div>`;
+
+            // Renderizar descripción general si existe, después de la tabla
+            if (ficha.descripcionProyecto) {
+                html += `<div class="mt-4">${ficha.descripcionProyecto}</div>`;
+            };
+
             return html;
         }
 
@@ -3657,7 +3658,7 @@
         }
 
         function formatCurrency(amount) {
-            if (amount === null || amount === undefined) return 'N/A';
+            if (amount === null || amount === undefined) return '';
             return new Intl.NumberFormat('es-MX', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
