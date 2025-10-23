@@ -1593,18 +1593,45 @@
             elements.fichaForm.reset();
             resetDynamicSections();
             
+            // Asegurarse de que la primera pestaña esté activa ANTES de mostrar el modal.
+            switchModalTab('principal');
+
             // Llenar formulario si es edición
             if (ficha) {
                 populateForm(ficha);
             }
             
-            // Mostrar modal
-            elements.fichaModal.classList.remove('hidden');
-            elements.fichaModal.classList.remove('modal-leave');
-            elements.fichaModal.classList.add('modal-enter');
-            // Asegurarse de que la primera pestaña esté activa al abrir
-            switchModalTab('principal');
-            document.body.classList.add('modal-open');
+            // Mostrar modal con la función helper
+            openModal(elements.fichaModal);
+        }
+
+        // --- INICIO: Lógica de Fragmentación (Chunking) para Firestore ---
+        const CHUNK_SIZE = 700000;
+
+        async function saveDocumentInFirestore(docId, filename, base64Content) {
+            const docRef = db.collection('fichaDocumentos').doc(docId);
+
+            if (base64Content.length > CHUNK_SIZE) {
+                // Lógica de fragmentación para archivos grandes
+                const chunks = [];
+                for (let i = 0; i < base64Content.length; i += CHUNK_SIZE) {
+                    chunks.push(base64Content.substring(i, i + CHUNK_SIZE));
+                }
+
+                // Guardar metadatos en el documento principal
+                await docRef.set({ filename, isChunked: true, chunkCount: chunks.length });
+
+                // Guardar cada chunk en una subcolección
+                const batch = db.batch();
+                chunks.forEach((chunk, index) => {
+                    const chunkRef = docRef.collection('chunks').doc(index.toString());
+                    batch.set(chunkRef, { data: chunk });
+                });
+                await batch.commit();
+            } else {
+                // Guardar directamente para archivos pequeños
+                await docRef.set({ base64Content: base64Content, filename: filename, isChunked: false });
+            }
         }
 
         function getTemplateDocRef(templateType = 'default') {
@@ -1705,7 +1732,7 @@
             updateDescripcionProyectosDisplay();
         }
 
-        function populateForm(ficha) {
+        async function populateForm(ficha) {
             // Establecer ID
             elements.fichaId.value = ficha.id;
             
@@ -1788,10 +1815,33 @@
                 updateDescripcionProyectosDisplay();
             }
 
-            // Documento asociado
-            if (ficha.uploadedDocx) {
-                uploadedDocxBase64 = ficha.uploadedDocx;
-                uploadedDocxFilename = ficha.uploadedDocxName || 'documento.docx';
+            // Documento asociado (ahora se carga desde la colección 'fichaDocumentos')
+            if (ficha.hasAssociatedDoc) {
+                try {
+                    const docSnap = await db.collection('fichaDocumentos').doc(ficha.id).get();
+                    if (docSnap.exists) {
+                        const docData = docSnap.data();
+                        uploadedDocxFilename = docData.filename;
+                        if (docData.isChunked) {
+                            // Reconstruir desde chunks
+                            const chunksQuery = await db.collection('fichaDocumentos').doc(ficha.id).collection('chunks').orderBy(firebase.firestore.FieldPath.documentId()).get();
+                            const chunks = chunksQuery.docs.map(doc => doc.data().data);
+                            uploadedDocxBase64 = chunks.join('');
+                        } else {
+                            // Cargar contenido directo (para archivos pequeños)
+                            uploadedDocxBase64 = docData.base64Content;
+                        }
+                    } else {
+                        showAlert(`El documento asociado a la ficha ${ficha.nombrePrograma} no fue encontrado.`, 'warning');
+                        uploadedDocxBase64 = null;
+                        uploadedDocxFilename = null;
+                    }
+                } catch (error) {
+                    console.error("Error al cargar documento asociado:", error);
+                    showAlert("Error al cargar el documento asociado.", "error");
+                    uploadedDocxBase64 = null;
+                    uploadedDocxFilename = null;
+                }
             }
             updateDocumentoDisplay();
         }
@@ -1816,6 +1866,7 @@
 
         async function handleFormSubmit(e) {
             e.preventDefault();
+            showAlert("Guardando ficha...", "info");
             
             try {
                 const formData = new FormData(elements.fichaForm);
@@ -1828,18 +1879,20 @@
                     }
                 }
                 
-                // 1. Forzar el valor del campo 'proyecto'
-                fichaData.proyecto = "Programa Estratégico (PE)";
+                // Extraer el contenido del documento para guardarlo por separado
+                const docxContentToSave = uploadedDocxBase64;
+                const docxNameToSave = uploadedDocxFilename;
+                // Indicar si hay un documento, pero no guardarlo aquí
+                fichaData.hasAssociatedDoc = !!docxContentToSave;
 
                 // Agregar datos dinámicos
+                fichaData.proyecto = "Programa Estratégico (PE)"; // Forzar valor del proyecto
                 fichaData.ramo = ramos.join('; ');
                 fichaData.fuente = fuentes.join('; ');
                 fichaData.programasPresupuestarios = programasPresupuestarios;
                 fichaData.licitacionesData = licitacionesData;
                 fichaData.nivelesIndicadores = nivelesIndicadores;
                 fichaData.metasData = metasData;
-                fichaData.uploadedDocx = uploadedDocxBase64; // Guardar el documento cargado
-                fichaData.uploadedDocxName = uploadedDocxFilename; // Guardar el nombre del documento
                 fichaData.programaSectorialData = programaSectorialData;
                 // Asegurarse de que la descripción del editor se guarde en el objeto correcto
                 fichaData.programaSectorialData.descripcion = fichaData.programaSectorialDescripcion;
@@ -1849,15 +1902,28 @@
                 // Agregar timestamp
                 fichaData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
                 
+                let fichaId;
+
                 if (currentEditingId) {
+                    fichaId = currentEditingId;
                     // Actualizar ficha existente
-                    await db.collection('fichas').doc(currentEditingId).update(fichaData);
-                    showAlert('Ficha actualizada correctamente', 'success');
+                    await db.collection('fichas').doc(fichaId).update(fichaData);
                 } else {
                     // Crear nueva ficha
                     fichaData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                    await db.collection('fichas').add(fichaData);
-                    showAlert('Ficha creada correctamente', 'success');
+                    const newDocRef = await db.collection('fichas').add(fichaData);
+                    fichaId = newDocRef.id;
+                }
+
+                // Ahora, manejar el documento asociado en la colección 'fichaDocumentos'
+                if (docxContentToSave) {
+                    // Siempre llamar a saveDocumentInFirestore si hay un documento.
+                    // Esta función ya contiene la lógica para fragmentar o no según el tamaño.
+                    await saveDocumentInFirestore(fichaId, docxNameToSave, docxContentToSave);
+                } else {
+                    // Si no hay documento, asegurarse de que no exista un registro antiguo.
+                    const docRef = db.collection('fichaDocumentos').doc(fichaId);
+                    await docRef.delete().catch(() => {}); // Ignorar error si no existe
                 }
                 
                 // Recargar datos y cerrar modal
@@ -1866,7 +1932,7 @@
                 
             } catch (error) {
                 console.error('Error al guardar ficha:', error);
-                showAlert('Error al guardar la ficha', 'error');
+                showAlert(`Error al guardar la ficha: ${error.message}`, 'error');
             }
         }
 
@@ -3685,7 +3751,7 @@
         }
 
         function editFicha(id) {
-            const ficha = fichas.find(f => f.id === id);
+            const ficha = JSON.parse(JSON.stringify(fichas.find(f => f.id === id)));
             if (ficha) {
                 openFichaModal(ficha);
             }
@@ -3736,20 +3802,63 @@
             elements.documentoFileInput.value = ''; // Limpiar el input para permitir cargar el mismo archivo de nuevo
         }
 
-        function deleteUploadedDocument() {
+        async function deleteUploadedDocument() {
+            // 1. Limpiar las variables locales y la UI inmediatamente para una respuesta rápida.
             uploadedDocxBase64 = null;
             uploadedDocxFilename = null;
             updateDocumentoDisplay();
-            showAlert('Documento asociado eliminado', 'info');
+
+            // 2. Si estamos editando una ficha existente, proceder a borrar el documento de Firestore.
+            if (currentEditingId) {
+                showAlert('Eliminando documento de la base de datos...', 'info');
+                try {
+                    await deleteDocumentFromFirestore(currentEditingId);
+                    showAlert('Documento asociado eliminado permanentemente.', 'success');
+                } catch (error) {
+                    console.error("Error al eliminar el documento de Firestore:", error);
+                    showAlert('Error al eliminar el documento de la base de datos.', 'error');
+                }
+            } else {
+                // Si es una ficha nueva, solo se necesitaba limpiar las variables locales.
+                showAlert('Documento local eliminado.', 'info');
+            }
+        }
+
+        async function deleteDocumentFromFirestore(docId) {
+            if (!docId) return;
+
+            const docRef = db.collection('fichaDocumentos').doc(docId);
+            const docSnap = await docRef.get();
+
+            if (docSnap.exists && docSnap.data().isChunked) {
+                // Si el documento está fragmentado (chunked), borrar todos los chunks.
+                const chunksQuery = await docRef.collection('chunks').get();
+                const batch = db.batch();
+                chunksQuery.docs.forEach(chunkDoc => {
+                    batch.delete(chunkDoc.ref);
+                });
+                await batch.commit();
+            }
+
+            // Finalmente, borrar el documento principal que contiene los metadatos.
+            await docRef.delete();
         }
 
         async function confirmDelete() {
             if (!fichaToDeleteId) return;
             
+            showAlert("Eliminando ficha...", "info");
             try {
+                // Eliminar el documento principal
                 await db.collection('fichas').doc(fichaToDeleteId).delete();
+
+                // Intentar eliminar el documento asociado, si existe
+                await db.collection('fichaDocumentos').doc(fichaToDeleteId).delete().catch(() => {
+                    // No hacer nada si no existe, es un borrado limpio.
+                });
+
                 showAlert('Ficha eliminada correctamente', 'success');
-                await loadFichas();
+                loadFichas(); // No es necesario esperar
                 closeConfirmModal();
             } catch (error) {
                 console.error('Error al eliminar ficha:', error);
@@ -3903,12 +4012,37 @@
                 return showAlert("No se encontró el registro de la noticia.", "error");
             }
 
-            // NUEVA LÓGICA: Verificar si hay un documento cargado para este registro
-            if (record.uploadedDocx && record.uploadedDocxName) {
+            // LÓGICA MEJORADA: Verificar si hay un documento asociado y descargarlo.
+            if (record.hasAssociatedDoc) {
                 showAlert("Descargando documento asociado...", "info");
-                const docxBlob = base64ToArrayBuffer(record.uploadedDocx);
-                saveAs(new Blob([docxBlob], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" }), record.uploadedDocxName);
-                return showAlert("Documento descargado con éxito.", "success");
+                try {
+                    const docSnap = await db.collection('fichaDocumentos').doc(fichaId).get();
+                    if (docSnap.exists) {
+                        const docData = docSnap.data();
+                        let finalBase64Content;
+
+                        if (docData.isChunked) {
+                            showAlert("Reconstruyendo archivo grande...", "info");
+                            // Reconstruir desde chunks
+                            const chunksQuery = await db.collection('fichaDocumentos').doc(fichaId).collection('chunks').orderBy(firebase.firestore.FieldPath.documentId()).get();
+                            const chunks = chunksQuery.docs.map(doc => doc.data().data);
+                            finalBase64Content = chunks.join('');
+                        } else {
+                            // Usar contenido directo para archivos pequeños (no chunkeados)
+                            finalBase64Content = docData.base64Content;
+                        }
+
+                        if (finalBase64Content) {
+                            const docxBlob = base64ToArrayBuffer(finalBase64Content);
+                            saveAs(new Blob([docxBlob], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" }), docData.filename);
+                            return showAlert("Documento descargado con éxito.", "success");
+                        }
+                    } else {
+                        return showAlert("El documento asociado no se encontró, pero la ficha indica que debería existir. Generando desde plantilla.", "warning");
+                    }
+                } catch (error) {
+                    return showAlert("Error al descargar el documento asociado. Intentando generar desde plantilla.", "error");
+                }
             }
 
             // Si no hay documento cargado, procede con la generación desde la plantilla
