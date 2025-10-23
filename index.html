@@ -1675,11 +1675,18 @@
         }
 
         function formatFuenteDisplay(fuente) {
-            if (!fuente) return '';
-            return fuente.split(';').map(f => {
-                const url = f.trim();
-                return `<a href="${url}" target="_blank" class="text-blue-600 hover:underline">${url}</a>`;
-            }).join('\n');
+             if (!fuente) return '';
+             return fuente.split(';').map(f => {
+                 // 1. Limpiar la URL de espacios y caracteres no deseados al inicio (como viñetas).
+                 let cleanUrl = f.trim().replace(/^[^a-zA-Z0-9]+/, '');
+ 
+                 // 2. Asegurarse de que la URL tenga un protocolo para que sea un enlace absoluto.
+                 let absoluteUrl = cleanUrl;
+                 if (cleanUrl && !/^https?:\/\//i.test(cleanUrl)) {
+                     absoluteUrl = 'https://' + cleanUrl;
+                 }
+                 return `<a href="${absoluteUrl}" target="_blank" class="text-blue-600 hover:underline">${cleanUrl}</a>`;
+             }).join('<br>'); // Usar <br> para un mejor espaciado en HTML
         }
 
         function formatDate(dateString) {
