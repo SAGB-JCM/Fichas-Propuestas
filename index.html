@@ -832,6 +832,26 @@
                                 </div>
                                 <p class="text-sm text-gray-500">Si se carga un documento, este será el que se descargue al generar el reporte.</p>
                             </div>
+
+                            <!-- Nueva sección para carga de imágenes -->
+                            <div id="imagenes-upload-area" class="space-y-4 pt-6 mt-6 border-t">
+                                <h4 class="section-title">Imágenes Asociadas (Mapas)</h4>
+                                <input type="file" id="imagenes-file-input" accept="image/png, image/jpeg" class="hidden" multiple>
+                                <button type="button" id="select-imagenes-btn" class="w-full bg-secondary hover:bg-secondary-dark text-white font-bold py-3 px-6 rounded-lg shadow transition-all duration-200 ease-in-out flex items-center justify-center space-x-2">
+                                    <i class="fa-solid fa-images"></i>
+                                    <span>Seleccionar Imágenes (JPG, PNG)</span>
+                                </button>
+                                <div id="imagenes-display-area" class="hidden grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-4 border border-gray-300 rounded-lg bg-gray-50">
+                                    <!-- Las vistas previas de las imágenes se agregarán aquí -->
+                                </div>
+                                <p class="text-sm text-gray-500">
+                                    Puedes seleccionar una o varias imágenes. Estas se mostrarán en el modal de detalles de la ficha.
+                                </p>
+                            </div>
+
+
+
+
                         </div>
                     </div>
                 </form>
@@ -1160,6 +1180,7 @@
         let uploadedDocxBase64 = null; // Para almacenar el contenido base64 del docx
         let uploadedDocxFilename = null; // Para almacenar el nombre del archivo docx
         let proyectosProgramados = [];
+        let uploadedImages = []; // Para almacenar las imágenes { filename, base64Content }
         let fichaToDeleteId = null;
         // IDs para edición en sub-modales
         let currentPpId = null;
@@ -1198,6 +1219,11 @@
             documentoDisplayArea: document.getElementById('documento-display-area'),
             documentoFilename: document.getElementById('documento-filename'),
             deleteDocumentoBtn: document.getElementById('delete-documento-btn'),
+            // Nuevos elementos para la funcionalidad de imágenes
+            imagenesFileInput: document.getElementById('imagenes-file-input'),
+            selectImagenesBtn: document.getElementById('select-imagenes-btn'),
+            imagenesDisplayArea: document.getElementById('imagenes-display-area'),
+
         };
 
         // Referencias a elementos de la nueva funcionalidad de plantillas
@@ -1398,6 +1424,17 @@
 
             elements.deleteDocumentoBtn.addEventListener('click', () => {
                 deleteUploadedDocument();
+            });
+
+            // --- Listeners para la funcionalidad de carga de imágenes ---
+            elements.selectImagenesBtn.addEventListener('click', () => {
+                elements.imagenesFileInput.click();
+            });
+
+            elements.imagenesFileInput.addEventListener('change', handleImageUpload);
+
+            elements.imagenesDisplayArea.addEventListener('click', (e) => {
+                if (e.target.closest('.delete-image-btn')) handleImageDelete(e);
             });
         }
 
@@ -1719,6 +1756,7 @@
             programaSectorialData = { descripcion: '', estrategias: [] };
             proyectosProgramados = [];
             uploadedDocxBase64 = null;
+            uploadedImages = [];
             uploadedDocxFilename = null;
             
             updateRamosDisplay();
@@ -1730,6 +1768,7 @@
             updateProgramaSectorialDisplay();
             updateDocumentoDisplay(); // Actualizar la visualización del documento
             updateDescripcionProyectosDisplay();
+            updateImagesDisplay();
         }
 
         async function populateForm(ficha) {
@@ -1844,6 +1883,39 @@
                 }
             }
             updateDocumentoDisplay();
+
+            // Cargar imágenes asociadas desde la colección 'fichaImagenes'
+            if (ficha.hasAssociatedImages) {
+                try {
+                    const imageDocSnap = await db.collection('fichaImagenes').doc(ficha.id).get();
+                    if (imageDocSnap.exists) {
+                        const imageData = imageDocSnap.data();
+                        if (imageData.isChunked) {
+                            // Reconstruir desde chunks
+                            const chunksQuery = await db.collection('fichaImagenes').doc(ficha.id).collection('chunks').orderBy(firebase.firestore.FieldPath.documentId()).get();
+                            const chunksData = chunksQuery.docs.map(doc => doc.data());
+                            
+                            // Agrupar chunks por imagen
+                            const imagesByFilename = chunksData.reduce((acc, chunk) => {
+                                acc[chunk.filename] = acc[chunk.filename] || [];
+                                acc[chunk.filename][chunk.chunkIndex] = chunk.data;
+                                return acc;
+                            }, {});
+
+                            uploadedImages = Object.entries(imagesByFilename).map(([filename, chunks]) => ({
+                                filename,
+                                base64Content: chunks.join('')
+                            }));
+                        } else {
+                            // Cargar desde el campo de imágenes (no chunkeado)
+                            uploadedImages = imageData.images || [];
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error al cargar imágenes asociadas:", error);
+                }
+            }
+            updateImagesDisplay();
         }
 
         function handleModalTabClick(e) {
@@ -1885,6 +1957,11 @@
                 // Indicar si hay un documento, pero no guardarlo aquí
                 fichaData.hasAssociatedDoc = !!docxContentToSave;
 
+                // Extraer imágenes para guardarlas por separado
+                const imagesToSave = [...uploadedImages];
+                // Indicar si hay imágenes
+                fichaData.hasAssociatedImages = imagesToSave.length > 0;
+
                 // Agregar datos dinámicos
                 fichaData.proyecto = "Programa Estratégico (PE)"; // Forzar valor del proyecto
                 fichaData.ramo = ramos.join('; ');
@@ -1924,6 +2001,16 @@
                     // Si no hay documento, asegurarse de que no exista un registro antiguo.
                     const docRef = db.collection('fichaDocumentos').doc(fichaId);
                     await docRef.delete().catch(() => {}); // Ignorar error si no existe
+                }
+
+                // Ahora, manejar las imágenes asociadas en la colección 'fichaImagenes'
+                if (imagesToSave.length > 0) {
+                    await saveImagesInFirestore(fichaId, imagesToSave);
+                } else {
+                    // Si no hay imágenes, asegurarse de que no exista un registro antiguo.
+                    const imageDocRef = db.collection('fichaImagenes').doc(fichaId);
+                    // Borrar subcolección de chunks si existe
+                    await deleteImagesFromFirestore(fichaId);
                 }
                 
                 // Recargar datos y cerrar modal
@@ -3491,11 +3578,63 @@
                     </div>
                 `;
             }
+
+            // Agregar imágenes si existen
+            if (ficha.hasAssociatedImages) {
+                detailsHTML += `
+                    <div id="details-images-container" class="bg-gray-50 p-4 rounded-lg mt-6">
+                        <h4 class="font-semibold text-primary mb-3">Mapas de Trazado Ferroviario</h4>
+                        <div id="details-images-content" class="flex flex-wrap justify-center gap-4">
+                        </div>
+                    </div>
+                `;
+            }
             
             elements.detailsContent.innerHTML = detailsHTML;
             elements.detailsModal.classList.remove('hidden');
             document.body.classList.add('modal-open');
             openModal(elements.detailsModal);
+
+            // Cargar imágenes si existen, después de que el modal es visible
+            if (ficha.hasAssociatedImages) {
+                loadAndDisplayDetailsImages(ficha.id);
+            }
+        }
+
+        // Función para cargar y mostrar las imágenes en el modal de detalles
+        async function loadAndDisplayDetailsImages(fichaId) {
+            const container = document.getElementById('details-images-content');
+            if (!container) return;
+
+            container.innerHTML = '<div class="spinner"></div>'; // Mostrar un spinner
+
+            try {
+                const imageDocSnap = await db.collection('fichaImagenes').doc(fichaId).get();
+                if (imageDocSnap.exists) {
+                    const imageData = imageDocSnap.data();
+                    let images = [];
+                    if (imageData.isChunked) {
+                        const chunksQuery = await db.collection('fichaImagenes').doc(fichaId).collection('chunks').orderBy('filename').orderBy('chunkIndex').get();
+                        const imagesByFilename = chunksQuery.docs.reduce((acc, doc) => {
+                            const chunk = doc.data();
+                            acc[chunk.filename] = (acc[chunk.filename] || '') + chunk.data;
+                            return acc;
+                        }, {});
+                        images = Object.entries(imagesByFilename).map(([filename, base64Content]) => ({ filename, base64Content }));
+                    } else {
+                        images = imageData.images || [];
+                    }
+
+                    container.innerHTML = images.map(img => `
+                        <img src="${img.base64Content}" alt="${img.filename}" class="max-w-full md:max-w-md h-auto rounded-lg shadow-md border">
+                    `).join('');
+                } else {
+                    container.innerHTML = '<p class="text-gray-500">No se encontraron imágenes.</p>';
+                }
+            } catch (error) {
+                console.error("Error al cargar imágenes para detalles:", error);
+                container.innerHTML = '<p class="text-red-500">Error al cargar las imágenes.</p>';
+            }
         }
 
         function renderMetasTable(ficha) {
@@ -3748,6 +3887,11 @@
 
         function closeDetailsModal() {
             closeModal(elements.detailsModal);
+            // Limpiar el contenido de las imágenes para que no se muestren en la siguiente apertura
+            const imagesContent = document.getElementById('details-images-content');
+            if (imagesContent) {
+                imagesContent.innerHTML = '';
+            }
         }
 
         function editFicha(id) {
@@ -3857,6 +4001,10 @@
                     // No hacer nada si no existe, es un borrado limpio.
                 });
 
+                // Eliminar las imágenes asociadas
+                await deleteImagesFromFirestore(fichaToDeleteId).catch(() => {
+                });
+
                 showAlert('Ficha eliminada correctamente', 'success');
                 loadFichas(); // No es necesario esperar
                 closeConfirmModal();
@@ -3864,6 +4012,105 @@
                 console.error('Error al eliminar ficha:', error);
                 showAlert('Error al eliminar la ficha', 'error');
             }
+        }
+
+        // --- Funciones para la carga de imágenes asociadas a la ficha ---
+
+        function handleImageUpload(event) {
+            const files = event.target.files;
+            if (!files.length) return;
+
+            Array.from(files).forEach(file => {
+                // Validar que no se haya subido ya
+                if (uploadedImages.some(img => img.filename === file.name)) {
+                    showAlert(`La imagen "${file.name}" ya ha sido cargada.`, 'warning');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedImages.push({
+                        filename: file.name,
+                        base64Content: e.target.result
+                    });
+                    updateImagesDisplay();
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Limpiar el input para permitir cargar el mismo archivo de nuevo
+            elements.imagenesFileInput.value = '';
+        }
+
+        function updateImagesDisplay() {
+            const container = elements.imagenesDisplayArea;
+            if (uploadedImages.length > 0) {
+                container.classList.remove('hidden');
+                container.innerHTML = uploadedImages.map((img, index) => `
+                    <div class="relative group">
+                        <img src="${img.base64Content}" alt="${img.filename}" class="w-full h-24 object-cover rounded-lg border">
+                        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                            <button type="button" class="delete-image-btn text-white text-2xl" data-index="${index}" title="Eliminar imagen">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-center truncate mt-1" title="${img.filename}">${img.filename}</p>
+                    </div>
+                `).join('');
+            } else {
+                container.classList.add('hidden');
+                container.innerHTML = '';
+            }
+        }
+
+        function handleImageDelete(e) {
+            const button = e.target.closest('.delete-image-btn');
+            const index = parseInt(button.dataset.index);
+            uploadedImages.splice(index, 1);
+            updateImagesDisplay();
+        }
+
+        async function saveImagesInFirestore(docId, images) {
+            const imageDocRef = db.collection('fichaImagenes').doc(docId);
+            const totalSize = images.reduce((sum, img) => sum + img.base64Content.length, 0);
+
+            if (totalSize > CHUNK_SIZE) {
+                // Lógica de fragmentación para múltiples imágenes
+                await imageDocRef.set({ isChunked: true, imageCount: images.length });
+
+                const batch = db.batch();
+                images.forEach(image => {
+                    for (let i = 0; i < image.base64Content.length; i += CHUNK_SIZE) {
+                        const chunkIndex = i / CHUNK_SIZE;
+                        const chunkData = image.base64Content.substring(i, i + CHUNK_SIZE);
+                        // Usar un ID de documento autogenerado para cada chunk
+                        const chunkRef = imageDocRef.collection('chunks').doc();
+                        batch.set(chunkRef, { 
+                            filename: image.filename, 
+                            chunkIndex: chunkIndex, 
+                            data: chunkData 
+                        });
+                    }
+                });
+                await batch.commit();
+            } else {
+                // Guardar directamente para un conjunto pequeño de imágenes
+                await imageDocRef.set({ images: images, isChunked: false });
+            }
+        }
+
+        async function deleteImagesFromFirestore(docId) {
+            if (!docId) return;
+            const imageDocRef = db.collection('fichaImagenes').doc(docId);
+            const imageDocSnap = await imageDocRef.get();
+
+            if (imageDocSnap.exists && imageDocSnap.data().isChunked) {
+                const chunksQuery = await imageDocRef.collection('chunks').get();
+                const batch = db.batch();
+                chunksQuery.docs.forEach(chunkDoc => batch.delete(chunkDoc.ref));
+                await batch.commit();
+            }
+            await imageDocRef.delete();
         }
 
         function formatCurrency(amount) {
@@ -4045,6 +4292,11 @@
                 }
             }
 
+            // Si el modal de detalles está abierto y tiene imágenes, cargarlas
+            if (modal === elements.detailsModal && document.getElementById('details-images-container')) {
+                const fichaId = fichas.find(f => f.nombrePrograma === elements.detailsContent.querySelector('h3:nth-of-type(2)').textContent)?.id;
+                if (fichaId) loadAndDisplayDetailsImages(fichaId);
+            }
             // Si no hay documento cargado, procede con la generación desde la plantilla
             
             try {
