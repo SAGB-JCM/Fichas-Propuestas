@@ -322,6 +322,64 @@
         color: #ffffff !important;
         font-weight: 600;
         }
+
+        /* Estilos para el contenedor de imágenes en el modal de detalles */
+        .details-image-wrapper {
+            width: 100%;
+            max-width: 28rem; /* Equivalente a md:max-w-md */
+            height: 28rem; /* Altura fija para crear el "cuadrado" */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8fafc; /* Un fondo sutil para el contenedor */
+        }
+
+        /* Estilos para el visor de imágenes */
+        #image-viewer-modal {
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+        #image-viewer-img {
+            transition: transform 0.2s ease-in-out;
+            transform: scale(0.95);
+        }
+        #image-viewer-modal.visible {
+            opacity: 1;
+        }
+        #image-viewer-modal.visible #image-viewer-img {
+            transform: scale(1);
+        }
+
+        /* --- Mejoras para el feedback de imágenes en el modal de detalles --- */
+        .details-image-wrapper {
+            position: relative;
+            cursor: zoom-in;
+            overflow: hidden; /* Asegura que el pseudo-elemento no se salga */
+            border-radius: 0.5rem; /* Hereda el borde redondeado para el overlay */
+        }
+
+        .details-image-wrapper img::after {
+            content: '\f00e'; /* Icono de búsqueda de Font Awesome */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.4);
+            color: white;
+            font-size: 2rem;
+            opacity: 0; /* Inicia oculto */
+            transition: opacity 0.2s ease-in-out;
+            pointer-events: none; /* El overlay no debe interceptar el clic */
+        }
+
+        .details-image-wrapper:hover img::after {
+            opacity: 1;
+        }
+
         /* =================================================================== */
     </style>
 </head>
@@ -1129,6 +1187,12 @@
         </div>
     </div>
 
+    <!-- Modal para ver imagen en grande (Lightbox) -->
+    <div id="image-viewer-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 z-[70] flex items-center justify-center p-4 cursor-pointer">
+        <button id="close-image-viewer-btn" class="absolute top-4 right-6 text-white text-5xl font-bold hover:text-gray-300 transition-colors">&times;</button>
+        <img id="image-viewer-img" src="" alt="Vista ampliada" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl cursor-default">
+    </div>
+
     <!-- Modal de Confirmación -->
     <div id="confirm-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
         <div class="relative bg-white p-8 rounded-lg shadow-xl w-full max-w-md mx-auto my-8">
@@ -1183,6 +1247,7 @@
         let uploadedImages = []; // Para almacenar las imágenes { filename, base64Content }
         let fichaToDeleteId = null;
         // IDs para edición en sub-modales
+            let isImageZoomed = false; // Estado para el zoom de la imagen en el visor
         let currentPpId = null;
         let currentLicitacionId = null;
         let currentNivelId = null;
@@ -1224,6 +1289,10 @@
             selectImagenesBtn: document.getElementById('select-imagenes-btn'),
             imagenesDisplayArea: document.getElementById('imagenes-display-area'),
 
+            // Visor de imágenes
+            imageViewerModal: document.getElementById('image-viewer-modal'),
+            imageViewerImg: document.getElementById('image-viewer-img'),
+            closeImageViewerBtn: document.getElementById('close-image-viewer-btn'),
         };
 
         // Referencias a elementos de la nueva funcionalidad de plantillas
@@ -1261,6 +1330,9 @@
                 // Configurar la lógica del modal de contraseña
                 setupPasswordVerification();
 
+                // Configurar listeners para el visor de imágenes
+                setupImageViewerListeners();
+
                 // Mostrar aplicación
                 elements.loader.classList.add('hidden');
                 elements.app.classList.remove('hidden');
@@ -1288,6 +1360,13 @@
             elements.closeModalBtn.addEventListener('click', () => closeFichaModal());
             elements.cancelBtn.addEventListener('click', () => closeFichaModal());
             elements.closeDetailsBtn.addEventListener('click', () => closeDetailsModal());
+
+            // Cerrar modal de detalles al hacer clic fuera
+            elements.detailsModal.addEventListener('click', (e) => {
+                if (e.target === elements.detailsModal) {
+                    closeDetailsModal();
+                }
+            });
 
             // Formulario
             elements.fichaForm.addEventListener('submit', handleFormSubmit);
@@ -1447,6 +1526,15 @@
             document.getElementById('password-input').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     verifyPassword();
+                }
+            });
+
+            // Delegación de eventos global para abrir el visor de imágenes
+            document.body.addEventListener('click', (e) => {
+                const imageWrapper = e.target.closest('.details-image-wrapper img');
+                if (imageWrapper && !elements.detailsModal.classList.contains('hidden')) {
+                    e.stopPropagation();
+                    openImageViewer(imageWrapper.src);
                 }
             });
         }
@@ -3595,7 +3683,6 @@
             document.body.classList.add('modal-open');
             openModal(elements.detailsModal);
 
-            // Cargar imágenes si existen, después de que el modal es visible
             if (ficha.hasAssociatedImages) {
                 loadAndDisplayDetailsImages(ficha.id);
             }
@@ -3626,7 +3713,9 @@
                     }
 
                     container.innerHTML = images.map(img => `
-                        <img src="${img.base64Content}" alt="${img.filename}" class="max-w-full md:max-w-md h-auto rounded-lg shadow-md border">
+                        <div class="details-image-wrapper">
+                            <img src="${img.base64Content}" alt="${img.filename}" class="w-full h-full object-contain rounded-lg shadow-md border">
+                        </div>
                     `).join('');
                 } else {
                     container.innerHTML = '<p class="text-gray-500">No se encontraron imágenes.</p>';
@@ -4177,6 +4266,57 @@
                 }
             }, 300); // Coincide con la duración de la animación
         }
+
+        // --- INICIO: FUNCIONES PARA EL VISOR DE IMÁGENES (LIGHTBOX) ---
+        function setupImageViewerListeners() {
+            // Listener para cerrar haciendo clic en el fondo del modal
+            elements.imageViewerModal.addEventListener('click', (e) => {
+                // Se cierra si el clic es en el contenedor principal, no en la imagen o sus hijos
+                if (e.target.id === 'image-viewer-modal') {
+                    closeImageViewer();
+                }
+            });
+
+            // Listener para cerrar con el botón 'x'
+            elements.closeImageViewerBtn.addEventListener('click', () => {
+                closeImageViewer();
+            });
+
+            // Listener para hacer zoom en la imagen
+            elements.imageViewerImg.addEventListener('click', (e) => {
+                e.stopPropagation(); // Evita que el clic en la imagen cierre el modal
+                isImageZoomed = !isImageZoomed;
+                elements.imageViewerImg.style.cursor = isImageZoomed ? 'zoom-out' : 'zoom-in';
+                elements.imageViewerImg.style.transform = isImageZoomed ? 'scale(1.5)' : 'scale(1)';
+                elements.imageViewerImg.style.maxHeight = isImageZoomed ? 'none' : '100%';
+                elements.imageViewerImg.style.maxWidth = isImageZoomed ? 'none' : '100%';
+            });
+
+            // Listener para cerrar con la tecla 'Escape'
+            document.addEventListener('keydown', (e) => {
+                if (e.key === "Escape" && !elements.imageViewerModal.classList.contains('hidden')) {
+                    closeImageViewer();
+                }
+            });
+        }
+
+        function openImageViewer(src) {
+            elements.imageViewerImg.src = src;
+            isImageZoomed = false; // Resetear el estado del zoom
+            elements.imageViewerImg.style.cursor = 'zoom-in';
+
+            elements.imageViewerModal.classList.remove('hidden');
+            setTimeout(() => elements.imageViewerModal.classList.add('visible'), 10); // Pequeño delay para activar la transición
+        }
+
+        function closeImageViewer() {
+            elements.imageViewerModal.classList.remove('visible');
+            setTimeout(() => {
+                elements.imageViewerModal.classList.add('hidden');
+                elements.imageViewerImg.src = ''; // Limpiar para evitar que se vea la imagen anterior al reabrir
+            }, 300); // Coincide con la duración de la transición CSS
+        }
+        // --- FIN: FUNCIONES PARA EL VISOR DE IMÁGENES (LIGHTBOX) ---
 
         // --- INICIO: FUNCIONES PARA GENERAR DOCUMENTO DOCX ---
 
