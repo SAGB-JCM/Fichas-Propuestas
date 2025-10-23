@@ -461,6 +461,7 @@
                     <button data-modal-tab="licitaciones" class="modal-tab-btn whitespace-nowrap py-3 px-4 border border-b-0 rounded-t-lg font-medium text-sm text-gray-600 bg-gray-100 hover:bg-gray-200">Licitaciones</button>
                     <button data-modal-tab="notas" class="modal-tab-btn whitespace-nowrap py-3 px-4 border border-b-0 rounded-t-lg font-medium text-sm text-gray-600 bg-gray-100 hover:bg-gray-200">Notas Relevantes</button>
                     <button data-modal-tab="fuentes" class="modal-tab-btn whitespace-nowrap py-3 px-4 border border-b-0 rounded-t-lg font-medium text-sm text-gray-600 bg-gray-100 hover:bg-gray-200">Fuentes</button>
+                    <button data-modal-tab="documento" class="modal-tab-btn whitespace-nowrap py-3 px-4 border border-b-0 rounded-t-lg font-medium text-sm text-gray-600 bg-gray-100 hover:bg-gray-200">Documento</button>
                 </nav>
             </div>
 
@@ -812,6 +813,27 @@
                             <input type="hidden" id="fuente" name="fuente">
                         </div>
                     </div>
+
+                    <!-- Contenido Pestaña Documento -->
+                    <div id="modal-tab-content-documento" class="modal-tab-content hidden">
+                        <div class="section-card">
+                            <h4 class="section-title">Documento Asociado</h4>
+                            <div id="documento-upload-area" class="space-y-4">
+                                <input type="file" id="documento-file-input" accept=".docx" class="hidden">
+                                <button type="button" id="select-documento-btn" class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-6 rounded-lg shadow transition-all duration-200 ease-in-out flex items-center justify-center space-x-2">
+                                    <i class="fa-solid fa-upload"></i>
+                                    <span>Seleccionar Documento Word</span>
+                                </button>
+                                <div id="documento-display-area" class="hidden p-4 border border-gray-300 rounded-lg bg-gray-50 flex items-center justify-between">
+                                    <span id="documento-filename" class="text-gray-700 font-medium"></span>
+                                    <button type="button" id="delete-documento-btn" class="text-red-600 hover:text-red-800" title="Eliminar documento">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                                <p class="text-sm text-gray-500">Si se carga un documento, este será el que se descargue al generar el reporte.</p>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
 
@@ -1135,6 +1157,8 @@
         let nivelesIndicadores = [];
         let metasData = [];
         let programaSectorialData = {};
+        let uploadedDocxBase64 = null; // Para almacenar el contenido base64 del docx
+        let uploadedDocxFilename = null; // Para almacenar el nombre del archivo docx
         let proyectosProgramados = [];
         let fichaToDeleteId = null;
         // IDs para edición en sub-modales
@@ -1167,7 +1191,13 @@
             detailsContent: document.getElementById('details-content'),
             confirmModal: document.getElementById('confirm-modal'),
             cancelDeleteBtn: document.getElementById('cancel-delete-btn'),
-            confirmDeleteBtn: document.getElementById('confirm-delete-btn')
+            confirmDeleteBtn: document.getElementById('confirm-delete-btn'),
+            // Nuevos elementos para la funcionalidad de documento
+            documentoFileInput: document.getElementById('documento-file-input'),
+            selectDocumentoBtn: document.getElementById('select-documento-btn'),
+            documentoDisplayArea: document.getElementById('documento-display-area'),
+            documentoFilename: document.getElementById('documento-filename'),
+            deleteDocumentoBtn: document.getElementById('delete-documento-btn'),
         };
 
         // Referencias a elementos de la nueva funcionalidad de plantillas
@@ -1350,8 +1380,24 @@
                 button.addEventListener('click', (e) => {
                     const templateType = e.currentTarget.dataset.templateType;
                     // La contraseña ya fue verificada para abrir este modal.
+                    // Para la carga de plantillas, la contraseña es necesaria.
+                    // Para la carga de documentos asociados a la ficha, no se requiere contraseña.
+                    // La función uploadTemplateFile ya maneja la lógica de carga.
+                    // Aquí se asume que el botón de carga de plantilla ya está dentro de un contexto de contraseña verificada.
+                    // Si se quiere que la carga de plantilla no pida contraseña, se debería mover el requirePassword.
                     uploadTemplateFile(templateType);
                 });
+            });
+
+            // --- Listeners para la funcionalidad de carga de documento asociado ---
+            elements.selectDocumentoBtn.addEventListener('click', () => {
+                elements.documentoFileInput.click();
+            });
+
+            elements.documentoFileInput.addEventListener('change', handleDocumentUpload);
+
+            elements.deleteDocumentoBtn.addEventListener('click', () => {
+                deleteUploadedDocument();
             });
         }
 
@@ -1645,6 +1691,8 @@
             metasData = [];
             programaSectorialData = { descripcion: '', estrategias: [] };
             proyectosProgramados = [];
+            uploadedDocxBase64 = null;
+            uploadedDocxFilename = null;
             
             updateRamosDisplay();
             updateFuentesDisplay();
@@ -1653,6 +1701,7 @@
             updateMetasDisplay();
             updateNivelesIndicadoresDisplay();
             updateProgramaSectorialDisplay();
+            updateDocumentoDisplay(); // Actualizar la visualización del documento
             updateDescripcionProyectosDisplay();
         }
 
@@ -1738,6 +1787,13 @@
                 proyectosProgramados = JSON.parse(JSON.stringify(ficha.proyectosProgramados));
                 updateDescripcionProyectosDisplay();
             }
+
+            // Documento asociado
+            if (ficha.uploadedDocx) {
+                uploadedDocxBase64 = ficha.uploadedDocx;
+                uploadedDocxFilename = ficha.uploadedDocxName || 'documento.docx';
+            }
+            updateDocumentoDisplay();
         }
 
         function handleModalTabClick(e) {
@@ -1782,6 +1838,8 @@
                 fichaData.licitacionesData = licitacionesData;
                 fichaData.nivelesIndicadores = nivelesIndicadores;
                 fichaData.metasData = metasData;
+                fichaData.uploadedDocx = uploadedDocxBase64; // Guardar el documento cargado
+                fichaData.uploadedDocxName = uploadedDocxFilename; // Guardar el nombre del documento
                 fichaData.programaSectorialData = programaSectorialData;
                 // Asegurarse de que la descripción del editor se guarde en el objeto correcto
                 fichaData.programaSectorialData.descripcion = fichaData.programaSectorialDescripcion;
@@ -3643,6 +3701,48 @@
             closeModal(elements.confirmModal);
         }
 
+        // --- Funciones para la carga de documento asociado a la ficha ---
+        function handleDocumentUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+                    showAlert('Por favor, seleccione un archivo .docx', 'error');
+                    elements.documentoFileInput.value = ''; // Limpiar el input
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedDocxBase64 = e.target.result;
+                    uploadedDocxFilename = file.name;
+                    updateDocumentoDisplay();
+                    showAlert('Documento cargado correctamente', 'success');
+                };
+                reader.onerror = () => {
+                    showAlert('Error al leer el archivo', 'error');
+                    elements.documentoFileInput.value = '';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateDocumentoDisplay() {
+            if (uploadedDocxBase64 && uploadedDocxFilename) {
+                elements.documentoFilename.textContent = uploadedDocxFilename;
+                elements.documentoDisplayArea.classList.remove('hidden');
+            } else {
+                elements.documentoDisplayArea.classList.add('hidden');
+                elements.documentoFilename.textContent = '';
+            }
+            elements.documentoFileInput.value = ''; // Limpiar el input para permitir cargar el mismo archivo de nuevo
+        }
+
+        function deleteUploadedDocument() {
+            uploadedDocxBase64 = null;
+            uploadedDocxFilename = null;
+            updateDocumentoDisplay();
+            showAlert('Documento asociado eliminado', 'info');
+        }
+
         async function confirmDelete() {
             if (!fichaToDeleteId) return;
             
@@ -3803,6 +3903,16 @@
                 return showAlert("No se encontró el registro de la noticia.", "error");
             }
 
+            // NUEVA LÓGICA: Verificar si hay un documento cargado para este registro
+            if (record.uploadedDocx && record.uploadedDocxName) {
+                showAlert("Descargando documento asociado...", "info");
+                const docxBlob = base64ToArrayBuffer(record.uploadedDocx);
+                saveAs(new Blob([docxBlob], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" }), record.uploadedDocxName);
+                return showAlert("Documento descargado con éxito.", "success");
+            }
+
+            // Si no hay documento cargado, procede con la generación desde la plantilla
+            
             try {
                 // 3. Obtener la plantilla en Firestore
                 const { ref: templateRef } = getTemplateDocRef('default');
@@ -3862,7 +3972,6 @@
                     palabra_clave_22: htmlToOpenXml(record.mediosComunicacion),
                     palabra_clave_23: (record.fuente || '').replace(/;/g, '\n'),
                 };
-
                 // 6. Renderizado y generación del .docx
                 doc.setData(dataForTemplate);
                 doc.render();
