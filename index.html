@@ -1474,6 +1474,10 @@
                     // Actualizamos la UI para mostrar la información del usuario (si no es anónimo)
                     await updateUserUI(user);
 
+                    // Volvemos a renderizar la tabla para mostrar/ocultar los botones de acción
+                    // según el estado de autenticación (anónimo vs. completo).
+                    renderFichasTable();
+
                     // Cargamos los datos y configuramos los listeners de la aplicación
                     await loadFichas();
                     setupRealtimeListeners();
@@ -1796,6 +1800,9 @@
         function renderFichasTable(filteredFichas = null) {
             const data = filteredFichas || fichas;
             const tbody = elements.fichasTableBody;
+            const user = auth.currentUser;
+            // Determina si el usuario está completamente autenticado (no es anónimo)
+            const isFullUser = user && !user.isAnonymous;
             
             tbody.innerHTML = '';
             
@@ -1822,12 +1829,14 @@
                             <button class="generate-doc-btn text-blue-600 hover:text-blue-800" data-id="${ficha.id}" title="Generar Documento">
                                 <i class="fa-solid fa-file-word"></i>
                             </button>
-                            <button class="edit-btn text-green-600 hover:text-green-800" data-id="${ficha.id}">
-                                <i class="fa-solid fa-edit"></i>
-                            </button>
-                            <button class="delete-btn text-red-600 hover:text-red-800" data-id="${ficha.id}">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
+                            ${isFullUser ? `
+                                <button class="edit-btn text-green-600 hover:text-green-800" data-id="${ficha.id}" title="Editar Ficha">
+                                    <i class="fa-solid fa-edit"></i>
+                                </button>
+                                <button class="delete-btn text-red-600 hover:text-red-800" data-id="${ficha.id}" title="Eliminar Ficha">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            ` : ''}
                         </div>
                     </td>
                 `;
@@ -4638,12 +4647,13 @@
                 }
             }
 
-            // Si el modal de detalles está abierto y tiene imágenes, cargarlas
-            if (modal === elements.detailsModal && document.getElementById('details-images-container')) {
-                const fichaId = fichas.find(f => f.nombrePrograma === elements.detailsContent.querySelector('h3:nth-of-type(2)').textContent)?.id;
-                if (fichaId) loadAndDisplayDetailsImages(fichaId);
+            // Si el modal de detalles está abierto y tiene un contenedor de imágenes,
+            // asegúrate de que las imágenes estén cargadas antes de generar el documento.
+            // Esto es relevante si la plantilla usara las imágenes.
+            const isDetailsModalOpen = !elements.detailsModal.classList.contains('hidden');
+            if (isDetailsModalOpen && document.getElementById('details-images-container')) {
+                loadAndDisplayDetailsImages(fichaId);
             }
-            // Si no hay documento cargado, procede con la generación desde la plantilla
             
             try {
                 // 3. Obtener la plantilla en Firestore
