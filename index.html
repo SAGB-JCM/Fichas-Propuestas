@@ -1332,6 +1332,7 @@
         let uploadedImages = []; // Para almacenar las imágenes { filename, base64Content }
         let fichaToDeleteId = null;
         // IDs para edición en sub-modales
+        let isAppInitialized = false; // Flag para controlar la inicialización
             let isImageZoomed = false; // Estado para el zoom de la imagen en el visor
         let currentPpId = null;
         let currentLicitacionId = null;
@@ -1384,6 +1385,8 @@
             loginForm: document.getElementById('login-form'),
             authActionBtn: document.getElementById('auth-action-btn'),
             userEmailSpan: document.getElementById('user-email'),
+            // Añadimos los botones que deben cambiar su visibilidad
+            reportSettingsBtn: document.getElementById('report-settings-btn'),
             loginError: document.getElementById('login-error'),
             togglePasswordVisibility: document.getElementById('toggle-password-visibility'),
         };
@@ -1470,26 +1473,30 @@
                 if (user) {
                     // --- CASO 1: HAY UN USUARIO AUTENTICADO (sea con email o anónimo) ---
                     console.log(`Usuario autenticado: ${user.uid}, Anónimo: ${user.isAnonymous}`);
- 
+
                     // Actualizamos la UI para mostrar la información del usuario (si no es anónimo)
                     await updateUserUI(user);
+
+                    // Si la app no ha sido inicializada, lo hacemos ahora.
+                    if (!isAppInitialized) {
+                        console.log("Inicializando aplicación por primera vez...");
+                        // Cargamos los datos y configuramos los listeners de la aplicación
+                        await loadFichas();
+                        setupRealtimeListeners();
+                        initializeEditors();
+                        setupPasswordVerification();
+                        setupImageViewerListeners();
+
+                        // Ocultamos el loader y mostramos la app principal
+                        elements.loader.classList.add('hidden');
+                        elements.app.classList.remove('hidden');
+                        isAppInitialized = true; // Marcamos la app como inicializada
+                        console.log('Aplicación inicializada y lista.');
+                    }
 
                     // Volvemos a renderizar la tabla para mostrar/ocultar los botones de acción
                     // según el estado de autenticación (anónimo vs. completo).
                     renderFichasTable();
-
-                    // Cargamos los datos y configuramos los listeners de la aplicación
-                    await loadFichas();
-                    setupRealtimeListeners();
-                    initializeEditors();
-                    setupPasswordVerification();
-                    setupImageViewerListeners();
-
-                    // Ocultamos el loader y la pantalla de login, y mostramos la app principal
-                    elements.loader.classList.add('hidden');
-                    elements.loginScreen.classList.add('hidden');
-                    elements.app.classList.remove('hidden');
-                    console.log('Aplicación inicializada y lista.');
 
                 } else {
                     // --- CASO 2: NO HAY NINGÚN USUARIO ---
@@ -1520,6 +1527,8 @@
             const authBtn = elements.authActionBtn;
             const userEmail = elements.userEmailSpan;
             const userInfo = elements.userInfo;
+            const addFichaBtn = elements.addFichaBtn;
+            const reportSettingsBtn = elements.reportSettingsBtn;
 
             // Eliminar listener anterior para evitar duplicados
             const newAuthBtn = authBtn.cloneNode(true);
@@ -1534,6 +1543,9 @@
                     auth.signOut().catch(error => console.error("Error al cerrar sesión:", error));
                 });
                 userInfo.classList.remove('hidden');
+                // Mostrar botones para usuarios autenticados
+                addFichaBtn.classList.remove('hidden');
+                reportSettingsBtn.classList.remove('hidden');
             } else {
                 // --- Usuario anónimo o sin usuario ---
                 userEmail.textContent = '';
@@ -1544,6 +1556,9 @@
                     elements.loginForm.reset();
                 });
                 userInfo.classList.remove('hidden');
+                // Ocultar botones para usuarios anónimos
+                addFichaBtn.classList.add('hidden');
+                reportSettingsBtn.classList.add('hidden');
             }
         }
 
