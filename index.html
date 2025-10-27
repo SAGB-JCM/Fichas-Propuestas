@@ -1004,8 +1004,11 @@
                 <button type="button" id="cancel-btn" class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors">
                     Cancelar
                 </button>
-                <button type="submit" form="ficha-form" class="px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors font-semibold">
-                    Guardar Ficha
+                <button type="submit" form="ficha-form" id="save-ficha-btn" class="px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors font-semibold flex items-center justify-center min-w-[150px]">
+                    <span class="btn-text">Guardar Ficha</span>
+                    <span class="btn-spinner hidden">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                    </span>
                 </button>
             </div>
         </div>
@@ -2256,7 +2259,17 @@
 
         async function handleFormSubmit(e) {
             e.preventDefault();
-            showAlert("Guardando ficha...", "info");
+            
+            const saveButton = document.getElementById('save-ficha-btn');
+            const cancelButton = document.getElementById('cancel-btn');
+            const btnText = saveButton.querySelector('.btn-text');
+            const btnSpinner = saveButton.querySelector('.btn-spinner');
+
+            // Deshabilitar botones y mostrar spinner
+            saveButton.disabled = true;
+            cancelButton.disabled = true;
+            btnText.classList.add('hidden');
+            btnSpinner.classList.remove('hidden');
             
             try {
                 const formData = new FormData(elements.fichaForm);
@@ -2337,9 +2350,16 @@
                 
             } catch (error) {
                 console.error('Error al guardar ficha:', error);
-                showAlert(`Error al guardar la ficha: ${error.message}`, 'error');
+                showAlert(`Error al guardar: ${error.message}`, 'error');
+            } finally {
+                // Volver a habilitar botones y ocultar spinner, sin importar si hubo éxito o error
+                saveButton.disabled = false;
+                cancelButton.disabled = false;
+                btnText.classList.remove('hidden');
+                btnSpinner.classList.add('hidden');
             }
         }
+
 
         function addRamo() {
             const input = document.getElementById('ramo-input');
