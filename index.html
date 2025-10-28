@@ -5220,6 +5220,17 @@
                 };
             }).sort((a, b) => b.costoPorKm - a.costoPorKm); // Ordenar de mayor a menor costo
 
+            // Calcular totales y promedio
+            const totalKm = dataParaTabla.reduce((sum, item) => sum + item.kmAdjudicados, 0);
+            const totalMonto = dataParaTabla.reduce((sum, item) => sum + item.montoAdjudicado, 0);
+            const costoPromedio = totalKm > 0 ? totalMonto / totalKm : 0;
+
+            // Construir la fila del pie de tabla
+            const footerHTML = `
+                <tfoot class="bg-slate-200 font-bold">
+                    <tr class="border-t-2 border-slate-300"><td class="py-2 px-3 text-center" colspan="2">Costo Promedio</td><td class="py-2 px-3 text-center">${formatNumber(totalKm)}</td><td class="py-2 px-3 text-center text-accent">${formatCurrency(costoPromedio)}</td><td class="py-2 px-3 text-center text-primary">${formatCurrency(totalMonto)}</td></tr>
+                </tfoot>`;
+
             // Construir la tabla HTML
             let tableHTML = `
                 <table class="w-full text-sm text-left">
@@ -5241,7 +5252,7 @@
                                 <td class="py-2 px-3 text-center font-bold bg-accent/10 text-accent">${formatCurrency(item.costoPorKm)}</td>
                                 <td class="py-2 px-3 text-center font-bold text-primary">${formatCurrency(item.montoAdjudicado)}</td>
                             </tr>`).join('')}
-                    </tbody>
+                    </tbody>${footerHTML}
                 </table>`;
             
             container.innerHTML = tableHTML;
@@ -5266,15 +5277,11 @@
             // Agrupar montos por categoría
             const montosPorCategoria = licitaciones.reduce((acc, lic) => {
                 const monto = parseFloat(lic.montoAdjudicado) || 0;
-                let categoria;
-
-                if (lic.tramoId !== 'otro') {
-                    categoria = 'Subtotal Tramos';
-                } else {
-                    categoria = lic.otroCategoria || 'Sin Categoría';
+                // Excluir las licitaciones que no son de tipo "otro"
+                if (lic.tramoId === 'otro') {
+                    const categoria = lic.otroCategoria || 'Sin Categoría';
+                    acc[categoria] = (acc[categoria] || 0) + monto;
                 }
-
-                acc[categoria] = (acc[categoria] || 0) + monto;
                 return acc;
             }, {});
 
