@@ -356,6 +356,35 @@
             transform: scale(1);
         }
 
+        /* --- Estilos para el Tooltip de Vista Rápida --- */
+        #quick-view-tooltip {
+            position: fixed;
+            display: none;
+            background-color: #ffffff;
+            color: #374151;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            pointer-events: none;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            max-width: 350px;
+            transition: opacity 0.2s ease-in-out;
+            opacity: 0;
+        }
+        #quick-view-tooltip.visible {
+            display: block;
+            opacity: 1;
+        }
+        #quick-view-tooltip strong {
+            color: var(--primary-color);
+        }
+        #quick-view-tooltip p {
+            margin-bottom: 0.25rem;
+        }
+
         /* --- Mejoras para el feedback de imágenes en el modal de detalles --- */
         .details-image-wrapper {
             position: relative;
@@ -546,13 +575,10 @@
                                     <th class="py-3 px-6">No.</th>
                                     <th class="py-3 px-6">Fase/Tramo</th>
                                     <th class="py-3 px-6">Programa Estratégico</th>
-                                    <th class="py-3 px-6">Fecha Actualización</th>
-                                    <th class="py-3 px-6">Pres. Aprobado (mdp)</th>
-                                    <th class="py-3 px-6">Pres. Modificado (mdp)</th>
-                                    <th class="py-3 px-6">Pres. Ejercido (mdp)</th>
+                                    <th class="py-3 px-6">Objetivo</th>
                                     <th class="py-3 px-6">KM Programados</th>
-                                    <th class="py-3 px-6">KM Adjudicados</th>
-                                    <th class="py-3 px-6">Monto Total (mdp)</th>
+                                    <th class="py-3 px-6">Pres. Ejercido (mdp)</th>
+                                    <th class="py-3 px-6">Fecha Actualización</th>
                                     <th class="py-3 px-6">Acciones</th>
                                 </tr>
                             </thead>
@@ -1309,6 +1335,9 @@
         </div>
     </div>
 
+    <!-- Tooltip de Vista Rápida -->
+    <div id="quick-view-tooltip"></div>
+
     <!-- Script Principal -->
     <script>
         // Configuración de Firebase
@@ -1354,6 +1383,7 @@
         let currentEstrategiaId = null;
 
         // Referencias a elementos DOM
+        let quickViewTooltip;
         const elements = {
             loader: document.getElementById('loader'),
             app: document.getElementById('app'),
@@ -1396,6 +1426,7 @@
             // --- Asignación de elementos para el login
             loginScreen: document.getElementById('login-screen'),
             loginForm: document.getElementById('login-form'),
+            quickViewTooltip: document.getElementById('quick-view-tooltip'),
             authActionBtn: document.getElementById('auth-action-btn'),
             userEmailSpan: document.getElementById('user-email'),
             // Añadimos los botones que deben cambiar su visibilidad
@@ -1499,6 +1530,7 @@
                         initializeEditors();
                         setupPasswordVerification();
                         setupImageViewerListeners();
+                        setupQuickViewTooltip(); // <-- Añadir la configuración del tooltip
 
                         // Ocultamos el loader y mostramos la app principal
                         elements.loader.classList.add('hidden');
@@ -1855,6 +1887,17 @@
             return { totalKmProgramado, totalKmAdjudicados, totalMontoAdjudicado };
         }
 
+        function truncateText(text, maxLength = 50) {
+            if (!text) return 'N/A';
+            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+        }
+
+        function stripHtml(html) {
+            if (!html) return '';
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            return doc.body.textContent || "";
+        }
+
         function renderFichasTable(filteredFichas = null) {
             const data = filteredFichas || fichas;
             const tbody = elements.fichasTableBody;
@@ -1876,17 +1919,25 @@
                 const licitacionTotals = calculateLicitacionTotals(ficha);
                 row.className = 'bg-white border-b hover:bg-gray-50 clickable-row';
                 row.setAttribute('data-id', ficha.id);
+                // --- INICIO: Añadir datos para el tooltip ---
+                row.dataset.quickview = 'true';
+                row.dataset.faseTramo = ficha.faseTramo || 'N/A';
+                row.dataset.nombrePrograma = ficha.nombrePrograma || 'N/A';
+                row.dataset.presupuestoAprobado = formatCurrency(ficha.presupuestoAprobado);
+                row.dataset.presupuestoModificado = formatCurrency(ficha.presupuestoModificado);
+                row.dataset.presupuestoEjercido = formatCurrency(ficha.presupuestoEjercido);
+                row.dataset.kmProgramados = formatNumber(licitacionTotals.totalKmProgramado);
+                row.dataset.kmAdjudicados = formatNumber(licitacionTotals.totalKmAdjudicados);
+                row.dataset.montoTotal = formatCurrency(licitacionTotals.totalMontoAdjudicado);
+                // --- FIN: Añadir datos para el tooltip ---
                 row.innerHTML = `
                     <td class="py-4 px-6">${index + 1}</td>
                     <td class="py-4 px-6">${ficha.faseTramo || ''}</td>
                     <td class="py-4 px-6">${ficha.nombrePrograma || ''}</td>
-                    <td class="py-4 px-6">${formatDate(ficha.fechaActualizacion)}</td>
-                    <td class="py-4 px-6 text-right">${formatCurrency(ficha.presupuestoAprobado)}</td>
-                    <td class="py-4 px-6 text-right">${formatCurrency(ficha.presupuestoModificado)}</td>
-                    <td class="py-4 px-6 text-right">${formatCurrency(ficha.presupuestoEjercido)}</td>
-                    <td class="py-4 px-6 text-right">${formatNumber(licitacionTotals.totalKmProgramado)}</td>
-                    <td class="py-4 px-6 text-right">${formatNumber(licitacionTotals.totalKmAdjudicados)}</td>
-                    <td class="py-4 px-6 text-right">${formatCurrency(licitacionTotals.totalMontoAdjudicado)}</td>
+                    <td class="py-4 px-6">${truncateText(stripHtml(ficha.objetivos || ''), 450)}</td>
+                    <td class="py-4 px-6 text-center">${formatNumber(licitacionTotals.totalKmProgramado)}</td>
+                    <td class="py-4 px-6 text-center">${formatCurrency(ficha.presupuestoEjercido)}</td>
+                    <td class="py-4 px-6 text-center">${formatDate(ficha.fechaActualizacion)}</td>
                     <td class="py-4 px-6">
                         <div class="flex space-x-2">
                             <button class="generate-doc-btn text-blue-600 hover:text-blue-800" data-id="${ficha.id}" title="Generar Documento">
@@ -4612,6 +4663,62 @@
             }, 300); // Coincide con la duración de la transición CSS
         }
         // --- FIN: FUNCIONES PARA EL VISOR DE IMÁGENES (LIGHTBOX) ---
+
+        /**
+         * @summary Configura los listeners para mostrar un tooltip con vista rápida al pasar el cursor sobre las filas de la tabla.
+         */
+        function setupQuickViewTooltip() {
+            const tooltip = elements.quickViewTooltip;
+            if (!tooltip) return;
+
+            const showTooltip = (e) => {
+                const row = e.target.closest('tr[data-quickview="true"]');
+                if (!row) return;
+
+                // Extraer los datos desde los atributos data-* de la fila
+                const {
+                    faseTramo,
+                    nombrePrograma,
+                    presupuestoAprobado,
+                    presupuestoModificado,
+                    presupuestoEjercido,
+                    kmProgramados,
+                    kmAdjudicados,
+                    montoTotal
+                } = row.dataset;
+
+                // Construir el contenido del tooltip
+                tooltip.innerHTML = `
+                    <p><strong>Fase/Tramo:</strong> ${faseTramo}</p>
+                    <p><strong>Programa:</strong> ${nombrePrograma}</p>
+                    <hr class="my-2">
+                    <p><strong>Presupuestos (mdp):</strong></p>
+                    <p class="pl-4">Aprobado: ${presupuestoAprobado}</p>
+                    <p class="pl-4">Modificado: ${presupuestoModificado}</p>
+                    <p class="pl-4">Ejercido: ${presupuestoEjercido}</p>
+                    <hr class="my-2">
+                    <p><strong>Licitaciones:</strong></p>
+                    <p class="pl-4">KM Programados: ${kmProgramados}</p>
+                    <p class="pl-4">KM Adjudicados: ${kmAdjudicados}</p>
+                    <p class="pl-4">Monto Total (mdp): ${montoTotal}</p>
+                `;
+
+                tooltip.classList.add('visible');
+            };
+
+            const hideTooltip = () => tooltip.classList.remove('visible');
+
+            const moveTooltip = (e) => {
+                if (tooltip.classList.contains('visible')) {
+                    tooltip.style.left = `${e.clientX + 15}px`;
+                    tooltip.style.top = `${e.clientY + 15}px`;
+                }
+            };
+
+            elements.fichasTableBody.addEventListener('mouseover', showTooltip);
+            elements.fichasTableBody.addEventListener('mouseout', hideTooltip);
+            elements.fichasTableBody.addEventListener('mousemove', moveTooltip);
+        }
 
         // --- INICIO: FUNCIONES PARA GENERAR DOCUMENTO DOCX ---
 
