@@ -11,6 +11,9 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Font Awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -598,16 +601,60 @@
             <!-- Reportes Tab Content -->
             <div id="tab-content-reportes" class="tab-content hidden">
                 <section class="bg-white p-8 rounded-xl shadow-md">
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                         <h2 class="text-2xl font-bold text-primary">Reportes y Estadísticas</h2>
-                        <button id="report-settings-btn" class="text-slate-500 hover:text-primary p-2 rounded-lg transition-colors" title="Configuración de Reportes">
-                            <i class="fa-solid fa-cog fa-lg"></i>
-                        </button>
+                        <div class="flex items-center gap-4 w-full md:w-auto">
+                            <select id="ficha-report-selector" class="w-full md:w-96 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                <option value="">-- Seleccione una Ficha para ver sus reportes --</option>
+                            </select>
+                            <button id="report-settings-btn" class="text-slate-500 hover:text-primary p-2 rounded-lg transition-colors" title="Configuración de Reportes">
+                                <i class="fa-solid fa-cog fa-lg"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="text-center py-12">
-                        <i class="fa-solid fa-chart-bar text-6xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-500 text-lg">Módulo de reportes en desarrollo</p>
-                        <p class="text-gray-400 mt-2">Esta funcionalidad estará disponible próximamente</p>
+                    <!-- Contenedor del Dashboard de Reportes -->
+                    <div id="reports-dashboard-container" class="hidden">
+                        <div class="grid grid-cols-1 gap-8">
+                            <!-- Fila 1: Presupuesto y Tramos -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <!-- Gráfica de Presupuestos -->
+                                <div class="bg-slate-50 p-6 rounded-lg border">
+                                    <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Distribución de Presupuesto (mdp)</h3>
+                                    <canvas id="budgetChart"></canvas>
+                                </div>
+                                <!-- Gráfica de Tramos -->
+                                <div class="bg-slate-50 p-6 rounded-lg border">
+                                    <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">KM Programados vs. KM Adjudicados</h3>
+                                    <canvas id="tramosChart"></canvas>
+                                </div>
+                            </div>
+                            <!-- Fila 2: Licitaciones y Comparativa de Montos -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <!-- Gráfica de Licitaciones -->
+                                <div class="bg-slate-50 p-6 rounded-lg border">
+                                    <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Monto Adjudicado por Empresa (mdp)</h3>
+                                    <canvas id="licitacionesChart"></canvas>
+                                </div>
+                                <!-- Nueva Gráfica: Comparativa de Montos (Tramos vs Otros) -->
+                                <div class="bg-slate-50 p-6 rounded-lg border">
+                                    <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Comparativa de Montos: Tramos vs. Otros (mdp)</h3>
+                                    <canvas id="subtramosVsOtrosChart"></canvas>
+                                </div>
+                            </div>
+                            <!-- Fila 3: Metas del Programa Sectorial -->
+                            <div class="bg-slate-50 p-6 rounded-lg border">
+                                <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Metas del Programa Sectorial de Infraestructura (2025-2030)</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
+                                    <canvas id="metasSectorialChart"></canvas>
+                                    <canvas id="avanceSectorialChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="no-report-selected" class="text-center py-12">
+                        <i class="fa-solid fa-chart-line text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500 text-lg">Seleccione una ficha para visualizar sus métricas</p>
+                        <p class="text-gray-400 mt-2">Los gráficos y datos relevantes aparecerán aquí.</p>
                     </div>
                 </section>
             </div>
@@ -1434,6 +1481,15 @@
             loginError: document.getElementById('login-error'),
             togglePasswordVisibility: document.getElementById('toggle-password-visibility'),
         };
+        
+        // --- INICIO: Referencias para la nueva pestaña de Reportes ---
+        const reportElements = {
+            fichaReportSelector: document.getElementById('ficha-report-selector'),
+            reportsDashboardContainer: document.getElementById('reports-dashboard-container'),
+            noReportSelected: document.getElementById('no-report-selected'),
+            charts: {} // Objeto para almacenar instancias de Chart.js
+        };
+        // --- FIN: Referencias para Reportes ---
 
         // Referencias a elementos de la nueva funcionalidad de plantillas
         const templateElements = {
@@ -1637,6 +1693,10 @@
             // Búsqueda
             elements.searchInput.addEventListener('input', handleSearch);
             elements.clearSearchBtn.addEventListener('click', clearSearch);
+
+            // --- INICIO: Listener para el selector de reportes ---
+            reportElements.fichaReportSelector.addEventListener('change', handleFichaReportSelection);
+            // --- FIN: Listener para el selector de reportes ---
 
             // Manejo de ramos
             document.getElementById('add-ramo-btn').addEventListener('click', addRamo);
@@ -1851,6 +1911,7 @@
                     ...doc.data()
                 }));
                 renderFichasTable();
+                populateFichaReportSelector(); // <-- Popular el selector de reportes
             } catch (error) {
                 console.error('Error al cargar fichas:', error);
                 showAlert('Error al cargar las fichas', 'error');
@@ -1898,6 +1959,20 @@
             return doc.body.textContent || "";
         }
 
+        /**
+         * @summary Popula el selector de fichas en la pestaña de reportes.
+         */
+        function populateFichaReportSelector() {
+            const selector = reportElements.fichaReportSelector;
+            selector.innerHTML = '<option value="">-- Seleccione una Ficha para ver sus reportes --</option>'; // Reset
+
+            fichas.forEach(ficha => {
+                const option = document.createElement('option');
+                option.value = ficha.id;
+                option.textContent = `${ficha.faseTramo || 'Ficha'} - ${ficha.nombrePrograma || 'Sin Nombre'}`;
+                selector.appendChild(option);
+            });
+        }
         function renderFichasTable(filteredFichas = null) {
             const data = filteredFichas || fichas;
             const tbody = elements.fichasTableBody;
@@ -4719,6 +4794,295 @@
             elements.fichasTableBody.addEventListener('mouseout', hideTooltip);
             elements.fichasTableBody.addEventListener('mousemove', moveTooltip);
         }
+        
+        // --- INICIO: FUNCIONES PARA LA PESTAÑA DE REPORTES ---
+
+        /**
+         * @summary Maneja la selección de una ficha en el selector de reportes.
+         */
+        function handleFichaReportSelection() {
+            const fichaId = reportElements.fichaReportSelector.value;
+            const selectedFicha = fichas.find(f => f.id === fichaId);
+
+            // Destruir gráficas anteriores para evitar conflictos
+            if (reportElements.charts.subtramosVsOtros) reportElements.charts.subtramosVsOtros.destroy();
+            if (reportElements.charts.metasSectorial) reportElements.charts.metasSectorial.destroy();
+            Object.values(reportElements.charts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+
+            if (selectedFicha) {
+                reportElements.noReportSelected.classList.add('hidden');
+                reportElements.reportsDashboardContainer.classList.remove('hidden');
+                renderAllChartsForFicha(selectedFicha);
+            } else {
+                reportElements.reportsDashboardContainer.classList.add('hidden');
+                reportElements.noReportSelected.classList.remove('hidden');
+            }
+        }
+
+        /**
+         * @summary Renderiza todas las gráficas para la ficha seleccionada.
+         * @param {object} ficha - El objeto de la ficha seleccionada.
+         */
+        function renderAllChartsForFicha(ficha) {
+            renderBudgetChart(ficha);
+            renderTramosChart(ficha);
+            renderLicitacionesChart(ficha);
+            renderSubtramosVsOtrosChart(ficha);
+            renderMetasSectorialChart(ficha);
+        }
+
+        /**
+         * @summary Renderiza la gráfica de presupuestos.
+         * @param {object} ficha - El objeto de la ficha.
+         */
+        function renderBudgetChart(ficha) {
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            const data = {
+                labels: ['Aprobado', 'Modificado', 'Ejercido'],
+                datasets: [{
+                    label: 'Presupuesto (mdp)',
+                    data: [
+                        parseFloat(ficha.presupuestoAprobado) || 0,
+                        parseFloat(ficha.presupuestoModificado) || 0,
+                        parseFloat(ficha.presupuestoEjercido) || 0
+                    ],
+                    backgroundColor: [
+                        '#A6802D', // Secondary
+                        '#1E5B4F', // Primary
+                        '#9C2348'  // Accent
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            };
+
+            reportElements.charts.budget = new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: false }
+                    }
+                }
+            });
+        }
+
+        /**
+         * @summary Renderiza la gráfica de comparación de Tramos vs. Subtramos.
+         * @param {object} ficha - El objeto de la ficha.
+         */
+        function renderTramosChart(ficha) {
+            const ctx = document.getElementById('tramosChart').getContext('2d');
+            const tramosData = ficha.proyectosProgramados || [];
+
+            const labels = [];
+            const kmProgramadosData = [];
+            const kmSubtramosData = [];
+
+            tramosData.forEach(tramo => {
+                labels.push(tramo.tramo || 'Tramo sin nombre');
+                kmProgramadosData.push(parseFloat(tramo.programadoKm) || 0);
+
+                const sumaSubtramos = (tramo.subtramos || []).reduce((acc, sub) => {
+                    // Lógica solicitada: `programadoKm` o `adjudicadoKm` como fallback.
+                    const km = parseFloat(sub.programadoKm) || parseFloat(sub.adjudicadoKm) || 0;
+                    return acc + km;
+                }, 0);
+                kmSubtramosData.push(sumaSubtramos);
+            });
+
+            reportElements.charts.tramos = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'KM Programados (Tramo)',
+                        data: kmProgramadosData,
+                        backgroundColor: 'rgba(30, 91, 79, 0.7)', // Primary con transparencia
+                    }, { // Etiqueta actualizada
+                        label: 'KM Adjudicados',
+                        data: kmSubtramosData,
+                        backgroundColor: 'rgba(166, 128, 45, 0.7)', // Secondary con transparencia
+                    }]
+                },
+                options: { indexAxis: 'y', responsive: true, scales: { x: { beginAtZero: true } } }
+            });
+        }
+
+        /**
+         * @summary Renderiza la nueva gráfica de comparación de montos entre subtramos y "Otros".
+         * @param {object} ficha - El objeto de la ficha.
+         */
+        function renderSubtramosVsOtrosChart(ficha) {
+            const ctx = document.getElementById('subtramosVsOtrosChart').getContext('2d');
+            const licitaciones = ficha.licitacionesData || [];
+
+            const licitacionesPorTramo = licitaciones.filter(lic => lic.tramoId !== 'otro');
+            const licitacionesOtro = licitaciones.filter(lic => lic.tramoId === 'otro');
+
+            const subtotalMontoTramos = licitacionesPorTramo.reduce((sum, lic) => sum + (parseFloat(lic.montoAdjudicado) || 0), 0);
+
+            const otrosAgrupados = licitacionesOtro.reduce((acc, lic) => {
+                const categoria = lic.otroCategoria || 'Sin Categoría';
+                acc[categoria] = (acc[categoria] || 0) + (parseFloat(lic.montoAdjudicado) || 0);
+                return acc;
+            }, {});
+
+            const labels = ['Subtotal Tramos', ...Object.keys(otrosAgrupados)];
+            const data = [subtotalMontoTramos, ...Object.values(otrosAgrupados)];
+
+            const backgroundColors = [
+                '#1E5B4F', // Primary para Subtotal Tramos
+                ...Array(Object.keys(otrosAgrupados).length).fill('#A6802D') // Secondary para las categorías "Otro"
+            ];
+
+            reportElements.charts.subtramosVsOtros = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Monto Adjudicado (mdp)',
+                        data: data,
+                        backgroundColor: backgroundColors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false } // Ocultar leyenda ya que los colores son autoexplicativos
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        /**
+         * @summary Renderiza las nuevas gráficas de radar para las metas del programa sectorial.
+         * @param {object} ficha - El objeto de la ficha.
+         */
+        function renderMetasSectorialChart(ficha) {
+            const metasCtx = document.getElementById('metasSectorialChart').getContext('2d');
+            const avanceCtx = document.getElementById('avanceSectorialChart').getContext('2d');
+
+            const estrategias = (ficha.programaSectorialData || {}).estrategias || [];
+            const years = ['2025', '2026', '2027', '2028', '2029', '2030'];
+            let allIndicadoresData = [];
+
+            estrategias.forEach(est => {
+                (est.objetivosIndependientes || []).forEach(obj => {
+                    (obj.indicadores || []).forEach(ind => {
+                        (ind.metas || []).forEach(meta => {
+                            allIndicadoresData.push({
+                                indicadorNombre: ind.nombre,
+                                meta: years.map(year => (meta.meta || {})[year] || 0),
+                                alcanzado: years.map(year => (meta.alcanzado || {})[year] || 0),
+                                avance: years.map(year => (meta.avance || {})[year] || 0)
+                            });
+                        });
+                    });
+                });
+            });
+
+            if (allIndicadoresData.length === 0) {
+                // Opcional: Mostrar un mensaje si no hay datos
+                return;
+            }
+
+            // Para simplificar, tomamos el primer indicador. Se podría hacer un selector si hay varios.
+            const primerIndicador = allIndicadoresData[0];
+
+            // Gráfica 1: Meta vs Alcanzado
+            reportElements.charts.metasSectorial = new Chart(metasCtx, {
+                type: 'radar',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: 'Meta',
+                        data: primerIndicador.meta,
+                        fill: true,
+                        backgroundColor: 'rgba(156, 35, 72, 0.2)', // Accent con transparencia
+                        borderColor: '#9C2348', // Accent
+                        pointBackgroundColor: '#9C2348',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#9C2348'
+                    }, {
+                        label: 'Alcanzado',
+                        data: primerIndicador.alcanzado,
+                        fill: true,
+                        backgroundColor: 'rgba(30, 91, 79, 0.2)', // Primary con transparencia
+                        borderColor: '#1E5B4F', // Primary
+                        pointBackgroundColor: '#1E5B4F',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#1E5B4F'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { title: { display: true, text: `Indicador: ${primerIndicador.indicadorNombre}` } }
+                }
+            });
+
+            // Gráfica 2: Avance %
+            reportElements.charts.avanceSectorial = new Chart(avanceCtx, {
+                type: 'radar',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: 'Avance (%)',
+                        data: primerIndicador.avance,
+                        borderColor: '#A6802D', // Secondary
+                        backgroundColor: 'rgba(166, 128, 45, 0.2)' // Secondary con transparencia
+                    }]
+                },
+                options: { responsive: true, plugins: { title: { display: true, text: 'Porcentaje de Avance Anual' } } }
+            });
+        }
+        
+        // --- FIN: FUNCIONES PARA LA PESTAÑA DE REPORTES ---
+
+        /**
+         * @summary Renderiza la gráfica de montos de licitaciones por empresa.
+         * @param {object} ficha - El objeto de la ficha.
+         */
+        function renderLicitacionesChart(ficha) {
+            const ctx = document.getElementById('licitacionesChart').getContext('2d');
+            const licitaciones = ficha.licitacionesData || [];
+            const montosPorEmpresa = {};
+
+            licitaciones.forEach(lic => {
+                 const empresa = lic.empresaConstructora || 'No especificada';
+                 const monto = parseFloat(lic.montoAdjudicado) || 0;
+                 // Solo considerar empresas con monto mayor a cero
+                 if (monto > 0) {
+                     montosPorEmpresa[empresa] = (montosPorEmpresa[empresa] || 0) + monto;
+                 }
+             });
+
+            const sortedEmpresas = Object.entries(montosPorEmpresa).sort((a, b) => b[1] - a[1]);
+
+            reportElements.charts.licitaciones = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedEmpresas.map(e => e[0]),
+                    datasets: [{
+                        label: 'Monto Adjudicado (mdp)',
+                        data: sortedEmpresas.map(e => e[1]),
+                        backgroundColor: '#1E5B4F' // Primary
+                    }]
+                },
+                options: { indexAxis: 'y', responsive: true, scales: { x: { beginAtZero: true } } }
+            });
+        }
+
+        // --- FIN: FUNCIONES PARA LA PESTAÑA DE REPORTES ---
 
         // --- INICIO: FUNCIONES PARA GENERAR DOCUMENTO DOCX ---
 
