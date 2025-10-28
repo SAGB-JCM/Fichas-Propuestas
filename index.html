@@ -38,7 +38,7 @@
             padding-left: 1.5rem; /* Asegura un padding consistente a la izquierda */
             padding-right: 1.5rem; /* Asegura un padding consistente a la derecha */
         }
-        body { zoom: 69%; }
+        /* body { zoom: 69%; } */ /* Causa probable de problemas de interacción con gráficas. Considera eliminar o reemplazar con transform: scale() o ajustar tamaños base. */
 
         :root {
             --primary-color: #1E5B4F;
@@ -417,6 +417,13 @@
         .details-image-wrapper:hover img::after {
             opacity: 1;
         }
+        
+        /* Contenedor para el canvas de la gráfica para asegurar responsividad */
+        .chart-wrapper {
+            position: relative;
+            height: 350px; /* Altura por defecto para los contenedores de gráficas */
+            width: 100%;
+        }
 
         /* =================================================================== */
     </style>
@@ -615,38 +622,69 @@
                     <!-- Contenedor del Dashboard de Reportes -->
                     <div id="reports-dashboard-container" class="hidden">
                         <div class="grid grid-cols-1 gap-8">
+                            <!-- Fila 1: Nuevos Indicadores de Costo por KM -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <!-- Indicador General de Costo por KM -->
+                                <div id="costo-km-general-container" class="bg-slate-50 p-6 rounded-lg border flex flex-col items-center justify-center text-center">
+                                    <h3 class="text-lg font-semibold text-slate-700 mb-2">Costo General por Kilómetro</h3>
+                                    <p class="text-sm text-gray-500 mb-4">(Incluye licitaciones de construcción y servicios "Otros")</p>
+                                    <div id="costo-km-general-value" class="text-4xl font-bold text-primary">
+                                        $0.00
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-1">mdp por KM</p>
+                                </div>
+                                <!-- Tabla de Costo por KM por Subtramo -->
+                                <div class="bg-slate-50 p-6 rounded-lg border">
+                                    <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Costo por KM por Licitación de Construcción</h3>
+                                    <div id="costo-km-detalle-table-container" class="max-h-64 overflow-y-auto">
+                                        <!-- La tabla se generará dinámicamente -->
+                                    </div>
+                                </div>
+                            </div>
                             <!-- Fila 1: Presupuesto y Tramos -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <!-- Gráfica de Presupuestos -->
-                                <div class="bg-slate-50 p-6 rounded-lg border">
+                                <div class="bg-slate-50 p-6 rounded-lg border flex flex-col">
                                     <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Distribución de Presupuesto (mdp)</h3>
-                                    <canvas id="budgetChart"></canvas>
+                                    <div class="chart-wrapper flex-grow">
+                                        <canvas id="budgetChart"></canvas>
+                                    </div>
                                 </div>
                                 <!-- Gráfica de Tramos -->
-                                <div class="bg-slate-50 p-6 rounded-lg border">
+                                <div class="bg-slate-50 p-6 rounded-lg border flex flex-col">
                                     <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">KM Programados vs. KM Adjudicados</h3>
-                                    <canvas id="tramosChart"></canvas>
+                                    <div class="chart-wrapper flex-grow">
+                                        <canvas id="tramosChart"></canvas>
+                                    </div>
                                 </div>
                             </div>
                             <!-- Fila 2: Licitaciones y Comparativa de Montos -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <!-- Gráfica de Licitaciones -->
-                                <div class="bg-slate-50 p-6 rounded-lg border">
+                                <div class="bg-slate-50 p-6 rounded-lg border flex flex-col">
                                     <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Monto Adjudicado por Empresa (mdp)</h3>
-                                    <canvas id="licitacionesChart"></canvas>
+                                    <div class="chart-wrapper flex-grow">
+                                        <canvas id="licitacionesChart"></canvas>
+                                    </div>
                                 </div>
                                 <!-- Nueva Gráfica: Comparativa de Montos (Tramos vs Otros) -->
-                                <div class="bg-slate-50 p-6 rounded-lg border">
-                                    <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Comparativa de Montos: Tramos vs. Otros (mdp)</h3>
-                                    <canvas id="subtramosVsOtrosChart"></canvas>
+                                <div class="bg-slate-50 p-6 rounded-lg border flex flex-col">
+                                    <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Montos Adjudicados (mdp)</h3>
+                                    <div class="chart-wrapper flex-grow">
+                                        <canvas id="subtramosVsOtrosChart"></canvas>
+                                    </div>
                                 </div>
                             </div>
                             <!-- Fila 3: Metas del Programa Sectorial -->
                             <div class="bg-slate-50 p-6 rounded-lg border">
                                 <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Metas del Programa Sectorial de Infraestructura (2025-2030)</h3>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
-                                    <canvas id="metasSectorialChart"></canvas>
-                                    <canvas id="avanceSectorialChart"></canvas>
+                                    <div class="chart-wrapper">
+                                        <canvas id="metasSectorialChart"></canvas>
+                                    </div>
+                                    <div class="chart-wrapper">
+                                        <canvas id="avanceSectorialChart"></canvas>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -4831,6 +4869,8 @@
             renderLicitacionesChart(ficha);
             renderSubtramosVsOtrosChart(ficha);
             renderMetasSectorialChart(ficha);
+            renderCostoKmGeneral(ficha); // Nueva función para el indicador general
+            renderCostoKmDetalle(ficha); // Nueva función para la tabla de detalle
         }
 
         /**
@@ -4863,9 +4903,30 @@
                 data: data,
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
+                    onHover: (event, chartElement) => {
+                        event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                    },
+                    interaction: { // Configuración explícita de interacción
+                        mode: 'nearest',
+                        intersect: true
+                    },
                     plugins: {
                         legend: { position: 'top' },
-                        title: { display: false }
+                        title: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    // Asegúrate de que el tooltip se active correctamente
+                                    // Si el cursor no cambia, es probable que el zoom esté interfiriendo.
+                                    const value = context.raw || 0;
+                                    const total = context.chart.getDatasetMeta(0).total;
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(2) : 0;
+                                    return `${label}: ${formatCurrency(value)} mdp (${percentage}%)`;
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -4904,12 +4965,27 @@
                         data: kmProgramadosData,
                         backgroundColor: 'rgba(30, 91, 79, 0.7)', // Primary con transparencia
                     }, { // Etiqueta actualizada
-                        label: 'KM Adjudicados',
+                        label: 'KM Adjudicados (Subtramos/Segmentos)',
                         data: kmSubtramosData,
                         backgroundColor: 'rgba(166, 128, 45, 0.7)', // Secondary con transparencia
                     }]
                 },
-                options: { indexAxis: 'y', responsive: true, scales: { x: { beginAtZero: true } } }
+                options: { 
+                    indexAxis: 'y', 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    onHover: (event, chartElement) => {
+                        event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                    },
+                    interaction: { // Configuración explícita de interacción
+                        mode: 'nearest',
+                        intersect: true
+                    },
+                    plugins: {
+                        tooltip: { mode: 'nearest', intersect: true } // Configuración explícita del tooltip
+                    },
+                    scales: { x: { beginAtZero: true } }
+                }
             });
         }
 
@@ -4952,12 +5028,22 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
+                    onHover: (event, chartElement) => {
+                        event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                    },
                     plugins: {
                         legend: { display: false } // Ocultar leyenda ya que los colores son autoexplicativos
                     },
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
+                    interaction: { // Configuración explícita de interacción
+                        mode: 'nearest',
+                        intersect: true
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { mode: 'nearest', intersect: true } // Configuración explícita del tooltip
+                    },
+                    scales: { y: { beginAtZero: true } }
                 }
             });
         }
@@ -5026,6 +5112,14 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
+                    onHover: (event, chartElement) => {
+                        event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                    },
+                    interaction: { // Configuración explícita de interacción
+                        mode: 'nearest',
+                        intersect: true
+                    },
                     plugins: { title: { display: true, text: `Indicador: ${primerIndicador.indicadorNombre}` } }
                 }
             });
@@ -5042,10 +5136,96 @@
                         backgroundColor: 'rgba(166, 128, 45, 0.2)' // Secondary con transparencia
                     }]
                 },
-                options: { responsive: true, plugins: { title: { display: true, text: 'Porcentaje de Avance Anual' } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    onHover: (event, chartElement) => {
+                        event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                    },
+                    interaction: { // Configuración explícita de interacción
+                        mode: 'nearest',
+                        intersect: true
+                    },
+                    plugins: {
+                        title: { display: true, text: 'Porcentaje de Avance Anual' },
+                        tooltip: { mode: 'nearest', intersect: true } // Configuración explícita del tooltip
+                    },
+                }
             });
         }
         
+        /**
+         * @summary Renderiza el indicador general de Costo por KM.
+         * @param {object} ficha - El objeto de la ficha.
+         */
+        function renderCostoKmGeneral(ficha) {
+             const container = document.getElementById('costo-km-general-value');
+             if (!container) return;
+ 
+             // Reutilizamos la función existente que ya calcula los totales para el tooltip.
+             const { totalKmAdjudicados, totalMontoAdjudicado } = calculateLicitacionTotals(ficha);
+ 
+             // Calcular el costo por KM. Si los KM son 0, el costo es 0 para evitar división por cero.
+             const costoPorKm = totalKmAdjudicados > 0 ? totalMontoAdjudicado / totalKmAdjudicados : 0;
+ 
+             // Actualizamos el valor en la tarjeta del indicador.
+             container.textContent = formatCurrency(costoPorKm);
+        }
+
+        /**
+         * @summary Renderiza la tabla detallada de Costo por KM para licitaciones de construcción.
+         * @param {object} ficha - El objeto de la ficha.
+         */
+        function renderCostoKmDetalle(ficha) {
+            const container = document.getElementById('costo-km-detalle-table-container');
+            if (!container) return;
+
+            // Filtrar solo las licitaciones que están asociadas a un tramo (no "Otro")
+            // y que tienen KM adjudicados para que el cálculo sea relevante.
+            const licitacionesDeConstruccion = (ficha.licitacionesData || []).filter(lic => 
+                lic.tramoId !== 'otro' && (parseFloat(lic.kmAdjudicados) || 0) > 0
+            );
+
+            if (licitacionesDeConstruccion.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 py-4">No hay datos de licitaciones de construcción para mostrar.</p>';
+                return;
+            }
+
+            // Calcular el costo por KM para cada una
+            const dataParaTabla = licitacionesDeConstruccion.map(lic => {
+                const monto = parseFloat(lic.montoAdjudicado) || 0;
+                const km = parseFloat(lic.kmAdjudicados) || 0;
+                const costoPorKm = km > 0 ? monto / km : 0;
+                return {
+                    descripcion: lic.descripcion || 'Sin descripción',
+                    empresa: lic.empresaConstructora || 'No especificada',
+                    costoPorKm: costoPorKm
+                };
+            }).sort((a, b) => b.costoPorKm - a.costoPorKm); // Ordenar de mayor a menor costo
+
+            // Construir la tabla HTML
+            let tableHTML = `
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-slate-700 uppercase bg-slate-200 sticky top-0">
+                        <tr>
+                            <th class="py-2 px-3">Licitación (Descripción)</th>
+                            <th class="py-2 px-3">Empresa</th>
+                            <th class="py-2 px-3 text-right">Costo/KM (mdp)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${dataParaTabla.map(item => `
+                            <tr class="border-b">
+                                <td class="py-2 px-3">${item.descripcion}</td>
+                                <td class="py-2 px-3">${item.empresa}</td>
+                                <td class="py-2 px-3 text-right font-medium">${formatCurrency(item.costoPorKm)}</td>
+                            </tr>`).join('')}
+                    </tbody>
+                </table>`;
+            
+            container.innerHTML = tableHTML;
+        }
+
         // --- FIN: FUNCIONES PARA LA PESTAÑA DE REPORTES ---
 
         /**
@@ -5078,7 +5258,22 @@
                         backgroundColor: '#1E5B4F' // Primary
                     }]
                 },
-                options: { indexAxis: 'y', responsive: true, scales: { x: { beginAtZero: true } } }
+                options: { 
+                    indexAxis: 'y', 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    onHover: (event, chartElement) => {
+                        event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                    },
+                    interaction: { // Configuración explícita de interacción
+                        mode: 'nearest',
+                        intersect: true
+                    },
+                    plugins: {
+                        tooltip: { mode: 'nearest', intersect: true } // Configuración explícita del tooltip
+                    },
+                    scales: { x: { beginAtZero: true } }
+                }
             });
         }
 
