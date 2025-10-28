@@ -5228,7 +5228,7 @@
             // Construir la fila del pie de tabla
             const footerHTML = `
                 <tfoot class="bg-slate-200 font-bold">
-                    <tr class="border-t-2 border-slate-300"><td class="py-2 px-3 text-center" colspan="2">Costo Promedio</td><td class="py-2 px-3 text-center">${formatNumber(totalKm)}</td><td class="py-2 px-3 text-center text-accent">${formatCurrency(costoPromedio)}</td><td class="py-2 px-3 text-center text-primary">${formatCurrency(totalMonto)}</td></tr>
+                    <tr class="border-t-2 border-slate-300"><td class="py-2 px-3 text-center" colspan="3">Costo Promedio</td><td class="py-2 px-3 text-center text-accent" colspan="2">${formatCurrency(costoPromedio)}</td></tr>
                 </tfoot>`;
 
             // Construir la tabla HTML
