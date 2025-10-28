@@ -32,6 +32,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <style>
+
         body { zoom: 69%; } /* Causa probable de problemas de interacción con gráficas. Considera eliminar o reemplazar con transform: scale() o ajustar tamaños base. */
         
         /* Mejora para aumentar el ancho general de la aplicación */
@@ -74,9 +75,12 @@
             font-weight: bold; 
         }
 
-        /* Anula el zoom del body para la pestaña de reportes y así evitar problemas con Chart.js */
-        #tab-content-reportes {
-            zoom: 145%; /* 1 / 0.69 ≈ 1.449 */
+        /* Contenedor específico para las gráficas de Chart.js. */
+        .chartjs-container {
+            /* Este zoom compensa el zoom general del body (69%) para que las gráficas se rendericen correctamente. */
+            /* El cálculo es 1 / 0.69 ≈ 1.45 */
+            zoom: 145%;
+            position: relative; /* Necesario para que Chart.js calcule bien el tamaño */
         }
 
         /* Estilos para las pestañas del modal */
@@ -658,14 +662,14 @@
                             <!-- Fila 1: Presupuesto y Tramos -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <!-- Gráfica de Presupuestos -->
-                                <div class="bg-slate-50 p-6 rounded-lg border flex flex-col">
+                                <div class="bg-slate-50 p-6 rounded-lg border flex flex-col chartjs-container">
                                     <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Distribución de Presupuesto (mdp)</h3>
                                     <div class="chart-wrapper flex-grow">
                                         <canvas id="budgetChart"></canvas>
                                     </div>
                                 </div>
                                 <!-- Gráfica de Tramos -->
-                                <div class="bg-slate-50 p-6 rounded-lg border flex flex-col">
+                                <div class="bg-slate-50 p-6 rounded-lg border flex flex-col chartjs-container">
                                     <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">KM Programados vs. KM Adjudicados</h3>
                                     <div class="chart-wrapper flex-grow">
                                         <canvas id="tramosChart"></canvas>
@@ -675,14 +679,14 @@
                             <!-- Fila 2: Licitaciones y Comparativa de Montos -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <!-- Gráfica de Licitaciones -->
-                                <div class="bg-slate-50 p-6 rounded-lg border flex flex-col">
+                                <div class="bg-slate-50 p-6 rounded-lg border flex flex-col chartjs-container">
                                     <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Monto Adjudicado por Empresa (mdp)</h3>
                                     <div class="chart-wrapper flex-grow">
                                         <canvas id="licitacionesChart"></canvas>
                                     </div>
                                 </div>
                                 <!-- Nueva Gráfica: Comparativa de Montos (Tramos vs Otros) -->
-                                <div class="bg-slate-50 p-6 rounded-lg border flex flex-col">
+                                <div class="bg-slate-50 p-6 rounded-lg border flex flex-col chartjs-container">
                                     <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Montos Adjudicados (mdp)</h3>
                                     <div class="chart-wrapper flex-grow">
                                         <canvas id="subtramosVsOtrosChart"></canvas>
@@ -691,12 +695,12 @@
                             </div>
                             <!-- Fila 3: Metas del Programa Sectorial -->
                             <div class="bg-slate-50 p-6 rounded-lg border">
-                                <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Metas del Programa Sectorial de Infraestructura (2025-2030)</h3>
+                                <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Metas del Programa Sectorial de Infraestructura (2025-2030)</h3>                                
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
-                                    <div class="chart-wrapper">
+                                    <div class="chart-wrapper chartjs-container">
                                         <canvas id="metasSectorialChart"></canvas>
                                     </div>
-                                    <div class="chart-wrapper">
+                                    <div class="chart-wrapper chartjs-container">
                                         <canvas id="avanceSectorialChart"></canvas>
                                     </div>
                                 </div>
@@ -2159,11 +2163,10 @@
             activeBtn.classList.add('active', 'border-primary', 'text-primary');
             activeBtn.classList.remove('border-transparent', 'text-gray-500');
             
-            // Mostrar contenido activo
+            // Mostrar contenido activo y quitar la manipulación de la clase en <html>
             elements.tabContents.forEach(content => {
-                content.classList.add('hidden');
+                content.classList.toggle('hidden', content.id !== `tab-content-${tabName}`);
             });
-            document.getElementById(`tab-content-${tabName}`).classList.remove('hidden');
         }
 
         function openFichaModal(ficha = null) {
