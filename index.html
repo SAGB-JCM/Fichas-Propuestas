@@ -32,13 +32,14 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <style>
+        body { zoom: 69%; } /* Causa probable de problemas de interacción con gráficas. Considera eliminar o reemplazar con transform: scale() o ajustar tamaños base. */
+        
         /* Mejora para aumentar el ancho general de la aplicación */
         .max-w-7xl {
             max-width: 100% !important; /* Anula el ancho máximo por defecto */
             padding-left: 1.5rem; /* Asegura un padding consistente a la izquierda */
             padding-right: 1.5rem; /* Asegura un padding consistente a la derecha */
         }
-        /* body { zoom: 69%; } */ /* Causa probable de problemas de interacción con gráficas. Considera eliminar o reemplazar con transform: scale() o ajustar tamaños base. */
 
         :root {
             --primary-color: #1E5B4F;
@@ -71,6 +72,11 @@
             border-color: var(--primary-color); 
             color: var(--primary-color); 
             font-weight: bold; 
+        }
+
+        /* Anula el zoom del body para la pestaña de reportes y así evitar problemas con Chart.js */
+        #tab-content-reportes {
+            zoom: 145%; /* 1 / 0.69 ≈ 1.449 */
         }
 
         /* Estilos para las pestañas del modal */
