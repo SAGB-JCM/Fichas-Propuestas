@@ -5229,11 +5229,14 @@
             const totalMonto = dataParaTabla.reduce((sum, item) => sum + item.montoAdjudicado, 0);
             const costoPromedio = totalKm > 0 ? totalMonto / totalKm : 0;
 
-            // Construir la fila del pie de tabla
-            const footerHTML = `
-                <tfoot class="bg-slate-200 font-bold">
-                    <tr class="border-t-2 border-slate-300"><td class="py-2 px-3 text-center" colspan="3">Costo Promedio</td><td class="py-2 px-3 text-center text-accent" colspan="2">${formatCurrency(costoPromedio)}</td></tr>
-                </tfoot>`;
+            // Construir la fila del pie de tabla solo si hay más de un registro
+            let footerHTML = '';
+            if (dataParaTabla.length > 1) {
+                footerHTML = `
+                    <tfoot class="bg-slate-200 font-bold">
+                        <tr class="border-t-2 border-slate-300"><td class="py-2 px-3 text-center" colspan="3">Costo Promedio</td><td class="py-2 px-3 text-center text-accent" colspan="2">${formatCurrency(costoPromedio)}</td></tr>
+                    </tfoot>`;
+            }
 
             // Construir la tabla HTML
             let tableHTML = `
