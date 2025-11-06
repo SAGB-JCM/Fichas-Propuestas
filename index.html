@@ -33,7 +33,7 @@
 
     <style>
 
-        body { zoom: 69%; } /* Causa probable de problemas de interacción con gráficas. Considera eliminar o reemplazar con transform: scale() o ajustar tamaños base. */
+        body { zoom: 65%; } /* Causa probable de problemas de interacción con gráficas. Considera eliminar o reemplazar con transform: scale() o ajustar tamaños base. */
         
         /* Mejora para aumentar el ancho general de la aplicación */
         .max-w-7xl {
@@ -92,8 +92,9 @@
 
         .table-container {
             overflow-x: auto;
-            max-height: 455px;
+            max-height: 560px;
             overflow-y: auto;
+            min-height: 400px; /* Altura mínima para evitar que sea demasiado pequeña en pantallas chicas */
         }
 
         .modal-enter { animation: fadeIn 0.3s ease-out forwards; }
@@ -589,28 +590,30 @@
                     </div>
 
                     <!-- Search and Filters -->
-                    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                            <!-- Filtro por Proyecto Ferroviario -->
+                    <div class="bg-white rounded-lg shadow-sm p-4 mb-6 flex flex-col gap-4">
+                        <!-- Fila 1: Filtros de selección -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="proyecto-ferroviario-filter" class="block text-sm font-medium text-gray-700 mb-1">Proyecto Ferroviario</label>
+                                <label for="proyecto-ferroviario-filter" class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Proyecto Ferroviario</label>
                                 <select id="proyecto-ferroviario-filter" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                                    <option value="">Todos</option>
+                                    <option value="">Todos los Proyectos</option>
                                 </select>
                             </div>
-                            <!-- Filtro por Tramo Correspondiente -->
                             <div>
-                                <label for="tramo-correspondiente-filter" class="block text-sm font-medium text-gray-700 mb-1">Tramo Correspondiente</label>
-                                <select id="tramo-correspondiente-filter" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus-ring-2 focus:ring-primary" disabled>
-                                    <option value="">Todos</option>
+                                <label for="tramo-correspondiente-filter" class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Tramo</label>
+                                <select id="tramo-correspondiente-filter" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" disabled>
+                                    <option value="">Todos los Tramos</option>
                                 </select>
                             </div>
-                            <div class="flex-1 relative">
-                                <input type="text" id="search-input" placeholder="Buscar en resultados..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <!-- Fila 2: Búsqueda y acciones -->
+                        <div class="flex items-center gap-4">
+                            <div class="flex-grow relative">
                                 <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="search-input" placeholder="Buscar en todos los campos de los resultados filtrados..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                             </div>
-                            <button id="clear-search-btn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-                                <i class="fa-solid fa-times mr-2"></i>Limpiar
+                            <button id="clear-search-btn" class="flex-shrink-0 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                                <i class="fa-solid fa-broom mr-2"></i>Limpiar Filtros
                             </button>
                         </div>
                     </div>
