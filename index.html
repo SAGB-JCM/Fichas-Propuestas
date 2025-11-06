@@ -660,10 +660,6 @@
                             <select id="report-tramo-correspondiente-filter" class="w-full md:w-auto p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" disabled>
                                 <option value="">-- Todos los Tramos --</option>
                             </select>
-                            <!-- Filtro Principal de Ficha -->
-                            <select id="ficha-report-selector" class="w-full md:w-96 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                                <option value="">-- Seleccione una Ficha para ver sus reportes --</option>
-                            </select>
                             <button id="report-settings-btn" class="text-slate-500 hover:text-primary p-2 rounded-lg transition-colors" title="Configuración de Reportes">
                                 <i class="fa-solid fa-cog fa-lg"></i>
                             </button>
@@ -1610,7 +1606,6 @@
         
         // --- INICIO: Referencias para la nueva pestaña de Reportes ---
         const reportElements = {
-            fichaReportSelector: document.getElementById('ficha-report-selector'),
             reportsDashboardContainer: document.getElementById('reports-dashboard-container'),
             noReportSelected: document.getElementById('no-report-selected'),
             charts: {} // Objeto para almacenar instancias de Chart.js
@@ -1829,14 +1824,10 @@
 
             elements.reportProyectoFerroviarioFilter.addEventListener('change', () => {
                 populateTramoFilter(elements.reportProyectoFerroviarioFilter.value, elements.reportTramoCorrespondienteFilter);
-                populateFichaReportSelector(); // Actualizar el selector de fichas
+                handleReportFilterChange(); // Llamar a la nueva lógica de filtrado
             });
-            elements.reportTramoCorrespondienteFilter.addEventListener('change', populateFichaReportSelector);
+            elements.reportTramoCorrespondienteFilter.addEventListener('change', handleReportFilterChange);
             // --- FIN: Listeners para los nuevos filtros ---
-
-            // --- INICIO: Listener para el selector de reportes ---
-            reportElements.fichaReportSelector.addEventListener('change', handleFichaReportSelection);
-            // --- FIN: Listener para el selector de reportes ---
 
             // Manejo de ramos
             document.getElementById('add-ramo-btn').addEventListener('click', addRamo);
@@ -2052,7 +2043,6 @@
                 }));
                 renderFichasTable();
                 populateProjectFilter(); // <-- Popular los filtros de proyecto
-                populateFichaReportSelector(); // <-- Popular el selector de reportes
             } catch (error) {
                 console.error('Error al cargar fichas:', error);
                 showAlert('Error al cargar las fichas', 'error');
@@ -2100,20 +2090,6 @@
             return doc.body.textContent || "";
         }
 
-        /**
-         * @summary Popula el selector de fichas en la pestaña de reportes.
-         */
-        function populateFichaReportSelector() { // MODIFICADA
-            const selector = reportElements.fichaReportSelector;
-            selector.innerHTML = '<option value="">-- Seleccione una Ficha para ver sus reportes --</option>'; // Reset
-            const filteredData = applyReportFilters(); // Aplicar filtros de proyecto/tramo
-            filteredData.forEach(ficha => {
-                const option = document.createElement('option');
-                option.value = ficha.id;
-                option.textContent = `${ficha.faseTramo || 'Ficha'} - ${ficha.nombrePrograma || 'Sin Nombre'}`;
-                selector.appendChild(option);
-            });
-        }
         function renderFichasTable(filteredFichas = null) {
             const tbody = elements.fichasTableBody;
             const data = filteredFichas === null ? applyAllFiltersAndRender(false) : filteredFichas;
@@ -3919,11 +3895,11 @@
                 renderFichasTable(data);
             } else {
                 return data;
-            }
+            } 
         }
 
         function handleSearch() {
-            applyAllFiltersAndRender();
+            applyAllFiltersAndRender(); 
         }
 
         function populateProjectFilter() {
@@ -3948,7 +3924,7 @@
                 tramoSelectElement.disabled = false;
             } else {
                 tramoSelectElement.disabled = true;
-            }
+            } 
         }
 
         function clearSearch() {
@@ -3975,7 +3951,7 @@
         // --- FIN: NUEVAS FUNCIONES DE FILTRADO ---
 
         function viewFicha(id) {
-            const ficha = fichas.find(f => f.id === id);
+            const ficha = fichas.find(f => f.id === id); 
             if (!ficha) return;
 
             // Generar contenido del modal de detalles
@@ -5007,23 +4983,46 @@
         // --- INICIO: FUNCIONES PARA LA PESTAÑA DE REPORTES ---
 
         /**
-         * @summary Maneja la selección de una ficha en el selector de reportes.
+         * @summary Maneja el cambio en los filtros de Proyecto o Tramo en la pestaña de Reportes.
          */
-        function handleFichaReportSelection() {
-            const fichaId = reportElements.fichaReportSelector.value;
-            const selectedFicha = fichas.find(f => f.id === fichaId);
-
+        function handleReportFilterChange() {
             // Destruir gráficas anteriores para evitar conflictos
-            if (reportElements.charts.subtramosVsOtros) reportElements.charts.subtramosVsOtros.destroy();
-            if (reportElements.charts.metasSectorial) reportElements.charts.metasSectorial.destroy();
             Object.values(reportElements.charts).forEach(chart => {
                 if (chart) chart.destroy();
             });
+            reportElements.charts = {}; // Limpiar el objeto de gráficas
 
-            if (selectedFicha) {
+            const selectedProyecto = elements.reportProyectoFerroviarioFilter.value;
+            const selectedTramo = elements.reportTramoCorrespondienteFilter.value;
+
+            if (!selectedProyecto) {
+                // Si no hay proyecto, ocultar el dashboard y mostrar el mensaje inicial
+                reportElements.reportsDashboardContainer.classList.add('hidden');
+                reportElements.noReportSelected.classList.remove('hidden');
+                return;
+            }
+
+            // Filtrar las fichas que coinciden con el proyecto seleccionado
+            const fichasDelProyecto = fichas.filter(f => f.proyectoFerroviario === selectedProyecto);
+            const tieneTramos = fichasDelProyecto.some(f => f.tramoCorrespondiente);
+
+            let fichasParaReporte = [];
+
+            if (tieneTramos) {
+                // Si el proyecto tiene tramos, solo mostrar reportes si se ha seleccionado un tramo
+                if (selectedTramo) {
+                    fichasParaReporte = fichasDelProyecto.filter(f => f.tramoCorrespondiente === selectedTramo);
+                }
+            } else {
+                // Si el proyecto no tiene tramos, usar todas las fichas de ese proyecto
+                fichasParaReporte = fichasDelProyecto;
+            }
+
+            if (fichasParaReporte.length > 0) {
                 reportElements.noReportSelected.classList.add('hidden');
                 reportElements.reportsDashboardContainer.classList.remove('hidden');
-                renderAllChartsForFicha(selectedFicha);
+                // Renderizar los reportes basados en el conjunto de fichas filtradas
+                renderAllChartsForFicha(fichasParaReporte);
             } else {
                 reportElements.reportsDashboardContainer.classList.add('hidden');
                 reportElements.noReportSelected.classList.remove('hidden');
@@ -5031,18 +5030,38 @@
         }
 
         /**
-         * @summary Renderiza todas las gráficas para la ficha seleccionada.
-         * @param {object} ficha - El objeto de la ficha seleccionada.
+         * @summary Renderiza todas las gráficas para un conjunto de fichas.
+         * @param {Array<object>} fichasParaReporte - Un array con las fichas a considerar para el reporte.
          */
-        function renderAllChartsForFicha(ficha) {
-            renderBudgetChart(ficha);
-            renderTramosChart(ficha);
-            renderLicitacionesChart(ficha);
-            renderSubtramosVsOtrosChart(ficha);
-            renderMetasSectorialChart(ficha);
-            renderCostoKmGeneral(ficha); // Nueva función para el indicador general
-            renderCostoKmDetalle(ficha); // Nueva función para la tabla de detalle
-            renderCostoKmOtras(ficha); // Nueva función para la tabla de "Otras Licitaciones"
+        function renderAllChartsForFicha(fichasParaReporte) {
+            // Agregamos los datos de todas las fichas relevantes
+            const datosAgregados = fichasParaReporte.reduce((acc, ficha) => {
+                acc.presupuestoAprobado += parseFloat(ficha.presupuestoAprobado) || 0;
+                acc.presupuestoModificado += parseFloat(ficha.presupuestoModificado) || 0;
+                acc.presupuestoEjercido += parseFloat(ficha.presupuestoEjercido) || 0;
+                acc.proyectosProgramados.push(...(ficha.proyectosProgramados || []));
+                acc.licitacionesData.push(...(ficha.licitacionesData || []));
+                if (ficha.programaSectorialData && ficha.programaSectorialData.estrategias) {
+                    acc.programaSectorialData.estrategias.push(...ficha.programaSectorialData.estrategias);
+                }
+                return acc;
+            }, {
+                presupuestoAprobado: 0,
+                presupuestoModificado: 0,
+                presupuestoEjercido: 0,
+                proyectosProgramados: [],
+                licitacionesData: [],
+                programaSectorialData: { estrategias: [] }
+            });
+
+            renderBudgetChart(datosAgregados);
+            renderTramosChart(datosAgregados);
+            renderLicitacionesChart(datosAgregados);
+            renderSubtramosVsOtrosChart(datosAgregados);
+            renderMetasSectorialChart(datosAgregados);
+            renderCostoKmGeneral(datosAgregados);
+            renderCostoKmDetalle(datosAgregados);
+            renderCostoKmOtras(datosAgregados);
         }
 
         /**
@@ -5056,9 +5075,9 @@
                 datasets: [{
                     label: 'Presupuesto (mdp)',
                     data: [
-                        parseFloat(ficha.presupuestoAprobado) || 0,
-                        parseFloat(ficha.presupuestoModificado) || 0,
-                        parseFloat(ficha.presupuestoEjercido) || 0
+                        ficha.presupuestoAprobado,
+                        ficha.presupuestoModificado,
+                        ficha.presupuestoEjercido
                     ],
                     backgroundColor: [
                         '#A6802D', // Secondary
@@ -5110,7 +5129,7 @@
          */
         function renderTramosChart(ficha) {
             const ctx = document.getElementById('tramosChart').getContext('2d');
-            const tramosData = ficha.proyectosProgramados || [];
+            const tramosData = ficha.proyectosProgramados;
 
             const labels = [];
             const kmProgramadosData = [];
@@ -5167,7 +5186,7 @@
          */
         function renderSubtramosVsOtrosChart(ficha) {
             const ctx = document.getElementById('subtramosVsOtrosChart').getContext('2d');
-            const licitaciones = ficha.licitacionesData || [];
+            const licitaciones = ficha.licitacionesData;
 
             const licitacionesPorTramo = licitaciones.filter(lic => lic.tramoId !== 'otro');
             const licitacionesOtro = licitaciones.filter(lic => lic.tramoId === 'otro');
@@ -5228,7 +5247,7 @@
             const metasCtx = document.getElementById('metasSectorialChart').getContext('2d');
             const avanceCtx = document.getElementById('avanceSectorialChart').getContext('2d');
 
-            const estrategias = (ficha.programaSectorialData || {}).estrategias || [];
+            const estrategias = ficha.programaSectorialData.estrategias;
             const years = ['2025', '2026', '2027', '2028', '2029', '2030'];
             let allIndicadoresData = [];
 
@@ -5334,7 +5353,7 @@
              const container = document.getElementById('costo-km-general-value');
              if (!container) return;
  
-             // Reutilizamos la función existente que ya calcula los totales para el tooltip.
+             // Usamos la función que calcula los totales para el conjunto de fichas.
              const { totalKmAdjudicados, totalMontoAdjudicado } = calculateLicitacionTotals(ficha);
  
              // Calcular el costo por KM. Si los KM son 0, el costo es 0 para evitar división por cero.
@@ -5354,7 +5373,7 @@
 
             // Filtrar solo las licitaciones que están asociadas a un tramo (no "Otro")
             // y que tienen KM adjudicados para que el cálculo sea relevante.
-            const licitacionesDeConstruccion = (ficha.licitacionesData || []).filter(lic => 
+            const licitacionesDeConstruccion = ficha.licitacionesData.filter(lic => 
                 lic.tramoId !== 'otro' && (parseFloat(lic.kmAdjudicados) || 0) > 0
             );
 
@@ -5426,7 +5445,7 @@
             const container = document.getElementById('costo-km-otras-table-container');
             if (!container) return;
 
-            const licitaciones = ficha.licitacionesData || [];
+            const licitaciones = ficha.licitacionesData;
             const { totalKmAdjudicados } = calculateLicitacionTotals(ficha);
 
             if (licitaciones.length === 0 || totalKmAdjudicados === 0) {
@@ -5491,7 +5510,7 @@
          */
         function renderLicitacionesChart(ficha) {
             const ctx = document.getElementById('licitacionesChart').getContext('2d');
-            const licitaciones = ficha.licitacionesData || [];
+            const licitaciones = ficha.licitacionesData;
             const montosPorEmpresa = {};
 
             licitaciones.forEach(lic => {
