@@ -796,7 +796,7 @@
                         <!-- Parte 1: Variables Principales -->
                         <div class="section-card">
                             <h4 class="section-title">Detalles del Programa Estratégico</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <!-- Proyecto (Oculto, valor por defecto) -->
                                 <input type="hidden" id="proyecto" name="proyecto" value="Programa Estratégico (PE)">
 
@@ -811,6 +811,13 @@
                                 <div class="complementary-field">
                                     <label class="block text-sm font-medium mb-2">Tramo Correspondiente</label>
                                     <input type="text" id="tramoCorrespondiente" name="tramoCorrespondiente" 
+                                           class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary">
+                                </div>
+
+                                <!-- NUEVO: Fase del Proyecto -->
+                                <div class="complementary-field">
+                                    <label class="block text-sm font-medium mb-2">Fase del Proyecto</label>
+                                    <input type="text" id="faseProyecto" name="faseProyecto"
                                            class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary">
                                 </div>
 
@@ -2403,7 +2410,7 @@
             // Campos simples
             const simpleFields = [
                 'proyecto', 'faseTramo', 'nombrePrograma', 'fechaActualizacion',
-                'proyectoFerroviario', 'tramoCorrespondiente', // <-- NUEVOS CAMPOS
+                'proyectoFerroviario', 'tramoCorrespondiente', 'faseProyecto', // <-- NUEVOS CAMPOS
                 'entidadResponsable', 'numeroCartera', 'periodoReportado', 'fuenteDescripcionProyecto',
                 'fuenteIndicadores', 'fuenteMetas', 'fuenteTransparencia',
                 'fuenteProgramaSectorial', 'fuenteLicitaciones',
