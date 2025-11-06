@@ -311,6 +311,21 @@
             padding-bottom: 0.5rem;
         }
 
+        /* Estilo para los nuevos campos complementarios */
+        .complementary-field {
+            background-color: #fefce8; /* yellow-50 */
+            border: 1px solid var(--secondary-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+        .complementary-field label {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        .complementary-field input {
+            border-color: var(--secondary-color) !important; /* !important para sobreescribir Tailwind */
+        }
+
         /* Da salto de línea en las fuentes de las tablas */
         .source-text {
             white-space: pre-line;
@@ -759,6 +774,22 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Proyecto (Oculto, valor por defecto) -->
                                 <input type="hidden" id="proyecto" name="proyecto" value="Programa Estratégico (PE)">
+
+                                <!-- NUEVO: Proyecto Ferroviario -->
+                                <div class="complementary-field">
+                                    <label class="block text-sm font-medium mb-2">Proyecto Ferroviario</label>
+                                    <input type="text" id="proyectoFerroviario" name="proyectoFerroviario" 
+                                           class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary">
+                                </div>
+
+                                <!-- NUEVO: Tramo Correspondiente -->
+                                <div class="complementary-field">
+                                    <label class="block text-sm font-medium mb-2">Tramo Correspondiente</label>
+                                    <input type="text" id="tramoCorrespondiente" name="tramoCorrespondiente" 
+                                           class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary">
+                                </div>
+
+
 
                                 <!-- Nombre del Programa Estratégico -->
                                 <div>
@@ -2326,6 +2357,7 @@
             // Campos simples
             const simpleFields = [
                 'proyecto', 'faseTramo', 'nombrePrograma', 'fechaActualizacion',
+                'proyectoFerroviario', 'tramoCorrespondiente', // <-- NUEVOS CAMPOS
                 'entidadResponsable', 'numeroCartera', 'periodoReportado', 'fuenteDescripcionProyecto',
                 'fuenteIndicadores', 'fuenteMetas', 'fuenteTransparencia',
                 'fuenteProgramaSectorial', 'fuenteLicitaciones',
