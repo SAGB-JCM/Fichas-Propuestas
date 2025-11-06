@@ -590,10 +590,23 @@
 
                     <!-- Search and Filters -->
                     <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-                        <div class="flex flex-col sm:flex-row gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                            <!-- Filtro por Proyecto Ferroviario -->
+                            <div>
+                                <label for="proyecto-ferroviario-filter" class="block text-sm font-medium text-gray-700 mb-1">Proyecto Ferroviario</label>
+                                <select id="proyecto-ferroviario-filter" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="">Todos</option>
+                                </select>
+                            </div>
+                            <!-- Filtro por Tramo Correspondiente -->
+                            <div>
+                                <label for="tramo-correspondiente-filter" class="block text-sm font-medium text-gray-700 mb-1">Tramo Correspondiente</label>
+                                <select id="tramo-correspondiente-filter" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus-ring-2 focus:ring-primary" disabled>
+                                    <option value="">Todos</option>
+                                </select>
+                            </div>
                             <div class="flex-1 relative">
-                                <input type="text" id="search-input" placeholder="Buscar en todas las fichas..." 
-                                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                <input type="text" id="search-input" placeholder="Buscar en resultados..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                                 <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                             </div>
                             <button id="clear-search-btn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
@@ -635,7 +648,16 @@
                 <section class="bg-white p-8 rounded-xl shadow-md">
                     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                         <h2 class="text-2xl font-bold text-primary">Reportes y Estadísticas</h2>
-                        <div class="flex items-center gap-4 w-full md:w-auto">
+                        <div class="flex items-center gap-4 w-full md:w-auto flex-wrap">
+                            <!-- Filtro por Proyecto Ferroviario (Reportes) -->
+                            <select id="report-proyecto-ferroviario-filter" class="w-full md:w-auto p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                <option value="">-- Todos los Proyectos --</option>
+                            </select>
+                            <!-- Filtro por Tramo Correspondiente (Reportes) -->
+                            <select id="report-tramo-correspondiente-filter" class="w-full md:w-auto p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" disabled>
+                                <option value="">-- Todos los Tramos --</option>
+                            </select>
+                            <!-- Filtro Principal de Ficha -->
                             <select id="ficha-report-selector" class="w-full md:w-96 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                                 <option value="">-- Seleccione una Ficha para ver sus reportes --</option>
                             </select>
@@ -1563,6 +1585,12 @@
             loginForm: document.getElementById('login-form'),
             quickViewTooltip: document.getElementById('quick-view-tooltip'),
             authActionBtn: document.getElementById('auth-action-btn'),
+            // Filtros de la tabla principal
+            proyectoFerroviarioFilter: document.getElementById('proyecto-ferroviario-filter'),
+            tramoCorrespondienteFilter: document.getElementById('tramo-correspondiente-filter'),
+            // Filtros de la pestaña de reportes
+            reportProyectoFerroviarioFilter: document.getElementById('report-proyecto-ferroviario-filter'),
+            reportTramoCorrespondienteFilter: document.getElementById('report-tramo-correspondiente-filter'),
             userEmailSpan: document.getElementById('user-email'),
             // Añadimos los botones que deben cambiar su visibilidad
             reportSettingsBtn: document.getElementById('report-settings-btn'),
@@ -1782,6 +1810,20 @@
             elements.searchInput.addEventListener('input', handleSearch);
             elements.clearSearchBtn.addEventListener('click', clearSearch);
 
+            // --- INICIO: Listeners para los nuevos filtros ---
+            elements.proyectoFerroviarioFilter.addEventListener('change', () => {
+                populateTramoFilter(elements.proyectoFerroviarioFilter.value, elements.tramoCorrespondienteFilter);
+                applyAllFiltersAndRender();
+            });
+            elements.tramoCorrespondienteFilter.addEventListener('change', applyAllFiltersAndRender);
+
+            elements.reportProyectoFerroviarioFilter.addEventListener('change', () => {
+                populateTramoFilter(elements.reportProyectoFerroviarioFilter.value, elements.reportTramoCorrespondienteFilter);
+                populateFichaReportSelector(); // Actualizar el selector de fichas
+            });
+            elements.reportTramoCorrespondienteFilter.addEventListener('change', populateFichaReportSelector);
+            // --- FIN: Listeners para los nuevos filtros ---
+
             // --- INICIO: Listener para el selector de reportes ---
             reportElements.fichaReportSelector.addEventListener('change', handleFichaReportSelection);
             // --- FIN: Listener para el selector de reportes ---
@@ -1999,6 +2041,7 @@
                     ...doc.data()
                 }));
                 renderFichasTable();
+                populateProjectFilter(); // <-- Popular los filtros de proyecto
                 populateFichaReportSelector(); // <-- Popular el selector de reportes
             } catch (error) {
                 console.error('Error al cargar fichas:', error);
@@ -2050,11 +2093,11 @@
         /**
          * @summary Popula el selector de fichas en la pestaña de reportes.
          */
-        function populateFichaReportSelector() {
+        function populateFichaReportSelector() { // MODIFICADA
             const selector = reportElements.fichaReportSelector;
             selector.innerHTML = '<option value="">-- Seleccione una Ficha para ver sus reportes --</option>'; // Reset
-
-            fichas.forEach(ficha => {
+            const filteredData = applyReportFilters(); // Aplicar filtros de proyecto/tramo
+            filteredData.forEach(ficha => {
                 const option = document.createElement('option');
                 option.value = ficha.id;
                 option.textContent = `${ficha.faseTramo || 'Ficha'} - ${ficha.nombrePrograma || 'Sin Nombre'}`;
@@ -2062,8 +2105,8 @@
             });
         }
         function renderFichasTable(filteredFichas = null) {
-            const data = filteredFichas || fichas;
             const tbody = elements.fichasTableBody;
+            const data = filteredFichas === null ? applyAllFiltersAndRender(false) : filteredFichas;
             const user = auth.currentUser;
             // Determina si el usuario está completamente autenticado (no es anónimo)
             const isFullUser = user && !user.isAnonymous;
@@ -3829,29 +3872,97 @@
             }
         }
 
-        function handleSearch() {
+        // --- INICIO: NUEVAS FUNCIONES DE FILTRADO ---
+
+        /**
+         * Aplica todos los filtros (proyecto, tramo y búsqueda) y renderiza la tabla.
+         * @param {boolean} [render=true] - Si es false, solo devuelve los datos filtrados sin renderizar.
+         * @returns {Array|undefined} - Devuelve los datos filtrados si render es false.
+         */
+        function applyAllFiltersAndRender(render = true) {
+            const proyectoFiltro = elements.proyectoFerroviarioFilter.value;
+            const tramoFiltro = elements.tramoCorrespondienteFilter.value;
             const searchTerm = elements.searchInput.value.toLowerCase().trim();
-            
-            if (!searchTerm) {
-                renderFichasTable();
-                return;
+
+            let data = fichas;
+
+            // 1. Filtrar por Proyecto Ferroviario
+            if (proyectoFiltro) {
+                data = data.filter(ficha => ficha.proyectoFerroviario === proyectoFiltro);
             }
+
+            // 2. Filtrar por Tramo Correspondiente
+            if (tramoFiltro) {
+                data = data.filter(ficha => ficha.tramoCorrespondiente === tramoFiltro);
+            }
+
+            // 3. Filtrar por término de búsqueda
+            if (searchTerm) {
+                data = data.filter(ficha =>
+                    Object.values(ficha).some(value =>
+                        String(value).toLowerCase().includes(searchTerm)
+                    )
+                );
+            }
+
+            if (render) {
+                renderFichasTable(data);
+            } else {
+                return data;
+            }
+        }
+
+        function handleSearch() {
+            applyAllFiltersAndRender();
+        }
+
+        function populateProjectFilter() {
+            const proyectos = [...new Set(fichas.map(f => f.proyectoFerroviario).filter(Boolean))].sort();
+            const proyectoFilter = elements.proyectoFerroviarioFilter;
+            const reportProyectoFilter = elements.reportProyectoFerroviarioFilter;
             
-            const filteredFichas = fichas.filter(ficha => 
-                (ficha.proyecto && ficha.proyecto.toLowerCase().includes(searchTerm)) ||
-                (ficha.faseTramo && ficha.faseTramo.toLowerCase().includes(searchTerm)) ||
-                (ficha.nombrePrograma && ficha.nombrePrograma.toLowerCase().includes(searchTerm)) ||
-                (ficha.ramo && ficha.ramo.toLowerCase().includes(searchTerm)) ||
-                (ficha.entidadResponsable && ficha.entidadResponsable.toLowerCase().includes(searchTerm))
-            );
-            
-            renderFichasTable(filteredFichas);
+            proyectoFilter.innerHTML = '<option value="">Todos los Proyectos</option>';
+            reportProyectoFilter.innerHTML = '<option value="">-- Todos los Proyectos --</option>';
+
+            proyectos.forEach(p => {
+                proyectoFilter.innerHTML += `<option value="${p}">${p}</option>`;
+                reportProyectoFilter.innerHTML += `<option value="${p}">${p}</option>`;
+            });
+        }
+
+        function populateTramoFilter(selectedProyecto, tramoSelectElement) {
+            const tramos = [...new Set(fichas.filter(f => f.proyectoFerroviario === selectedProyecto).map(f => f.tramoCorrespondiente).filter(Boolean))].sort();
+            tramoSelectElement.innerHTML = '<option value="">Todos los Tramos</option>';
+            if (selectedProyecto && tramos.length > 0) {
+                tramos.forEach(t => tramoSelectElement.innerHTML += `<option value="${t}">${t}</option>`);
+                tramoSelectElement.disabled = false;
+            } else {
+                tramoSelectElement.disabled = true;
+            }
         }
 
         function clearSearch() {
             elements.searchInput.value = '';
             renderFichasTable();
         }
+
+        /**
+         * Aplica los filtros de la pestaña de reportes para obtener los datos relevantes.
+         * @returns {Array} - Las fichas filtradas.
+         */
+        function applyReportFilters() {
+            const proyectoFiltro = elements.reportProyectoFerroviarioFilter.value;
+            const tramoFiltro = elements.reportTramoCorrespondienteFilter.value;
+            let data = fichas;
+            if (proyectoFiltro) {
+                data = data.filter(ficha => ficha.proyectoFerroviario === proyectoFiltro);
+            }
+            if (tramoFiltro) {
+                data = data.filter(ficha => ficha.tramoCorrespondiente === tramoFiltro);
+            }
+            return data;
+        }
+        // --- FIN: NUEVAS FUNCIONES DE FILTRADO ---
 
         function viewFicha(id) {
             const ficha = fichas.find(f => f.id === id);
