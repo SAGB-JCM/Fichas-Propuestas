@@ -1847,39 +1847,43 @@
             elements.detailsContent.addEventListener('click', (e) => {
                 const viewBtn = e.target.closest('#view-licitaciones-btn');
                 if (viewBtn) {
-                     const proyecto = viewBtn.dataset.proyecto;
-                     const tramo = viewBtn.dataset.tramo;
- 
-                     // 1. Cargar el iframe con la URL base. Los parámetros se enviarán después.
-                     const iframeBaseSrc = `https://sagb-jcm.github.io/Gesti-n-de-Licitaciones/?tab=costos`;
-                     elements.licitacionesIframe.src = iframeBaseSrc;
- 
-                     // 2. Abrir el modal inmediatamente.
-                     openModal(elements.licitacionesIframeModal);
- 
-                     // 3. Crear una función para manejar el mensaje de "listo" del iframe.
-                     const handleIframeReady = (event) => {
-                         // Asegurarse de que el mensaje viene del iframe correcto y tiene el estado esperado.
-                         if (event.source === elements.licitacionesIframe.contentWindow && event.data.status === 'ready') {
-                             console.log("APP DE FICHAS: Recibido 'ready' desde el iframe. Enviando filtros...");
- 
-                             // 4. Ahora que el iframe está listo, enviar el mensaje con los filtros.
-                             const message = {
-                                 action: 'selectFilters',
-                                 payload: {
-                                     proyecto: proyecto,
-                                     tramo: tramo
-                                 }
-                             };
-                             elements.licitacionesIframe.contentWindow.postMessage(message, '*');
- 
-                             // 5. Limpiar el listener para no recibir mensajes duplicados si el iframe se recarga.
-                             window.removeEventListener('message', handleIframeReady);
-                         }
-                     };
- 
-                     // 6. Añadir el listener que esperará el mensaje de "listo".
-                     window.addEventListener('message', handleIframeReady);
+                    const proyecto = viewBtn.dataset.proyecto;
+                    const tramo = viewBtn.dataset.tramo;
+
+                    // 1. Abrir el modal inmediatamente.
+                    openModal(elements.licitacionesIframeModal);
+
+                    // 2. Definir la función que se ejecutará cuando el iframe esté listo.
+                    // Usamos .onload para asegurarnos de que el script se ejecuta DESPUÉS de que el iframe cargue.
+                    elements.licitacionesIframe.onload = () => {
+                        console.log("APP DE FICHAS: Iframe cargado. Preparando para enviar mensaje.");
+
+                        // 3. Crear la función que manejará la respuesta 'ready' del iframe.
+                        const handleIframeReady = (event) => {
+                            // Validar que el mensaje viene del iframe correcto y es el que esperamos.
+                            if (event.source === elements.licitacionesIframe.contentWindow && event.data.status === 'ready') {
+                                console.log("APP DE FICHAS: Recibido 'ready' del iframe. Enviando filtros...");
+
+                                // 4. Enviar el mensaje con los filtros.
+                                const message = {
+                                    action: 'selectFilters',
+                                    payload: { proyecto, tramo }
+                                };
+                                elements.licitacionesIframe.contentWindow.postMessage(message, '*');
+
+                                // 5. Limpiar el listener para evitar ejecuciones múltiples.
+                                window.removeEventListener('message', handleIframeReady);
+                            }
+                        };
+
+                        // 6. Añadir el listener que espera el mensaje 'ready'.
+                        window.addEventListener('message', handleIframeReady);
+                    };
+
+                    // 7. Asignar el src al iframe. Esto disparará la carga y, al completarse, el evento .onload.
+                    // Se hace al final para asegurar que el listener .onload ya está asignado.
+                    const iframeBaseSrc = `https://sagb-jcm.github.io/Gesti-n-de-Licitaciones/?tab=costos`;
+                    elements.licitacionesIframe.src = iframeBaseSrc;
                 }
             });
 
@@ -1887,6 +1891,12 @@
             elements.closeLicitacionesIframeModalBtn.addEventListener('click', () => closeModal(elements.licitacionesIframeModal));
             elements.licitacionesIframeModal.addEventListener('click', (e) => {
                 if (e.target === elements.licitacionesIframeModal) {
+                    // Al cerrar el modal, es buena práctica limpiar el src del iframe.
+                    // Esto detiene cualquier proceso en el iframe y asegura una carga limpia la próxima vez.
+                    if (elements.licitacionesIframe) {
+                        elements.licitacionesIframe.src = 'about:blank';
+                        elements.licitacionesIframe.onload = null; // Limpiar el handler
+                    }
                     closeModal(elements.licitacionesIframeModal);
                 }
             });
