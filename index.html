@@ -1463,6 +1463,21 @@
         </div>
     </div>
 
+    <!-- MODAL PARA IFRAME DE LICITACIONES -->
+    <div id="licitaciones-iframe-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 overflow-y-auto h-full w-full z-[60] flex items-center justify-center p-4">
+        <div class="relative bg-white rounded-lg shadow-xl w-full h-full max-w-7xl mx-auto flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="text-xl font-bold text-primary">Visor de Licitaciones</h3>
+                <button id="close-licitaciones-iframe-modal-btn" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fa-solid fa-times-circle fa-lg"></i>
+                </button>
+            </div>
+            <div class="flex-grow p-2">
+                <iframe id="licitaciones-iframe" class="w-full h-full border-0 rounded-b-lg"></iframe>
+            </div>
+        </div>
+    </div>
+    
     <!-- Modal para ver imagen en grande (Lightbox) -->
     <div id="image-viewer-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 z-[70] flex items-center justify-center p-4 cursor-pointer">
         <button id="close-image-viewer-btn" class="absolute top-4 right-6 text-white text-5xl font-bold hover:text-gray-300 transition-colors">&times;</button>
@@ -1536,6 +1551,10 @@
         let currentEstrategiaId = null;
 
         // Referencias a elementos DOM
+        // Nuevo modal de licitaciones
+        let licitacionesIframeModal, closeLicitacionesIframeModalBtn, licitacionesIframe;
+
+
         let quickViewTooltip;
         const elements = {
             loader: document.getElementById('loader'),
@@ -1575,6 +1594,11 @@
             imageViewerModal: document.getElementById('image-viewer-modal'),
             imageViewerImg: document.getElementById('image-viewer-img'),
             closeImageViewerBtn: document.getElementById('close-image-viewer-btn'),
+
+            // Modal de Iframe de Licitaciones
+            licitacionesIframeModal: document.getElementById('licitaciones-iframe-modal'),
+            closeLicitacionesIframeModalBtn: document.getElementById('close-licitaciones-iframe-modal-btn'),
+            licitacionesIframe: document.getElementById('licitaciones-iframe'),
 
             // --- Asignación de elementos para el login
             loginScreen: document.getElementById('login-screen'),
@@ -1818,6 +1842,27 @@
             });
             elements.reportTramoCorrespondienteFilter.addEventListener('change', handleReportFilterChange);
             // --- FIN: Listeners para los nuevos filtros ---
+
+            // Listener para el nuevo botón "Ver Licitaciones" (delegado al contenedor de detalles)
+            elements.detailsContent.addEventListener('click', (e) => {
+                const viewBtn = e.target.closest('#view-licitaciones-btn');
+                if (viewBtn) {
+                    const encodedProyecto = viewBtn.dataset.proyecto;
+                    const encodedTramo = viewBtn.dataset.tramo;
+                    const iframeSrc = `https://sagb-jcm.github.io/Gesti-n-de-Licitaciones/?tab=costos&proyecto=${encodedProyecto}&tramo=${encodedTramo}`;
+                    
+                    elements.licitacionesIframe.src = iframeSrc;
+                    openModal(elements.licitacionesIframeModal);
+                }
+            });
+
+            // Listeners para cerrar el modal del iframe
+            elements.closeLicitacionesIframeModalBtn.addEventListener('click', () => closeModal(elements.licitacionesIframeModal));
+            elements.licitacionesIframeModal.addEventListener('click', (e) => {
+                if (e.target === elements.licitacionesIframeModal) {
+                    closeModal(elements.licitacionesIframeModal);
+                }
+            });
 
             // Manejo de ramos
             document.getElementById('add-ramo-btn').addEventListener('click', addRamo);
@@ -3943,12 +3988,22 @@
             const ficha = fichas.find(f => f.id === id); 
             if (!ficha) return;
 
+            // Extraer proyecto y tramo para el botón de licitaciones
+            const proyecto = ficha.proyectoFerroviario || '';
+            const tramo = ficha.tramoCorrespondiente || '';
+
             // Generar contenido del modal de detalles nombre.Programa faseTramo
             let detailsHTML = `
-                <div class="details-header border-b border-gray-200 pb-4 mb-6">
-                    <h3 class="text-xl font-bold text-primary">${ficha.proyecto || 'Sin nombre'}</h3>
-                    <h3 class="text-xl font-bold text-primary">${ficha.proyectoFerroviario || 'Sin nombre'}</h3>
-                    <h3 class="text-xl font-bold text-primary">Fase ${ficha.faseProyecto || 'Sin nombre'}${ficha.tramoCorrespondiente ? `. ${ficha.tramoCorrespondiente}` : ''}</h3>
+                <div class="details-header border-b border-gray-200 pb-4 mb-6 flex justify-between items-start">
+                    <div>
+                        <h3 class="text-xl font-bold text-primary">${ficha.proyecto || 'Sin nombre'}</h3>
+                        <h3 class="text-xl font-bold text-primary">${ficha.proyectoFerroviario || 'Sin nombre'}</h3>
+                        <h3 class="text-xl font-bold text-primary">Fase ${ficha.faseProyecto || 'Sin nombre'}${ficha.tramoCorrespondiente ? `. ${ficha.tramoCorrespondiente}` : ''}</h3>
+                    </div>
+                    <button id="view-licitaciones-btn" data-proyecto="${encodeURIComponent(proyecto)}" data-tramo="${encodeURIComponent(tramo)}" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center space-x-2" title="Ver Licitaciones Asociadas">
+                        <i class="fa-solid fa-gavel"></i>
+                        <span>Ver Licitaciones</span>
+                    </button>
                 </div>
 
                 <div class="bg-gray-50 p-4 rounded-lg">
