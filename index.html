@@ -1888,16 +1888,20 @@
             });
 
             // Listeners para cerrar el modal del iframe
-            elements.closeLicitacionesIframeModalBtn.addEventListener('click', () => closeModal(elements.licitacionesIframeModal));
+            const closeIframeModal = () => {
+                // Al cerrar el modal, es buena práctica limpiar el src del iframe.
+                // Esto detiene cualquier proceso en el iframe y asegura una carga limpia la próxima vez.
+                if (elements.licitacionesIframe) {
+                    elements.licitacionesIframe.src = 'about:blank';
+                    elements.licitacionesIframe.onload = null; // Limpiar el handler para evitar fugas de memoria
+                }
+                closeModal(elements.licitacionesIframeModal);
+            };
+
+            elements.closeLicitacionesIframeModalBtn.addEventListener('click', closeIframeModal);
             elements.licitacionesIframeModal.addEventListener('click', (e) => {
                 if (e.target === elements.licitacionesIframeModal) {
-                    // Al cerrar el modal, es buena práctica limpiar el src del iframe.
-                    // Esto detiene cualquier proceso en el iframe y asegura una carga limpia la próxima vez.
-                    if (elements.licitacionesIframe) {
-                        elements.licitacionesIframe.src = 'about:blank';
-                        elements.licitacionesIframe.onload = null; // Limpiar el handler
-                    }
-                    closeModal(elements.licitacionesIframeModal);
+                    closeIframeModal();
                 }
             });
 
