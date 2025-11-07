@@ -1847,12 +1847,39 @@
             elements.detailsContent.addEventListener('click', (e) => {
                 const viewBtn = e.target.closest('#view-licitaciones-btn');
                 if (viewBtn) {
-                    const encodedProyecto = viewBtn.dataset.proyecto;
-                    const encodedTramo = viewBtn.dataset.tramo;
-                    const iframeSrc = `https://sagb-jcm.github.io/Gesti-n-de-Licitaciones/?tab=costos&proyecto=${encodedProyecto}&tramo=${encodedTramo}`;
-                    
-                    elements.licitacionesIframe.src = iframeSrc;
-                    openModal(elements.licitacionesIframeModal);
+                     const proyecto = viewBtn.dataset.proyecto;
+                     const tramo = viewBtn.dataset.tramo;
+ 
+                     // 1. Cargar el iframe con la URL base. Los parámetros se enviarán después.
+                     const iframeBaseSrc = `https://sagb-jcm.github.io/Gesti-n-de-Licitaciones/?tab=costos`;
+                     elements.licitacionesIframe.src = iframeBaseSrc;
+ 
+                     // 2. Abrir el modal inmediatamente.
+                     openModal(elements.licitacionesIframeModal);
+ 
+                     // 3. Crear una función para manejar el mensaje de "listo" del iframe.
+                     const handleIframeReady = (event) => {
+                         // Asegurarse de que el mensaje viene del iframe correcto y tiene el estado esperado.
+                         if (event.source === elements.licitacionesIframe.contentWindow && event.data.status === 'ready') {
+                             console.log("APP DE FICHAS: Recibido 'ready' desde el iframe. Enviando filtros...");
+ 
+                             // 4. Ahora que el iframe está listo, enviar el mensaje con los filtros.
+                             const message = {
+                                 action: 'selectFilters',
+                                 payload: {
+                                     proyecto: proyecto,
+                                     tramo: tramo
+                                 }
+                             };
+                             elements.licitacionesIframe.contentWindow.postMessage(message, '*');
+ 
+                             // 5. Limpiar el listener para no recibir mensajes duplicados si el iframe se recarga.
+                             window.removeEventListener('message', handleIframeReady);
+                         }
+                     };
+ 
+                     // 6. Añadir el listener que esperará el mensaje de "listo".
+                     window.addEventListener('message', handleIframeReady);
                 }
             });
 
@@ -3991,8 +4018,6 @@
             // Extraer proyecto y tramo para el botón de licitaciones
             const proyecto = ficha.proyectoFerroviario || '';
             const tramo = ficha.tramoCorrespondiente || '';
-
-            // Generar contenido del modal de detalles nombre.Programa faseTramo
             let detailsHTML = `
                 <div class="details-header border-b border-gray-200 pb-4 mb-6 flex justify-between items-start">
                     <div>
@@ -4000,7 +4025,7 @@
                         <h3 class="text-xl font-bold text-primary">${ficha.proyectoFerroviario || 'Sin nombre'}</h3>
                         <h3 class="text-xl font-bold text-primary">Fase ${ficha.faseProyecto || 'Sin nombre'}${ficha.tramoCorrespondiente ? `. ${ficha.tramoCorrespondiente}` : ''}</h3>
                     </div>
-                    <button id="view-licitaciones-btn" data-proyecto="${encodeURIComponent(proyecto)}" data-tramo="${encodeURIComponent(tramo)}" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center space-x-2" title="Ver Licitaciones Asociadas">
+                    <button id="view-licitaciones-btn" data-proyecto="${proyecto}" data-tramo="${tramo}" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center space-x-2" title="Ver Licitaciones Asociadas">
                         <i class="fa-solid fa-gavel"></i>
                         <span>Ver Licitaciones</span>
                     </button>
