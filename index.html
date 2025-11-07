@@ -92,9 +92,9 @@
 
         .table-container {
             overflow-x: auto;
-            max-height: 560px;
+            max-height: 670px;
             overflow-y: auto;
-            min-height: 400px; /* Altura mínima para evitar que sea demasiado pequeña en pantallas chicas */
+            min-height: 200px; /* Altura mínima para evitar que sea demasiado pequeña en pantallas chicas */
         }
 
         .modal-enter { animation: fadeIn 0.3s ease-out forwards; }
@@ -581,41 +581,39 @@
             <!-- Fichas Tab Content -->
             <div id="tab-content-fichas" class="tab-content">
                 <section class="mb-8">
+
+                    <!-- Search and Filters -->
+                    <div class="bg-white rounded-lg shadow-sm p-4 mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <!-- Filtro Proyecto Ferroviario -->
+                        <div>
+                            <label for="proyecto-ferroviario-filter" class="block text-sm font-medium text-gray-700 mb-1">Proyecto Ferroviario</label>
+                            <select id="proyecto-ferroviario-filter" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                <option value="">Todos los Proyectos</option>
+                            </select>
+                        </div>
+                        <!-- Filtro Tramo -->
+                        <div>
+                            <label for="tramo-correspondiente-filter" class="block text-sm font-medium text-gray-700 mb-1">Tramo</label>
+                            <select id="tramo-correspondiente-filter" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" disabled>
+                                <option value="">Todos los Tramos</option>
+                            </select>
+                        </div>
+                        <!-- Búsqueda y Limpiar -->
+                        <div class="md:col-span-2 flex items-center gap-2">
+                            <div class="flex-grow relative">
+                                <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10"></i>
+                                <input type="text" id="search-input" placeholder="Buscar en todos los campos de los resultados filtrados..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <button id="clear-search-btn" class="flex-shrink-0 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors" title="Limpiar Filtros"><i class="fa-solid fa-broom"></i></button>
+                        </div>
+                    </div>
+
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-primary">Gestión de Fichas de Programas Estratégicos</h2>
-                        <button id="add-ficha-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow transition-all duration-200 ease-in-out flex items-center space-x-2">
+                        <h2 class="text-xl font-bold text-primary">Gestión de Fichas de Programas Estratégicos</h2>
+                        <button id="add-ficha-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-all duration-200 ease-in-out flex items-center space-x-2">
                             <i class="fa-solid fa-plus"></i>
                             <span>Agregar Nueva Ficha</span>
                         </button>
-                    </div>
-
-                    <!-- Search and Filters -->
-                    <div class="bg-white rounded-lg shadow-sm p-4 mb-6 flex flex-col gap-4">
-                        <!-- Fila 1: Filtros de selección -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label for="proyecto-ferroviario-filter" class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Proyecto Ferroviario</label>
-                                <select id="proyecto-ferroviario-filter" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                                    <option value="">Todos los Proyectos</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="tramo-correspondiente-filter" class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Tramo</label>
-                                <select id="tramo-correspondiente-filter" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" disabled>
-                                    <option value="">Todos los Tramos</option>
-                                </select>
-                            </div>
-                        </div>
-                        <!-- Fila 2: Búsqueda y acciones -->
-                        <div class="flex items-center gap-4">
-                            <div class="flex-grow relative">
-                                <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                                <input type="text" id="search-input" placeholder="Buscar en todos los campos de los resultados filtrados..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                            </div>
-                            <button id="clear-search-btn" class="flex-shrink-0 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-                                <i class="fa-solid fa-broom mr-2"></i>Limpiar Filtros
-                            </button>
-                        </div>
                     </div>
 
                     <!-- Fichas Table -->
