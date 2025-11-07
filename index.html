@@ -624,8 +624,9 @@
                             <thead class="text-xs text-slate-700 uppercase bg-slate-100 sticky top-0">
                                 <tr>
                                     <th class="py-3 px-6 text-center">No.</th>
-                                    <th class="py-3 px-6 text-center">Fase/Tramo</th>
-                                    <th class="py-3 px-6 text-center">Programa Estratégico</th>
+                                    <th class="py-3 px-6 text-center">Fase</th>
+                                    <th class="py-3 px-6 text-center">Proyecto Ferroviario</th>
+                                    <th class="py-3 px-6 text-center">Tramo Correspondiente</th>
                                     <th class="py-3 px-6 text-center">Objetivo</th>
                                     <th class="py-3 px-6 text-center">KM Programados</th>
                                     <th class="py-3 px-6 text-center">Pres. Ejercido (mdp)</th>
@@ -822,20 +823,6 @@
  
                              <!-- INICIO: Contenedor para el resto de los campos en dos columnas -->
                              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                                <!-- Nombre del Programa Estratégico -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nombre del Programa Estratégico</label>
-                                    <input type="text" id="nombrePrograma" name="nombrePrograma" 
-                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-
-                                 <!-- Fase/Tramo -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Fase y Tramo</label>
-                                    <input type="text" id="faseTramo" name="faseTramo" 
-                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                                 </div>
-
                                 <!-- Ramo (Múltiple) -->
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Ramo o Sector</label>
@@ -2116,8 +2103,6 @@
                 row.setAttribute('data-id', ficha.id);
                 // --- INICIO: Añadir datos para el tooltip ---
                 row.dataset.quickview = 'true';
-                row.dataset.faseTramo = ficha.faseTramo || 'N/A';
-                row.dataset.nombrePrograma = ficha.nombrePrograma || 'N/A';
                 row.dataset.presupuestoAprobado = formatCurrency(ficha.presupuestoAprobado);
                 row.dataset.presupuestoModificado = formatCurrency(ficha.presupuestoModificado);
                 row.dataset.presupuestoEjercido = formatCurrency(ficha.presupuestoEjercido);
@@ -2127,8 +2112,9 @@
                 // --- FIN: Añadir datos para el tooltip ---
                 row.innerHTML = `
                     <td class="py-4 px-6">${index + 1}</td>
-                    <td class="py-4 px-6">${ficha.faseTramo || ''}</td>
-                    <td class="py-4 px-6">${ficha.nombrePrograma || ''}</td>
+                    <td class="py-4 px-6">${ficha.faseProyecto || ''}</td>
+                    <td class="py-4 px-6">${ficha.proyectoFerroviario || ''}</td>
+                    <td class="py-4 px-6">${ficha.tramoCorrespondiente || ''}</td>
                     <td class="py-4 px-6">${truncateText(stripHtml(ficha.objetivos || ''), 450)}</td>
                     <td class="py-4 px-6 text-center">${formatNumber(licitacionTotals.totalKmProgramado)}</td>
                     <td class="py-4 px-6 text-center">${formatCurrency(ficha.presupuestoEjercido)}</td>
@@ -2388,7 +2374,7 @@
             
             // Campos simples
             const simpleFields = [
-                'proyecto', 'faseTramo', 'nombrePrograma', 'fechaActualizacion',
+                'proyecto', 'fechaActualizacion',
                 'proyectoFerroviario', 'tramoCorrespondiente', 'faseProyecto', // <-- NUEVOS CAMPOS
                 'entidadResponsable', 'numeroCartera', 'periodoReportado', 'fuenteDescripcionProyecto',
                 'fuenteIndicadores', 'fuenteMetas', 'fuenteTransparencia',
@@ -2483,7 +2469,7 @@
                             uploadedDocxBase64 = docData.base64Content;
                         }
                     } else {
-                        showAlert(`El documento asociado a la ficha ${ficha.nombrePrograma} no fue encontrado.`, 'warning');
+                        showAlert(`El documento asociado a la ficha ${ficha.tramoCorrespondiente} no fue encontrado.`, 'warning');
                         uploadedDocxBase64 = null;
                         uploadedDocxFilename = null;
                     }
@@ -4940,8 +4926,6 @@
 
                 // Extraer los datos desde los atributos data-* de la fila
                 const {
-                    faseTramo,
-                    nombrePrograma,
                     presupuestoAprobado,
                     presupuestoModificado,
                     presupuestoEjercido,
@@ -4952,8 +4936,6 @@
 
                 // Construir el contenido del tooltip
                 tooltip.innerHTML = `
-                    <p><strong>Fase/Tramo:</strong> ${faseTramo}</p>
-                    <p><strong>Programa:</strong> ${nombrePrograma}</p>
                     <hr class="my-2">
                     <p><strong>Presupuestos (mdp):</strong></p>
                     <p class="pl-4">Aprobado: ${presupuestoAprobado}</p>
@@ -5703,8 +5685,6 @@
 
                 // 5. Mapeo de palabras clave (placeholders)
                 const dataForTemplate = {
-                    palabra_clave_1: record.nombrePrograma || '',
-                    palabra_clave_2: record.faseTramo || '',
                     palabra_clave_3: (record.ramo || '').replace(/;/g, '\n'),
                     palabra_clave_4: formatDate(record.fechaActualizacion) || '',
                     palabra_clave_5: record.entidadResponsable || '',
@@ -5750,7 +5730,7 @@
                 });
 
                 // 7. Lógica para generar el nombre del archivo
-                const filename = `Ficha_${record.nombrePrograma || 'SinNombre'}_${new Date().toISOString().slice(0, 10)}.docx`;
+                const filename = `Ficha_${record.proyectoFerroviario || 'SinNombre'}_${record.tramoCorrespondiente || 'SinNombre'}_Fase_${record.faseProyecto || ''}_${new Date().toISOString().slice(0, 10)}.docx`;
                 saveAs(out, filename);
                 showAlert("¡Reporte generado con éxito!", "success");
 
