@@ -1855,15 +1855,38 @@
                     const proyecto = viewBtn.dataset.proyecto;
                     const tramo = viewBtn.dataset.tramo;
 
-                    // 1. Abrir el modal inmediatamente.
+                    // --- Lógica para el modal del iframe ---
+                    // 1. Abrir el modal del iframe inmediatamente.
                     openModal(elements.licitacionesIframeModal);
 
-                    // Construir la URL con los filtros para el botón "Ir al Sitio"
-                    const siteUrl = `https://sagb-jcm.github.io/Gesti-n-de-Licitaciones/?tab=costos&proyecto=${encodeURIComponent(proyecto)}&tramo=${encodeURIComponent(tramo)}`;
-                    
-                    // Asignar la URL al botón para que abra en una nueva pestaña
-                    elements.goToSiteBtn.href = siteUrl;
+                    // --- Lógica robusta para el botón "Ir al Sitio" ---
+                    // 2. Preparamos la URL base SIN los parámetros de filtro.
+                    const siteUrlBase = `https://sagb-jcm.github.io/Gesti-n-de-Licitaciones/?tab=costos`;
+                    elements.goToSiteBtn.href = siteUrlBase; // Asignamos la URL base.
 
+                    // 3. Reemplazamos el comportamiento por defecto del clic para tener control total.
+                    const newGoToSiteBtn = elements.goToSiteBtn.cloneNode(true);
+                    elements.goToSiteBtn.parentNode.replaceChild(newGoToSiteBtn, elements.goToSiteBtn);
+                    elements.goToSiteBtn = newGoToSiteBtn;
+
+                    elements.goToSiteBtn.addEventListener('click', function(event) {
+                        event.preventDefault(); // Prevenimos la navegación normal.
+                        
+                        // 4. Abrimos la nueva pestaña y guardamos una referencia a ella.
+                        const newTab = window.open(siteUrlBase, '_blank');
+
+                        // 5. Esperamos a que la nueva pestaña cargue y nos envíe el mensaje "ready".
+                        const handleNewTabReady = (messageEvent) => {
+                            if (messageEvent.source === newTab && messageEvent.data.status === 'ready') {
+                                console.log("APP DE FICHAS: Recibido 'ready' de la nueva pestaña. Enviando filtros...");
+                                // 6. Cuando esté lista, le enviamos los filtros vía postMessage.
+                                newTab.postMessage({ action: 'selectFilters', payload: { proyecto, tramo } }, '*');
+                                // 7. Limpiamos el listener para no tenerlo activo innecesariamente.
+                                window.removeEventListener('message', handleNewTabReady);
+                            }
+                        };
+                        window.addEventListener('message', handleNewTabReady);
+                    });
 
                     // 2. Definir la función que se ejecutará cuando el iframe esté listo.
                     // Usamos .onload para asegurarnos de que el script se ejecuta DESPUÉS de que el iframe cargue.
