@@ -5047,8 +5047,15 @@
 
             const moveTooltip = (e) => {
                 if (tooltip.classList.contains('visible')) {
-                    tooltip.style.left = `${e.clientX + 15}px`;
-                    tooltip.style.top = `${e.clientY + 15}px`;
+                    // El `zoom: 65%` en el body hace que las coordenadas del cursor (e.clientX/Y)
+                    // no coincidan con el layout escalado. Para corregirlo, debemos "des-escalar"
+                    // las coordenadas del cursor dividiéndolas por el factor de zoom.
+                    const zoomFactor = 0.65;
+                    const correctedX = e.clientX / zoomFactor;
+                    const correctedY = e.clientY / zoomFactor;
+
+                    tooltip.style.left = `${correctedX + 15}px`;
+                    tooltip.style.top = `${correctedY + 15}px`;
                 }
             };
 
