@@ -1464,9 +1464,15 @@
     <!-- MODAL PARA IFRAME DE LICITACIONES -->
     <div id="licitaciones-iframe-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 overflow-y-auto h-full w-full z-[60] flex items-center justify-center p-4">
         <div class="relative bg-white rounded-lg shadow-xl w-full h-full max-w-7xl mx-auto flex flex-col">
-            <div class="flex justify-between items-center p-4 border-b">
-                <h3 class="text-xl font-bold text-primary">Visor de Licitaciones</h3>
-                <button id="close-licitaciones-iframe-modal-btn" class="text-gray-400 hover:text-gray-600 transition-colors">
+            <div class="flex justify-between items-center p-4 border-b gap-4">
+                <div class="flex items-center gap-4">
+                    <h3 class="text-xl font-bold text-primary">Visor de Licitaciones</h3>
+                    <a id="go-to-site-btn" href="#" target="_blank" class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-1 px-3 rounded-lg transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <span>Ir al Sitio</span>
+                    </a>
+                </div>
+                <button id="close-licitaciones-iframe-modal-btn" class="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0">
                     <i class="fa-solid fa-times-circle fa-lg"></i>
                 </button>
             </div>
@@ -1597,6 +1603,7 @@
             licitacionesIframeModal: document.getElementById('licitaciones-iframe-modal'),
             closeLicitacionesIframeModalBtn: document.getElementById('close-licitaciones-iframe-modal-btn'),
             licitacionesIframe: document.getElementById('licitaciones-iframe'),
+            goToSiteBtn: document.getElementById('go-to-site-btn'), // <-- Nuevo botón
 
             // --- Asignación de elementos para el login
             loginScreen: document.getElementById('login-screen'),
@@ -1850,6 +1857,13 @@
 
                     // 1. Abrir el modal inmediatamente.
                     openModal(elements.licitacionesIframeModal);
+
+                    // Construir la URL con los filtros para el botón "Ir al Sitio"
+                    const siteUrl = `https://sagb-jcm.github.io/Gesti-n-de-Licitaciones/?tab=costos&proyecto=${encodeURIComponent(proyecto)}&tramo=${encodeURIComponent(tramo)}`;
+                    
+                    // Asignar la URL al botón para que abra en una nueva pestaña
+                    elements.goToSiteBtn.href = siteUrl;
+
 
                     // 2. Definir la función que se ejecutará cuando el iframe esté listo.
                     // Usamos .onload para asegurarnos de que el script se ejecuta DESPUÉS de que el iframe cargue.
