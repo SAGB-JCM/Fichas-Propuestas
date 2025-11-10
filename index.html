@@ -662,6 +662,10 @@
                             <button id="report-settings-btn" class="text-slate-500 hover:text-primary p-2 rounded-lg transition-colors" title="Configuración de Reportes">
                                 <i class="fa-solid fa-cog fa-lg"></i>
                             </button>
+                            <button id="view-report-licitaciones-btn" class="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-all duration-200 ease-in-out flex items-center space-x-2" title="Ver Licitaciones del Proyecto/Tramo">
+                                <i class="fa-solid fa-gavel"></i>
+                                <span>Ver Licitaciones</span>
+                            </button>
                         </div>
                     </div>
                     <!-- Contenedor del Dashboard de Reportes -->
@@ -1603,6 +1607,7 @@
             licitacionesIframeModal: document.getElementById('licitaciones-iframe-modal'),
             closeLicitacionesIframeModalBtn: document.getElementById('close-licitaciones-iframe-modal-btn'),
             licitacionesIframe: document.getElementById('licitaciones-iframe'),
+            viewReportLicitacionesBtn: document.getElementById('view-report-licitaciones-btn'), // <-- NUEVO
             goToSiteBtn: document.getElementById('go-to-site-btn'), // <-- Nuevo botón
 
             // --- Asignación de elementos para el login
@@ -1803,6 +1808,87 @@
             }
         }
 
+        /**
+         * @summary Abre el modal del visor de licitaciones y envía los filtros al iframe.
+         * @param {string} proyecto - El nombre del proyecto ferroviario a filtrar.
+         * @param {string} tramo - El nombre del tramo correspondiente a filtrar.
+         */
+        function openLicitacionesViewer(proyecto, tramo) {
+            // 1. Abrir el modal del iframe inmediatamente.
+            openModal(elements.licitacionesIframeModal);
+
+            // --- Lógica robusta para el botón "Ir al Sitio" ---
+            // 2. Preparamos la URL base SIN los parámetros de filtro.
+            const siteUrlBase = `https://sagb-jcm.github.io/Gesti-n-de-Licitaciones/?tab=costos`;
+            
+            // 3. Reemplazamos el comportamiento por defecto del clic para tener control total.
+            // Clonar y reemplazar para eliminar listeners anteriores
+            const newGoToSiteBtn = elements.goToSiteBtn.cloneNode(true);
+            elements.goToSiteBtn.parentNode.replaceChild(newGoToSiteBtn, elements.goToSiteBtn);
+            elements.goToSiteBtn = newGoToSiteBtn; // Actualizar la referencia
+
+            elements.goToSiteBtn.href = siteUrlBase; // Asignamos la URL base.
+
+            elements.goToSiteBtn.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevenimos la navegación normal.
+                
+                // 4. Abrimos la nueva pestaña y guardamos una referencia a ella.
+                const newTab = window.open(siteUrlBase, '_blank');
+
+                // 5. Esperamos a que la nueva pestaña cargue y nos envíe el mensaje "ready".
+                const handleNewTabReady = (messageEvent) => {
+                    if (messageEvent.source === newTab && messageEvent.data.status === 'ready') {
+                        console.log("APP DE FICHAS: Recibido 'ready' de la nueva pestaña. Enviando filtros...");
+                        // 6. Cuando esté lista, le enviamos los filtros vía postMessage.
+                        newTab.postMessage({ action: 'selectFilters', payload: { proyecto, tramo } }, '*');
+                        // 7. Limpiamos el listener para no tenerlo activo innecesariamente.
+                        window.removeEventListener('message', handleNewTabReady);
+                    }
+                };
+                window.addEventListener('message', handleNewTabReady);
+            });
+
+            // 2. Definir la función que se ejecutará cuando el iframe esté listo.
+            // Usamos .onload para asegurarse de que el script se ejecuta DESPUÉS de que el iframe cargue.
+            elements.licitacionesIframe.onload = () => {
+                console.log("APP DE FICHAS: Iframe cargado. Preparando para enviar mensaje.");
+
+                // 3. Crear la función que manejará la respuesta 'ready' del iframe.
+                const handleIframeReady = (event) => {
+                    // Validar que el mensaje viene del iframe correcto y es el que esperamos.
+                    if (event.source === elements.licitacionesIframe.contentWindow && event.data.status === 'ready') {
+                        console.log("APP DE FICHAS: Recibido 'ready' del iframe. Enviando filtros...");
+
+                        // 4. Enviar el mensaje con los filtros.
+                        const filterMessage = {
+                            action: 'selectFilters',
+                            payload: { proyecto, tramo }
+                        };
+                        elements.licitacionesIframe.contentWindow.postMessage(filterMessage, '*');
+
+                        // 5. Enviar un segundo mensaje para aplicar el estilo de zoom.
+                        const styleMessage = {
+                            action: 'applyStyles',
+                            payload: {
+                                target: 'body',
+                                styles: { zoom: '163%' }
+                            }
+                        };
+                        elements.licitacionesIframe.contentWindow.postMessage(styleMessage, '*');
+                        
+                        // 5. Limpiar el listener para evitar ejecuciones múltiples.
+                        window.removeEventListener('message', handleIframeReady);
+                    }
+                };
+                // 6. Añadir el listener que espera el mensaje 'ready'.
+                window.addEventListener('message', handleIframeReady);
+            };
+            // 7. Asignar el src al iframe. Esto disparará la carga y, al completarse, el evento .onload.
+            // Se hace al final para asegurar que el listener .onload ya está asignado.
+            const iframeBaseSrc = `https://sagb-jcm.github.io/Gesti-n-de-Licitaciones/?tab=costos`;
+            elements.licitacionesIframe.src = iframeBaseSrc;
+        }
+
         function setupRealtimeListeners() {
             // Navegación entre pestañas
             elements.tabButtons.forEach(btn => {
@@ -1854,83 +1940,24 @@
                 if (viewBtn) {
                     const proyecto = viewBtn.dataset.proyecto;
                     const tramo = viewBtn.dataset.tramo;
-
-                    // --- Lógica para el modal del iframe ---
-                    // 1. Abrir el modal del iframe inmediatamente.
-                    openModal(elements.licitacionesIframeModal);
-
-                    // --- Lógica robusta para el botón "Ir al Sitio" ---
-                    // 2. Preparamos la URL base SIN los parámetros de filtro.
-                    const siteUrlBase = `https://sagb-jcm.github.io/Gesti-n-de-Licitaciones/?tab=costos`;
-                    elements.goToSiteBtn.href = siteUrlBase; // Asignamos la URL base.
-
-                    // 3. Reemplazamos el comportamiento por defecto del clic para tener control total.
-                    const newGoToSiteBtn = elements.goToSiteBtn.cloneNode(true);
-                    elements.goToSiteBtn.parentNode.replaceChild(newGoToSiteBtn, elements.goToSiteBtn);
-                    elements.goToSiteBtn = newGoToSiteBtn;
-
-                    elements.goToSiteBtn.addEventListener('click', function(event) {
-                        event.preventDefault(); // Prevenimos la navegación normal.
-                        
-                        // 4. Abrimos la nueva pestaña y guardamos una referencia a ella.
-                        const newTab = window.open(siteUrlBase, '_blank');
-
-                        // 5. Esperamos a que la nueva pestaña cargue y nos envíe el mensaje "ready".
-                        const handleNewTabReady = (messageEvent) => {
-                            if (messageEvent.source === newTab && messageEvent.data.status === 'ready') {
-                                console.log("APP DE FICHAS: Recibido 'ready' de la nueva pestaña. Enviando filtros...");
-                                // 6. Cuando esté lista, le enviamos los filtros vía postMessage.
-                                newTab.postMessage({ action: 'selectFilters', payload: { proyecto, tramo } }, '*');
-                                // 7. Limpiamos el listener para no tenerlo activo innecesariamente.
-                                window.removeEventListener('message', handleNewTabReady);
-                            }
-                        };
-                        window.addEventListener('message', handleNewTabReady);
-                    });
-
-                    // 2. Definir la función que se ejecutará cuando el iframe esté listo.
-                    // Usamos .onload para asegurarnos de que el script se ejecuta DESPUÉS de que el iframe cargue.
-                    elements.licitacionesIframe.onload = () => {
-                        console.log("APP DE FICHAS: Iframe cargado. Preparando para enviar mensaje.");
-
-                        // 3. Crear la función que manejará la respuesta 'ready' del iframe.
-                        const handleIframeReady = (event) => {
-                            // Validar que el mensaje viene del iframe correcto y es el que esperamos.
-                            if (event.source === elements.licitacionesIframe.contentWindow && event.data.status === 'ready') {
-                                console.log("APP DE FICHAS: Recibido 'ready' del iframe. Enviando filtros...");
-
-                                // 4. Enviar el mensaje con los filtros.
-                                const filterMessage = {
-                                    action: 'selectFilters',
-                                    payload: { proyecto, tramo }
-                                };
-                                elements.licitacionesIframe.contentWindow.postMessage(filterMessage, '*');
-
-                                // 5. Enviar un segundo mensaje para aplicar el estilo de zoom.
-                                const styleMessage = {
-                                    action: 'applyStyles',
-                                    payload: {
-                                        target: 'body',
-                                        styles: { zoom: '163%' }
-                                    }
-                                };
-                                elements.licitacionesIframe.contentWindow.postMessage(styleMessage, '*');
-                                
-                                // 5. Limpiar el listener para evitar ejecuciones múltiples.
-                                window.removeEventListener('message', handleIframeReady);
-                            }
-                        };
-
-                        // 6. Añadir el listener que espera el mensaje 'ready'.
-                        window.addEventListener('message', handleIframeReady);
-                    };
-
-                    // 7. Asignar el src al iframe. Esto disparará la carga y, al completarse, el evento .onload.
-                    // Se hace al final para asegurar que el listener .onload ya está asignado.
-                    const iframeBaseSrc = `https://sagb-jcm.github.io/Gesti-n-de-Licitaciones/?tab=costos`;
-                    elements.licitacionesIframe.src = iframeBaseSrc;
+                    openLicitacionesViewer(proyecto, tramo); // Llama a la nueva función reutilizable
                 }
             });
+
+            // Listener para el botón "Ver Licitaciones" en la pestaña de reportes
+            if (elements.viewReportLicitacionesBtn) {
+                elements.viewReportLicitacionesBtn.addEventListener('click', () => {
+                    const selectedProyecto = elements.reportProyectoFerroviarioFilter.value;
+                    const selectedTramo = elements.reportTramoCorrespondienteFilter.value;
+
+                    if (!selectedProyecto) {
+                        showAlert("Por favor, seleccione un 'Proyecto Ferroviario' en los filtros de reportes para ver las licitaciones.", "warning");
+                        return;
+                    }
+                    // Si se selecciona un proyecto pero no un tramo, se pasa una cadena vacía para el tramo.
+                    openLicitacionesViewer(selectedProyecto, selectedTramo || '');
+                });
+            }
 
             // Listeners para cerrar el modal del iframe
             const closeIframeModal = () => {
