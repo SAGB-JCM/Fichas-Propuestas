@@ -5592,29 +5592,41 @@
                 };
             }).sort((a, b) => b.costoPorKm - a.costoPorKm); // Ordenar de mayor a menor costo
 
-            // Calcular totales y promedio
+            // Calcular totales y promedios
             const totalKm = dataParaTabla.reduce((sum, item) => sum + item.kmAdjudicados, 0);
             const totalMonto = dataParaTabla.reduce((sum, item) => sum + item.montoAdjudicado, 0);
-            const costoPromedio = totalKm > 0 ? totalMonto / totalKm : 0;
+            const costoPonderado = totalKm > 0 ? totalMonto / totalKm : 0;
+            const costoPromedioSimple = dataParaTabla.length > 0
+                ? dataParaTabla.reduce((sum, item) => sum + item.costoPorKm, 0) / dataParaTabla.length
+                : 0;
 
             // Construir la fila del pie de tabla solo si hay más de un registro
             let footerHTML = '';
             if (dataParaTabla.length > 1) {
                 footerHTML = `
-                    <tfoot class="bg-slate-200 font-bold">
-                        <tr class="border-t-2 border-slate-300"><td class="py-2 px-3 text-center" colspan="3">Costo Promedio</td><td class="py-2 px-3 text-center text-accent" colspan="2">${formatCurrency(costoPromedio)}</td></tr>
+                    <tfoot class="font-bold">
+                        <tr class="bg-slate-200 border-t-2 border-slate-300">
+                            <td class="py-2 px-3 text-center" colspan="2">Costo Total por Km</td>
+                            <td class="py-2 px-3 text-center">${formatNumber(totalKm)}</td>
+                            <td class="py-2 px-3 text-center text-accent">${formatCurrency(costoPonderado)}</td>
+                            <td class="py-2 px-3 text-center text-primary">${formatCurrency(totalMonto)}</td>
+                        </tr>
+                        <tr class="bg-slate-100">
+                            <td class="py-2 px-3 text-center text-sm" colspan="3">Costo Promedio por Km</td>
+                            <td class="py-2 px-3 text-center text-sm text-accent" colspan="2">${formatCurrency(costoPromedioSimple)}</td>
+                        </tr>
                     </tfoot>`;
             }
 
             // Construir la tabla HTML
             let tableHTML = `
                 <table class="w-full text-sm text-left">
-                    <thead class="text-xs text-slate-700 uppercase bg-slate-200 sticky top-0">
+                    <thead class="text-xs text-slate-700 uppercase bg-slate-200 sticky top-0 z-10">
                         <tr>
                             <th class="py-2 px-3 text-center">Licitación (Descripción)</th>
                             <th class="py-2 px-3 text-center">Empresa</th>
                             <th class="py-2 px-3 text-center">KM Adjudicados</th>
-                            <th class="py-2 px-3 text-center">Costo/KM (mdp)</th>
+                            <th class="py-2 px-3 text-center whitespace-nowrap">Costo/KM (mdp)</th>
                             <th class="py-2 px-3 text-center">Monto (mdp)</th>
                         </tr>
                     </thead>
