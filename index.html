@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -689,14 +689,25 @@
                             <!-- Fila 1: Nuevos Indicadores de Costo por KM -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                                 <!-- Indicador General de Costo por KM -->
-                                <div id="costo-km-general-container" class="bg-slate-50 p-6 rounded-lg border flex flex-col items-center justify-center text-center">
+                                <div id="costo-km-general-container" class="bg-slate-50 p-6 rounded-lg border flex flex-col text-center">
                                     <h3 class="text-lg font-semibold text-slate-700 mb-2">Costo General de Construcción por Kilómetro</h3>
-                                    <p class="text-sm text-gray-500 mb-4">(Considera todas las licitaciones: Costos de construcción, supervisión, asesoría y diversos servicios.)</p>
-                                    <div id="costo-km-general-value" class="text-4xl font-bold text-primary">
+                                    <div id="costo-km-general-value" class="text-4xl font-bold text-primary my-2">
                                         $0.00
                                     </div>
                                     <p class="text-sm text-gray-600 mt-1">mdp por KM</p>
-                                    <div class="mt-4">
+                                    <!-- INICIO: Desglose de cálculo -->
+                                    <div id="costo-km-general-breakdown" class="w-full max-w-xs mx-auto mt-4 text-xs text-slate-600 space-y-1 hidden">
+                                        <div class="flex justify-between border-b pb-1">
+                                            <span>Costo Construcción:</span>
+                                            <span id="costo-construccion-value" class="font-semibold"></span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>+ Costo Otros Servicios:</span>
+                                            <span id="costo-otros-value" class="font-semibold"></span>
+                                        </div>
+                                    </div>
+                                    <!-- FIN: Desglose de cálculo -->
+                                    <div class="mt-auto pt-4">
                                         <button id="view-report-licitaciones-btn" class="text-primary hover:text-primary-dark text-sm font-medium py-1 px-2 rounded transition-colors flex items-center space-x-1 hidden" title="Ver Licitaciones del Proyecto/Tramo">
                                             <i class="fa-solid fa-gavel"></i><span>Ver Licitaciones</span>
                                         </button>
@@ -2237,10 +2248,10 @@
          * @returns {Object} Un objeto con { totalKmProgramado, totalKmAdjudicados, totalMontoAdjudicado }.
          */
         function calculateLicitacionTotals(ficha) {
-            if (!ficha.licitacionesData || ficha.licitacionesData.length === 0) {
-                return { totalKmProgramado: 0, totalKmAdjudicados: 0, totalMontoAdjudicado: 0 };
+            if (!ficha || !ficha.licitacionesData || ficha.licitacionesData.length === 0) {
+                return { totalKmProgramado: 0, totalKmAdjudicados: 0, totalMontoAdjudicado: 0, subtotalMontoTramos: 0, totalMontoOtros: 0 };
             }
-
+        
             const licitacionesPorTramo = ficha.licitacionesData.filter(lic => lic.tramoId !== 'otro');
             const licitacionesOtro = ficha.licitacionesData.filter(lic => lic.tramoId === 'otro');
 
@@ -2248,17 +2259,17 @@
             let totalKmAdjudicados = 0;
             let subtotalMontoTramos = 0;
 
-            licitacionesPorTramo.forEach(lic => {
-                tramosUnicos.set(lic.tramoId, lic.tramoProgramadoKm || 0);
-                totalKmAdjudicados += parseFloat(lic.kmAdjudicados) || 0;
-                subtotalMontoTramos += parseFloat(lic.montoAdjudicado) || 0;
+            (ficha.proyectosProgramados || []).forEach(tramo => {
+                tramosUnicos.set(tramo.id, parseFloat(tramo.programadoKm) || 0);
+                totalKmAdjudicados += (tramo.subtramos || []).reduce((sum, sub) => sum + (parseFloat(sub.adjudicadoKm) || 0), 0);
             });
+
+            subtotalMontoTramos = licitacionesPorTramo.reduce((sum, lic) => sum + (parseFloat(lic.montoAdjudicado) || 0), 0);
 
             const totalKmProgramado = Array.from(tramosUnicos.values()).reduce((sum, km) => sum + (parseFloat(km) || 0), 0);
             const totalMontoOtros = licitacionesOtro.reduce((sum, lic) => sum + (parseFloat(lic.montoAdjudicado) || 0), 0);
             const totalMontoAdjudicado = subtotalMontoTramos + totalMontoOtros;
-
-            return { totalKmProgramado, totalKmAdjudicados, totalMontoAdjudicado };
+            return { totalKmProgramado, totalKmAdjudicados, totalMontoAdjudicado, subtotalMontoTramos, totalMontoOtros };
         }
 
         function truncateText(text, maxLength = 50) {
@@ -5560,17 +5571,32 @@
          * @param {object} ficha - El objeto de la ficha.
          */
         function renderCostoKmGeneral(ficha) {
-             const container = document.getElementById('costo-km-general-value');
-             if (!container) return;
- 
-             // Usamos la función que calcula los totales para el conjunto de fichas.
-             const { totalKmAdjudicados, totalMontoAdjudicado } = calculateLicitacionTotals(ficha);
- 
-             // Calcular el costo por KM. Si los KM son 0, el costo es 0 para evitar división por cero.
-             const costoPorKm = totalKmAdjudicados > 0 ? totalMontoAdjudicado / totalKmAdjudicados : 0;
- 
-             // Actualizamos el valor en la tarjeta del indicador.
-             container.textContent = formatCurrency(costoPorKm);
+            const valueContainer = document.getElementById('costo-km-general-value');
+            const breakdownContainer = document.getElementById('costo-km-general-breakdown');
+            const costoConstruccionEl = document.getElementById('costo-construccion-value');
+            const costoOtrosEl = document.getElementById('costo-otros-value');
+
+            if (!valueContainer || !breakdownContainer || !costoConstruccionEl || !costoOtrosEl) return;
+
+            // Usamos la función que calcula los totales para el conjunto de fichas.
+            const { totalKmAdjudicados, totalMontoAdjudicado, subtotalMontoTramos, totalMontoOtros } = calculateLicitacionTotals(ficha);
+
+            // Calcular el costo por KM. Si los KM son 0, el costo es 0 para evitar división por cero.
+            const costoPorKm = totalKmAdjudicados > 0 ? totalMontoAdjudicado / totalKmAdjudicados : 0;
+
+            // Actualizamos el valor principal en la tarjeta del indicador.
+            valueContainer.textContent = formatCurrency(costoPorKm);
+            
+            // Llenar y mostrar el desglose si hay montos que mostrar.
+            if (totalMontoAdjudicado > 0) {
+                // Usar los valores ya calculados para llenar el desglose
+                costoConstruccionEl.textContent = `${formatCurrency(subtotalMontoTramos)} mdp`;
+                costoOtrosEl.textContent = `${formatCurrency(totalMontoOtros)} mdp`;
+                breakdownContainer.classList.remove('hidden');
+            } else {
+                // Ocultar si no hay datos
+                breakdownContainer.classList.add('hidden');
+            }
         }
 
         /**
@@ -6024,4 +6050,4 @@
 
     </script>
 </body>
-</html> 
+</html>  -->
