@@ -5668,55 +5668,95 @@
             const container = document.getElementById('costo-km-otras-table-container');
             if (!container) return;
 
-            const licitaciones = ficha.licitacionesData;
+            const licitacionesData = ficha.licitacionesData;
             const { totalKmAdjudicados } = calculateLicitacionTotals(ficha);
 
-            if (licitaciones.length === 0 || totalKmAdjudicados === 0) {
+            // Filtrar solo las licitaciones de tipo "otro"
+            const licitacionesOtro = licitacionesData.filter(lic => lic.tramoId === 'otro');
+
+            if (licitacionesOtro.length === 0 || totalKmAdjudicados === 0) {
                 container.innerHTML = '<p class="text-center text-gray-500 py-4">No hay datos suficientes para este cálculo.</p>';
                 return;
             }
 
-            // Agrupar montos por categoría
-            const montosPorCategoria = licitaciones.reduce((acc, lic) => {
-                const monto = parseFloat(lic.montoAdjudicado) || 0;
-                // Excluir las licitaciones que no son de tipo "otro"
-                if (lic.tramoId === 'otro') {
-                    const categoria = lic.otroCategoria || 'Sin Categoría';
-                    acc[categoria] = (acc[categoria] || 0) + monto;
+            // Agrupar licitaciones por categoría para mostrar subtotales y luego el desglose
+            const groupedByCategoria = licitacionesOtro.reduce((acc, lic) => {
+                const categoria = lic.otroCategoria || 'Sin Categoría';
+                if (!acc[categoria]) {
+                    acc[categoria] = {
+                        totalMonto: 0,
+                        licitaciones: []
+                    };
                 }
+                acc[categoria].totalMonto += parseFloat(lic.montoAdjudicado) || 0;
+                acc[categoria].licitaciones.push(lic);
                 return acc;
             }, {});
 
-            // Calcular costo por KM para cada categoría
-            const dataParaTabla = Object.entries(montosPorCategoria).map(([categoria, monto]) => {
-                return {
-                    categoria: categoria,
-                    monto: monto,
-                    costoPorKm: totalKmAdjudicados > 0 ? monto / totalKmAdjudicados : 0
-                };
-            }).sort((a, b) => b.costoPorKm - a.costoPorKm); // Ordenar de mayor a menor costo
-
-            // Construir la tabla HTML
             let tableHTML = `
                 <table class="w-full text-sm text-left">
                     <thead class="text-xs text-slate-700 uppercase bg-slate-200 sticky top-0">
                         <tr>
-                            <th class="py-2 px-3 text-center">Categoría</th>
-                            <th class="py-2 px-3 text-center">KM Adjudicados Totales</th>
-                            <th class="py-2 px-3 text-center">Costo/KM (mdp)</th>
-                            <th class="py-2 px-3 text-center">Monto Total (mdp)</th>
+                            <th class="py-2 px-3 text-center">Categoría / Licitación (Descripción)</th>
+                            <th class="py-2 px-3 text-center">Empresa</th>
+                            <th class="py-2 px-3 text-center">KM Adjudicados</th>
+                            <th class="py-2 px-3 text-center whitespace-nowrap !bg-accent/10">Costo/KM (mdp)</th>
+                            <th class="py-2 px-3 text-center">Monto (mdp)</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${dataParaTabla.map(item => `
-                            <tr class="border-b">
-                                <td class="py-2 px-3 text-center">${item.categoria}</td>
-                                <td class="py-2 px-3 text-center">${formatNumber(totalKmAdjudicados)}</td>
-                                <td class="py-2 px-3 text-center font-bold bg-accent/10 text-accent">${formatCurrency(item.costoPorKm)}</td>
-                                <td class="py-2 px-3 text-center font-bold text-primary">${formatCurrency(item.monto)}</td>
-                            </tr>`).join('')}
-                    </tbody>
-                </table>`;
+            `;
+
+            let grandTotalMontoOtras = 0;
+
+            // Iterar sobre las categorías agrupadas
+            for (const categoria in groupedByCategoria) {
+                const categoryData = groupedByCategoria[categoria];
+                const categoryCostoPorKm = totalKmAdjudicados > 0 ? categoryData.totalMonto / totalKmAdjudicados : 0;
+                grandTotalMontoOtras += categoryData.totalMonto;
+
+                // Fila de subtotal por categoría
+                tableHTML += `
+                    <tr class="font-bold bg-slate-100">
+                        <td class="py-2 px-3 text-left-important">${categoria}</td>
+                        <td class="py-2 px-3 text-center"></td>
+                        <td class="py-2 px-3 text-center">${formatNumber(totalKmAdjudicados)}</td> <!-- KM Adjudicados de construcción como base -->
+                        <td class="py-2 px-3 text-center bg-accent/10 text-accent">${formatCurrency(categoryCostoPorKm)}</td>
+                        <td class="py-2 px-3 text-center text-primary">${formatCurrency(categoryData.totalMonto)}</td>
+                    </tr>
+                `;
+
+                // Desglose de licitaciones individuales dentro de la categoría
+                categoryData.licitaciones.forEach(lic => {
+                    const licMonto = parseFloat(lic.montoAdjudicado) || 0;
+                    const licKmAdjudicados = parseFloat(lic.kmAdjudicados) || 0; // Puede ser 0 para muchas licitaciones "otras"
+                    const licCostoPorKm = totalKmAdjudicados > 0 ? licMonto / totalKmAdjudicados : 0;
+
+                    tableHTML += `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-2 px-3 text-left-important pl-8">${lic.descripcion || 'Sin descripción'}</td>
+                            <td class="py-2 px-3 text-center">${lic.empresaConstructora || 'N/A'}</td>
+                            <td class="py-2 px-3 text-center">${formatNumber(licKmAdjudicados)}</td>
+                            <td class="py-2 px-3 text-center bg-accent/10 text-accent">${formatCurrency(licCostoPorKm)}</td>
+                            <td class="py-2 px-3 text-center text-primary">${formatCurrency(licMonto)}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Fila de total general para todas las "Otras Licitaciones"
+            tableHTML += `
+                </tbody>
+                <tfoot class="font-bold">
+                    <tr class="bg-slate-200 border-t-2 border-slate-300">
+                        <td class="py-2 px-3 text-left-important">Total General Otras Licitaciones</td>
+                        <td class="py-2 px-3 text-center"></td>
+                        <td class="py-2 px-3 text-center">${formatNumber(totalKmAdjudicados)}</td> <!-- KM Adjudicados de construcción como base -->
+                        <td class="py-2 px-3 text-center bg-accent text-white">${formatCurrency(totalKmAdjudicados > 0 ? grandTotalMontoOtras / totalKmAdjudicados : 0)}</td>
+                        <td class="py-2 px-3 text-center bg-green-600 text-white">${formatCurrency(grandTotalMontoOtras)}</td>
+                    </tr>
+                </tfoot>
+            </table>`;
             
             container.innerHTML = tableHTML;
         }
