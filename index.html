@@ -1900,12 +1900,22 @@
                                 console.log("APP DE FICHAS: Recibido 'ready' del iframe. Enviando filtros...");
 
                                 // 4. Enviar el mensaje con los filtros.
-                                const message = {
+                                const filterMessage = {
                                     action: 'selectFilters',
                                     payload: { proyecto, tramo }
                                 };
-                                elements.licitacionesIframe.contentWindow.postMessage(message, '*');
+                                elements.licitacionesIframe.contentWindow.postMessage(filterMessage, '*');
 
+                                // 5. Enviar un segundo mensaje para aplicar el estilo de zoom.
+                                const styleMessage = {
+                                    action: 'applyStyles',
+                                    payload: {
+                                        target: 'body',
+                                        styles: { zoom: '163%' }
+                                    }
+                                };
+                                elements.licitacionesIframe.contentWindow.postMessage(styleMessage, '*');
+                                
                                 // 5. Limpiar el listener para evitar ejecuciones múltiples.
                                 window.removeEventListener('message', handleIframeReady);
                             }
