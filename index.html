@@ -365,7 +365,12 @@
         }
         .bg-accent\/10 {
             background-color: rgba(156, 35, 72, 0.1) !important;
+            color: var(--accent-color) !important; /* #9C2348 */
         }
+        .text-accent {
+            color: var(--accent-color) !important; /* #9C2348 */
+        }
+
 
         /* Estilos para el contenedor de imágenes en el modal de detalles */
         .details-image-wrapper {
@@ -5621,8 +5626,8 @@
                             <td class="py-2 px-3 text-center bg-green-600 text-white">${formatCurrency(totalMonto)}</td>
                         </tr>
                         <tr class="bg-slate-100">
-                            <td class="py-2 px-3 text-center text-sm" colspan="3">Costo Promedio por Km</td>
-                            <td class="py-2 px-3 text-center text-sm italic !bg-accent/10 text-accent-custom">${formatCurrency(costoPromedioSimple)}</td>
+                            <td class="py-2 px-3 text-center text-sm italic text-accent" colspan="3">Costo Promedio por Km</td>
+                            <td class="py-2 px-3 text-center text-sm italic text-accent">${formatCurrency(costoPromedioSimple)}</td>
                             <td class="py-2 px-3 text-center text-sm"></td>
                         </tr>
                     </tfoot>`;
@@ -5646,7 +5651,7 @@
                                 <td class="py-2 px-3 text-center">${item.descripcion}</td>
                                 <td class="py-2 px-3 text-center">${item.empresa}</td>
                                 <td class="py-2 px-3 text-center">${formatNumber(item.kmAdjudicados)}</td>
-                                <td class="py-2 px-3 text-center font-bold bg-accent/10 text-accent">${formatCurrency(item.costoPorKm)}</td>
+                                <td class="py-2 px-3 text-center font-bold bg-accent/10">${formatCurrency(item.costoPorKm)}</td>
                                 <td class="py-2 px-3 text-center font-bold text-primary">${formatCurrency(item.montoAdjudicado)}</td>
                             </tr>`).join('')}
                     </tbody>${footerHTML}
