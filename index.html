@@ -1646,6 +1646,9 @@
         // Nuevo modal de licitaciones
         let licitacionesIframeModal, closeLicitacionesIframeModalBtn, licitacionesIframe;
 
+        // Variable para detectar si la app corre en un iframe
+        const isRunningInIframe = window.self !== window.top;
+
 
         let quickViewTooltip;
         const elements = {
@@ -4150,8 +4153,8 @@
             const tramo = elements.reportTramoCorrespondienteFilter.value;
             const button = elements.viewReportLicitacionesBtn;
 
-            // La condición es estricta: se deben seleccionar AMBOS filtros.
-            if (proyecto && tramo) {
+            // La condición ahora es: se deben seleccionar AMBOS filtros Y no debe estar en un iframe.
+            if (proyecto && tramo && !isRunningInIframe) {
                 button.classList.remove('hidden');
             } else {
                 button.classList.add('hidden');
@@ -4225,10 +4228,12 @@
                         <h3 class="text-xl font-bold text-primary">${ficha.proyectoFerroviario || 'Sin nombre'}</h3>
                         <h3 class="text-xl font-bold text-primary">Fase ${ficha.faseProyecto || 'Sin nombre'}${ficha.tramoCorrespondiente ? `. ${ficha.tramoCorrespondiente}` : ''}</h3>
                     </div>
+                ${!isRunningInIframe ? `
                     <button id="view-licitaciones-btn" data-proyecto="${proyecto}" data-tramo="${tramo}" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center space-x-2" title="Ver Licitaciones Asociadas">
                         <i class="fa-solid fa-gavel"></i>
                         <span>Ver Licitaciones</span>
                     </button>
+                ` : ''}
                 </div>
 
                 <div class="bg-gray-50 p-4 rounded-lg">
@@ -6132,26 +6137,26 @@
             if (message && message.action === 'selectFilters' && message.payload) {
                 const { proyecto, tramo } = message.payload;
 
-                // 1. Cambiar a la pestaña de "Costos" donde están los filtros relevantes.
-                const costosTabButton = document.querySelector('button[data-tab="costos"]');
-                if (costosTabButton) {
-                    costosTabButton.click();
+                // 1. Cambiar a la pestaña "Fichas de Trabajo" donde están los filtros principales.
+                const fichasTabButton = document.querySelector('button[data-tab="fichas"]');
+                if (fichasTabButton) {
+                    fichasTabButton.click();
                 }
 
-                // 2. Seleccionar el proyecto y tramo en los selectores de la pestaña de Costos.
+                // 2. Seleccionar el proyecto y tramo en los selectores de la pestaña "Fichas de Trabajo".
                 // Usamos un pequeño timeout para asegurar que la pestaña ha cambiado y los selectores están listos.
                 setTimeout(() => {
-                    if (elements.reportProyectoFerroviarioFilter) {
-                        elements.reportProyectoFerroviarioFilter.value = proyecto;
+                    if (elements.proyectoFerroviarioFilter) {
+                        elements.proyectoFerroviarioFilter.value = proyecto;
                         // Disparamos el evento 'change' para que se pueble el selector de tramos.
-                        elements.reportProyectoFerroviarioFilter.dispatchEvent(new Event('change')); 
+                        elements.proyectoFerroviarioFilter.dispatchEvent(new Event('change')); 
                         
                         // Segundo timeout para dar tiempo a que se pueble el selector de tramos.
                         setTimeout(() => { 
-                            if (elements.reportTramoCorrespondienteFilter) {
-                                elements.reportTramoCorrespondienteFilter.value = tramo;
-                                // Disparamos el evento 'change' para que se cargue el dashboard de costos.
-                                elements.reportTramoCorrespondienteFilter.dispatchEvent(new Event('change')); 
+                            if (elements.tramoCorrespondienteFilter) {
+                                elements.tramoCorrespondienteFilter.value = tramo;
+                                // Disparamos el evento 'change' para que se aplique el filtro en la tabla.
+                                elements.tramoCorrespondienteFilter.dispatchEvent(new Event('change')); 
                             }
                         }, 200);
                     }
