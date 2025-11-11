@@ -696,7 +696,19 @@
                                 <!-- Indicador General de Costo Total del Proyecto-->
                                 <div id="costo-total-general-container" class="bg-slate-50 p-4 rounded-lg border flex flex-col">
                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 flex-grow">
-                                        <!-- Columna Izquierda: Costo Total (Verde) -->
+                                        <!-- Columna Izquierda: KM Adjudicados (Secundario/Dorado) --> 
+                                        <div class="bg-total-km-adjudicados-cell text-white p-4 rounded-lg flex flex-col text-center shadow">
+                                            <h3 class="text-lg font-semibold text-white mb-2">KM Adjudicados</h3>
+                                            <div id="km-adjudicados-general-value" class="text-4xl font-bold my-2">
+                                                0.00
+                                            </div>
+                                            <p class="text-sm text-white mt-1">Km considerados para cálculo</p>
+                                            <div class="w-full max-w-xs mx-auto mt-4 text-xs text-slate-600 space-y-1">
+                                                <!-- Espacio reservado por si se necesita un desglose futuro -->
+                                            </div>
+                                        </div>
+
+                                        <!-- Columna Central: Costo Total (Verde) -->
                                         <div class="bg-green-600 text-white p-4 rounded-lg flex flex-col text-center shadow">
                                             <h3 class="text-lg font-semibold text-green-100 mb-2">Costo Total</h3>
                                             <div id="costo-total-general-value" class="text-4xl font-bold my-2">
@@ -715,17 +727,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- Columna Central: KM Adjudicados (Secundario/Dorado) -->
-                                        <div class="bg-total-km-adjudicados-cell text-white p-4 rounded-lg flex flex-col text-center shadow">
-                                            <h3 class="text-lg font-semibold text-white mb-2">KM Adjudicados</h3>
-                                            <div id="km-adjudicados-general-value" class="text-4xl font-bold my-2">
-                                                0.00
-                                            </div>
-                                            <p class="text-sm text-white mt-1">Km considerados para cálculo</p>
-                                            <div class="w-full max-w-xs mx-auto mt-4 text-xs text-slate-600 space-y-1">
-                                                <!-- Espacio reservado por si se necesita un desglose futuro -->
-                                            </div>
-                                        </div>
+
                                         <!-- Columna Derecha: Costo por KM (Accent/Vino) -->
                                         <div class="bg-accent text-white p-4 rounded-lg flex flex-col text-center shadow">
                                             <h3 class="text-lg font-semibold text-red-100 mb-2">Costo por Kilómetro</h3>
