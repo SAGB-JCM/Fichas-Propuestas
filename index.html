@@ -6107,6 +6107,50 @@
         }
         // --- FIN: FUNCIONES PARA GENERAR DOCUMENTO DOCX ---
 
+        // =================================================================
+        // MÓDULO: Comunicación Inter-aplicaciones (postMessage)
+        // =================================================================
+        /**
+         * Escucha los mensajes enviados desde una ventana padre (como la APP DE LICITACIONES).
+         * Esto permite que la APP DE LICITACIONES controle los filtros de esta aplicación
+         * después de que se haya cargado completamente.
+         */
+        window.addEventListener('message', (event) => {
+            // Por seguridad, se podría verificar el origen del mensaje:
+            // if (event.origin !== 'https://sagb-jcm.github.io') return;
+            
+            const message = event.data;
+
+            if (message && message.action === 'selectFilters' && message.payload) {
+                const { proyecto, tramo } = message.payload;
+
+                // 1. Cambiar a la pestaña de "Costos" donde están los filtros relevantes.
+                const costosTabButton = document.querySelector('button[data-tab="costos"]');
+                if (costosTabButton) {
+                    costosTabButton.click();
+                }
+
+                // 2. Seleccionar el proyecto y tramo en los selectores de la pestaña de Costos.
+                // Usamos un pequeño timeout para asegurar que la pestaña ha cambiado y los selectores están listos.
+                setTimeout(() => {
+                    if (elements.reportProyectoFerroviarioFilter) {
+                        elements.reportProyectoFerroviarioFilter.value = proyecto;
+                        // Disparamos el evento 'change' para que se pueble el selector de tramos.
+                        elements.reportProyectoFerroviarioFilter.dispatchEvent(new Event('change')); 
+                        
+                        // Segundo timeout para dar tiempo a que se pueble el selector de tramos.
+                        setTimeout(() => { 
+                            if (elements.reportTramoCorrespondienteFilter) {
+                                elements.reportTramoCorrespondienteFilter.value = tramo;
+                                // Disparamos el evento 'change' para que se cargue el dashboard de costos.
+                                elements.reportTramoCorrespondienteFilter.dispatchEvent(new Event('change')); 
+                            }
+                        }, 200);
+                    }
+                }, 100);
+            }
+        });
+
     </script>
 </body>
 </html>
