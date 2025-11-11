@@ -696,19 +696,7 @@
                                 <!-- Indicador General de Costo Total del Proyecto-->
                                 <div id="costo-total-general-container" class="bg-slate-50 p-4 rounded-lg border flex flex-col">
                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 flex-grow">
-                                        <!-- Columna Izquierda: KM Adjudicados (Secundario/Dorado) --> 
-                                        <div class="bg-total-km-adjudicados-cell text-white p-4 rounded-lg flex flex-col text-center shadow">
-                                            <h3 class="text-lg font-semibold text-white mb-2">KM Adjudicados</h3>
-                                            <div id="km-adjudicados-general-value" class="text-4xl font-bold my-2">
-                                                0.00
-                                            </div>
-                                            <p class="text-sm text-white mt-1">Km considerados para cálculo</p>
-                                            <div class="w-full max-w-xs mx-auto mt-4 text-xs text-slate-600 space-y-1">
-                                                <!-- Espacio reservado por si se necesita un desglose futuro -->
-                                            </div>
-                                        </div>
-
-                                        <!-- Columna Central: Costo Total (Verde) -->
+                                        <!-- Columna Izquierda: Costo Total (Verde) -->
                                         <div class="bg-green-600 text-white p-4 rounded-lg flex flex-col text-center shadow">
                                             <h3 class="text-lg font-semibold text-green-100 mb-2">Costo Total</h3>
                                             <div id="costo-total-general-value" class="text-4xl font-bold my-2">
@@ -727,7 +715,17 @@
                                                 </div>
                                             </div>
                                         </div>
-
+                                        <!-- Columna Central: KM Adjudicados (Secundario/Dorado) -->
+                                        <div class="bg-total-km-adjudicados-cell text-white p-4 rounded-lg flex flex-col text-center shadow">
+                                            <h3 class="text-lg font-semibold text-white mb-2">KM Adjudicados</h3>
+                                            <div id="km-adjudicados-general-value" class="text-4xl font-bold my-2">
+                                                0.00
+                                            </div>
+                                            <p class="text-sm text-white mt-1">Km considerados para cálculo</p>
+                                            <div class="w-full max-w-xs mx-auto mt-4 text-xs text-slate-600 space-y-1">
+                                                <!-- Espacio reservado por si se necesita un desglose futuro -->
+                                            </div>
+                                        </div>
                                         <!-- Columna Derecha: Costo por KM (Accent/Vino) -->
                                         <div class="bg-accent text-white p-4 rounded-lg flex flex-col text-center shadow">
                                             <h3 class="text-lg font-semibold text-red-100 mb-2">Costo por Kilómetro</h3>
@@ -748,14 +746,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Botón para ver las Licitaciones Asociadas -->
                                     <div class="mt-auto pt-6 text-center">
                                         <button id="view-report-licitaciones-btn" class="text-primary hover:text-primary-dark text-sm font-medium py-1 px-2 rounded transition-colors flex items-center space-x-1 hidden" title="Ver Licitaciones del Proyecto/Tramo">
                                             <i class="fa-solid fa-gavel"></i><span>Ver Desglose Completo de Costos</span>
                                         </button>
                                     </div>
                                 </div>
-
                                 <!-- Tabla de Costo por KM por Subtramo -->
                                 <div class="bg-slate-50 p-6 rounded-lg border">
                                     <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Licitaciones de Construcción - Costo por Km</h3>
@@ -5706,12 +5702,12 @@
                     <tfoot class="font-bold">
                         <tr class="bg-slate-200 border-t-2 border-slate-300">
                             <td class="py-2 px-3 text-center" colspan="2">Costo Total por Km</td>
-                            <td class="py-2 px-3 text-center bg-total-km-adjudicados-cell text-white">${formatNumber(totalKm)}</td> <!-- KM Adjudicados -->
-                            <td class="py-2 px-3 text-center bg-green-600 text-white">${formatCurrency(totalMonto)}</td> <!-- Monto (mdp) -->
+                            <td class="py-2 px-3 text-center bg-total-km-adjudicados-cell text-white">${formatNumber(totalKm)}</td>
                             <td class="py-2 px-3 text-center bg-accent text-white">${formatCurrency(costoPonderado)}</td>
+                            <td class="py-2 px-3 text-center bg-green-600 text-white">${formatCurrency(totalMonto)}</td>
                         </tr>
                         <tr class="bg-slate-100">
-                            <td class="py-2 px-3 text-center text-sm italic text-accent" colspan="4">Costo Promedio por Km</td>
+                            <td class="py-2 px-3 text-center text-sm italic text-accent" colspan="3">Costo Promedio por Km</td>
                             <td class="py-2 px-3 text-center text-sm italic text-accent">${formatCurrency(costoPromedioSimple)}</td>
                             <td class="py-2 px-3 text-center text-sm"></td>
                         </tr>
@@ -5725,9 +5721,9 @@
                         <tr>
                             <th class="py-2 px-3 text-center">Licitación (Descripción)</th>
                             <th class="py-2 px-3 text-center">Empresa</th>
-                            <th class="py-2 px-3 text-center">KM<br>Adjudicados</th>
-                            <th class="py-2 px-3 text-center">Monto<br>(mdp)</th>
+                            <th class="py-2 px-3 text-center">KM<br>Adjudicados</th> 
                             <th class="py-2 px-3 text-center whitespace-nowrap !bg-accent/10">Costo/KM<br>(mdp)</th>
+                            <th class="py-2 px-3 text-center">Monto<br>(mdp)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -5736,8 +5732,8 @@
                                 <td class="py-2 px-3 text-center">${item.descripcion}</td>
                                 <td class="py-2 px-3 text-center">${item.empresa}</td>
                                 <td class="py-2 px-3 text-center">${formatNumber(item.kmAdjudicados)}</td>
-                                <td class="py-2 px-3 text-center font-bold text-primary">${formatCurrency(item.montoAdjudicado)}</td>
                                 <td class="py-2 px-3 text-center font-bold bg-accent/10">${formatCurrency(item.costoPorKm)}</td>
+                                <td class="py-2 px-3 text-center font-bold text-primary">${formatCurrency(item.montoAdjudicado)}</td>
                             </tr>`).join('')}
                     </tbody>${footerHTML}
                 </table>`;
@@ -5784,9 +5780,9 @@
                         <tr>
                             <th class="py-2 px-3 text-center">Categoría / Licitación (Descripción)</th>
                             <th class="py-2 px-3 text-center">Empresa</th>
-                            <th class="py-2 px-3 text-center">KM<br>Adjudicados</th> <!-- Base de cálculo -->
-                            <th class="py-2 px-3 text-center">Monto<br>(mdp)</th>
+                            <th class="py-2 px-3 text-center">KM<br>Adjudicados</th>
                             <th class="py-2 px-3 text-center whitespace-nowrap !bg-accent/10">Costo/KM<br>(mdp)</th>
+                            <th class="py-2 px-3 text-center">Monto<br>(mdp)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -5805,9 +5801,9 @@
                     <tr class="font-bold bg-slate-100">
                         <td class="py-2 px-3 text-left-important">${categoria}</td>
                         <td class="py-2 px-3 text-center"></td>
-                        <td class="py-2 px-3 text-center">${formatNumber(totalKmAdjudicados)}</td>
-                        <td class="py-2 px-3 text-center text-primary">${formatCurrency(categoryData.totalMonto)}</td>
+                        <td class="py-2 px-3 text-center">${formatNumber(totalKmAdjudicados)}</td> <!-- KM Adjudicados de construcción como base -->
                         <td class="py-2 px-3 text-center bg-accent/10 text-accent">${formatCurrency(categoryCostoPorKm)}</td>
+                        <td class="py-2 px-3 text-center text-primary">${formatCurrency(categoryData.totalMonto)}</td>
                     </tr>
                 `;
 
@@ -5821,9 +5817,9 @@
                         <tr class="border-b hover:bg-gray-50">
                             <td class="py-2 px-3 text-left-important pl-8">${lic.descripcion || 'Sin descripción'}</td>
                             <td class="py-2 px-3 text-center">${lic.empresaConstructora || 'N/A'}</td>
-                            <td class="py-2 px-3 text-center">${formatNumber(licKmAdjudicados)}</td> <!-- KM de la licitación "otra" -->
-                            <td class="py-2 px-3 text-center text-primary">${formatCurrency(licMonto)}</td>
+                            <td class="py-2 px-3 text-center">${formatNumber(licKmAdjudicados)}</td>
                             <td class="py-2 px-3 text-center bg-accent/10 text-accent">${formatCurrency(licCostoPorKm)}</td>
+                            <td class="py-2 px-3 text-center text-primary">${formatCurrency(licMonto)}</td>
                         </tr>
                     `;
                 });
@@ -5836,9 +5832,9 @@
                     <tr class="bg-slate-200 border-t-2 border-slate-300">
                         <td class="py-2 px-3 text-center">Costo Total</td>
                         <td class="py-2 px-3 text-center"></td>
-                        <td class="py-2 px-3 text-center bg-total-km-adjudicados-cell text-white">${formatNumber(totalKmAdjudicados)}</td>
-                        <td class="py-2 px-3 text-center bg-green-600 text-white">${formatCurrency(grandTotalMontoOtras)}</td>
+                        <td class="py-2 px-3 text-center bg-total-km-adjudicados-cell text-white">${formatNumber(totalKmAdjudicados)}</td> <!-- KM Adjudicados de construcción como base -->
                         <td class="py-2 px-3 text-center bg-accent text-white">${formatCurrency(totalKmAdjudicados > 0 ? grandTotalMontoOtras / totalKmAdjudicados : 0)}</td>
+                        <td class="py-2 px-3 text-center bg-green-600 text-white">${formatCurrency(grandTotalMontoOtras)}</td>
                     </tr>
                 </tfoot>
             </table>`;
@@ -6106,67 +6102,6 @@
             }
         }
         // --- FIN: FUNCIONES PARA GENERAR DOCUMENTO DOCX ---
-
-        // =================================================================
-        // MÓDULO: Comunicación Inter-aplicaciones (postMessage)
-        // =================================================================
-        /**
-         * Escucha los mensajes enviados desde una ventana padre (como la APP DE LICITACIONES).
-         * Esto permite que la APP DE LICITACIONES controle los filtros de esta aplicación
-         * después de que se haya cargado completamente.
-         */
-        window.addEventListener('message', (event) => {
-            // Por seguridad, se podría verificar el origen del mensaje:
-            // if (event.origin !== 'https://sagb-jcm.github.io') return;
-            
-            const message = event.data;
-
-            if (message && message.action === 'selectFilters' && message.payload) {
-                const { proyecto, tramo } = message.payload;
-
-                // 1. Cambiar a la pestaña de "Costos" donde están los filtros relevantes.
-                const costosTabButton = document.querySelector('button[data-tab="costos"]');
-                if (costosTabButton) {
-                    costosTabButton.click();
-                }
-
-                // 2. Seleccionar el proyecto y tramo en los selectores de la pestaña de Costos.
-                // Usamos un pequeño timeout para asegurar que la pestaña ha cambiado y los selectores están listos.
-                setTimeout(() => {
-                    if (elements.reportProyectoFerroviarioFilter) {
-                        elements.reportProyectoFerroviarioFilter.value = proyecto;
-                        // Disparamos el evento 'change' para que se pueble el selector de tramos.
-                        elements.reportProyectoFerroviarioFilter.dispatchEvent(new Event('change')); 
-                        
-                        // Segundo timeout para dar tiempo a que se pueble el selector de tramos.
-                        setTimeout(() => { 
-                            if (elements.reportTramoCorrespondienteFilter) {
-                                elements.reportTramoCorrespondienteFilter.value = tramo;
-                                // Disparamos el evento 'change' para que se cargue el dashboard de costos.
-                                elements.reportTramoCorrespondienteFilter.dispatchEvent(new Event('change')); 
-                            }
-                        }, 200);
-                    }
-                }, 100);
-            }
-        });
-
-        // =================================================================
-        // MÓDULO: Notificación de "listo" para la ventana padre
-        // =================================================================
-        /**
-         * Si la aplicación se carga dentro de un iframe, envía un mensaje a la
-         * ventana padre para notificar que está lista para recibir comandos,
-         * como la aplicación de filtros.
-         */
-        document.addEventListener('DOMContentLoaded', () => {
-            // Comprueba si la ventana actual es diferente de la ventana de nivel superior.
-            // Esto es una forma fiable de saber si se está ejecutando en un iframe.
-            if (window.self !== window.top) {
-                console.log("APP DE FICHAS: Cargada en un iframe. Enviando mensaje 'ready' al padre.");
-                window.parent.postMessage({ status: 'ready' }, '*');
-            }
-        });
 
     </script>
 </body>
