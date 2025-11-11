@@ -1822,6 +1822,14 @@
                         elements.loader.classList.add('hidden');
                         elements.app.classList.remove('hidden');
                         isAppInitialized = true; // Marcamos la app como inicializada
+
+                        // --- INICIO: Notificar al padre que la app está REALMENTE lista ---
+                        // Si la app está en un iframe, ahora es el momento de avisar que puede recibir comandos.
+                        if (window.self !== window.top) {
+                            console.log("APP DE FICHAS: Aplicación inicializada. Enviando mensaje 'ready' al padre.");
+                            window.parent.postMessage({ status: 'ready' }, '*');
+                        }
+                        // --- FIN: Notificación ---
                         console.log('Aplicación inicializada y lista.');
                     }
 
@@ -6148,23 +6156,6 @@
                         }, 200);
                     }
                 }, 100);
-            }
-        });
-
-        // =================================================================
-        // MÓDULO: Notificación de "listo" para la ventana padre
-        // =================================================================
-        /**
-         * Si la aplicación se carga dentro de un iframe, envía un mensaje a la
-         * ventana padre para notificar que está lista para recibir comandos,
-         * como la aplicación de filtros.
-         */
-        document.addEventListener('DOMContentLoaded', () => {
-            // Comprueba si la ventana actual es diferente de la ventana de nivel superior.
-            // Esto es una forma fiable de saber si se está ejecutando en un iframe.
-            if (window.self !== window.top) {
-                console.log("APP DE FICHAS: Cargada en un iframe. Enviando mensaje 'ready' al padre.");
-                window.parent.postMessage({ status: 'ready' }, '*');
             }
         });
 
