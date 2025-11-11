@@ -6134,32 +6134,45 @@
             
             const message = event.data;
 
-            if (message && message.action === 'selectFilters' && message.payload) {
+            if (message && message.action === 'selectFilters' && message.payload) { // REFACTOR: Fortalecido para aplicar filtros en ambas pestañas
                 const { proyecto, tramo } = message.payload;
 
-                // 1. Cambiar a la pestaña "Fichas de Trabajo" donde están los filtros principales.
+                // 1. Asegurarse de que la app esté en la pestaña principal "Fichas de Trabajo".
                 const fichasTabButton = document.querySelector('button[data-tab="fichas"]');
                 if (fichasTabButton) {
                     fichasTabButton.click();
                 }
 
-                // 2. Seleccionar el proyecto y tramo en los selectores de la pestaña "Fichas de Trabajo".
-                // Usamos un pequeño timeout para asegurar que la pestaña ha cambiado y los selectores están listos.
+                // 2. Aplicar filtros a ambas pestañas usando un timeout para asegurar que la UI esté lista.
                 setTimeout(() => {
+                    // --- Pestaña Principal ("Fichas de Trabajo") ---
                     if (elements.proyectoFerroviarioFilter) {
                         elements.proyectoFerroviarioFilter.value = proyecto;
-                        // Disparamos el evento 'change' para que se pueble el selector de tramos.
                         elements.proyectoFerroviarioFilter.dispatchEvent(new Event('change')); 
                         
-                        // Segundo timeout para dar tiempo a que se pueble el selector de tramos.
                         setTimeout(() => { 
                             if (elements.tramoCorrespondienteFilter) {
                                 elements.tramoCorrespondienteFilter.value = tramo;
-                                // Disparamos el evento 'change' para que se aplique el filtro en la tabla.
                                 elements.tramoCorrespondienteFilter.dispatchEvent(new Event('change')); 
                             }
                         }, 200);
                     }
+
+                    // --- Pestaña de Costos (simultáneamente) ---
+                    if (elements.reportProyectoFerroviarioFilter) {
+                        elements.reportProyectoFerroviarioFilter.value = proyecto;
+                        // Disparamos el evento 'change' para que se pueble el selector de tramos de reportes.
+                        elements.reportProyectoFerroviarioFilter.dispatchEvent(new Event('change'));
+
+                        setTimeout(() => {
+                            if (elements.reportTramoCorrespondienteFilter) {
+                                elements.reportTramoCorrespondienteFilter.value = tramo;
+                                // Disparamos el evento 'change' para que se actualicen los reportes en la pestaña de costos.
+                                elements.reportTramoCorrespondienteFilter.dispatchEvent(new Event('change'));
+                            }
+                        }, 200);
+                    }
+
                 }, 100);
             }
         });
