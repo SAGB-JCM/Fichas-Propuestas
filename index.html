@@ -748,12 +748,14 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- Botón para ver las Licitaciones Asociadas -->
                                     <div class="mt-auto pt-6 text-center">
                                         <button id="view-report-licitaciones-btn" class="text-primary hover:text-primary-dark text-sm font-medium py-1 px-2 rounded transition-colors flex items-center space-x-1 hidden" title="Ver Licitaciones del Proyecto/Tramo">
                                             <i class="fa-solid fa-gavel"></i><span>Ver Desglose Completo de Costos</span>
                                         </button>
                                     </div>
                                 </div>
+
                                 <!-- Tabla de Costo por KM por Subtramo -->
                                 <div class="bg-slate-50 p-6 rounded-lg border">
                                     <h3 class="text-lg font-semibold text-center text-slate-700 mb-4">Licitaciones de Construcción - Costo por Km</h3>
@@ -5704,12 +5706,12 @@
                     <tfoot class="font-bold">
                         <tr class="bg-slate-200 border-t-2 border-slate-300">
                             <td class="py-2 px-3 text-center" colspan="2">Costo Total por Km</td>
-                            <td class="py-2 px-3 text-center bg-total-km-adjudicados-cell text-white">${formatNumber(totalKm)}</td>
+                            <td class="py-2 px-3 text-center bg-total-km-adjudicados-cell text-white">${formatNumber(totalKm)}</td> <!-- KM Adjudicados -->
+                            <td class="py-2 px-3 text-center bg-green-600 text-white">${formatCurrency(totalMonto)}</td> <!-- Monto (mdp) -->
                             <td class="py-2 px-3 text-center bg-accent text-white">${formatCurrency(costoPonderado)}</td>
-                            <td class="py-2 px-3 text-center bg-green-600 text-white">${formatCurrency(totalMonto)}</td>
                         </tr>
                         <tr class="bg-slate-100">
-                            <td class="py-2 px-3 text-center text-sm italic text-accent" colspan="3">Costo Promedio por Km</td>
+                            <td class="py-2 px-3 text-center text-sm italic text-accent" colspan="4">Costo Promedio por Km</td>
                             <td class="py-2 px-3 text-center text-sm italic text-accent">${formatCurrency(costoPromedioSimple)}</td>
                             <td class="py-2 px-3 text-center text-sm"></td>
                         </tr>
@@ -5723,9 +5725,9 @@
                         <tr>
                             <th class="py-2 px-3 text-center">Licitación (Descripción)</th>
                             <th class="py-2 px-3 text-center">Empresa</th>
-                            <th class="py-2 px-3 text-center">KM<br>Adjudicados</th> 
-                            <th class="py-2 px-3 text-center whitespace-nowrap !bg-accent/10">Costo/KM<br>(mdp)</th>
+                            <th class="py-2 px-3 text-center">KM<br>Adjudicados</th>
                             <th class="py-2 px-3 text-center">Monto<br>(mdp)</th>
+                            <th class="py-2 px-3 text-center whitespace-nowrap !bg-accent/10">Costo/KM<br>(mdp)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -5734,8 +5736,8 @@
                                 <td class="py-2 px-3 text-center">${item.descripcion}</td>
                                 <td class="py-2 px-3 text-center">${item.empresa}</td>
                                 <td class="py-2 px-3 text-center">${formatNumber(item.kmAdjudicados)}</td>
-                                <td class="py-2 px-3 text-center font-bold bg-accent/10">${formatCurrency(item.costoPorKm)}</td>
                                 <td class="py-2 px-3 text-center font-bold text-primary">${formatCurrency(item.montoAdjudicado)}</td>
+                                <td class="py-2 px-3 text-center font-bold bg-accent/10">${formatCurrency(item.costoPorKm)}</td>
                             </tr>`).join('')}
                     </tbody>${footerHTML}
                 </table>`;
@@ -5782,9 +5784,9 @@
                         <tr>
                             <th class="py-2 px-3 text-center">Categoría / Licitación (Descripción)</th>
                             <th class="py-2 px-3 text-center">Empresa</th>
-                            <th class="py-2 px-3 text-center">KM<br>Adjudicados</th>
-                            <th class="py-2 px-3 text-center whitespace-nowrap !bg-accent/10">Costo/KM<br>(mdp)</th>
+                            <th class="py-2 px-3 text-center">KM<br>Adjudicados</th> <!-- Base de cálculo -->
                             <th class="py-2 px-3 text-center">Monto<br>(mdp)</th>
+                            <th class="py-2 px-3 text-center whitespace-nowrap !bg-accent/10">Costo/KM<br>(mdp)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -5803,9 +5805,9 @@
                     <tr class="font-bold bg-slate-100">
                         <td class="py-2 px-3 text-left-important">${categoria}</td>
                         <td class="py-2 px-3 text-center"></td>
-                        <td class="py-2 px-3 text-center">${formatNumber(totalKmAdjudicados)}</td> <!-- KM Adjudicados de construcción como base -->
-                        <td class="py-2 px-3 text-center bg-accent/10 text-accent">${formatCurrency(categoryCostoPorKm)}</td>
+                        <td class="py-2 px-3 text-center">${formatNumber(totalKmAdjudicados)}</td>
                         <td class="py-2 px-3 text-center text-primary">${formatCurrency(categoryData.totalMonto)}</td>
+                        <td class="py-2 px-3 text-center bg-accent/10 text-accent">${formatCurrency(categoryCostoPorKm)}</td>
                     </tr>
                 `;
 
@@ -5819,9 +5821,9 @@
                         <tr class="border-b hover:bg-gray-50">
                             <td class="py-2 px-3 text-left-important pl-8">${lic.descripcion || 'Sin descripción'}</td>
                             <td class="py-2 px-3 text-center">${lic.empresaConstructora || 'N/A'}</td>
-                            <td class="py-2 px-3 text-center">${formatNumber(licKmAdjudicados)}</td>
-                            <td class="py-2 px-3 text-center bg-accent/10 text-accent">${formatCurrency(licCostoPorKm)}</td>
+                            <td class="py-2 px-3 text-center">${formatNumber(licKmAdjudicados)}</td> <!-- KM de la licitación "otra" -->
                             <td class="py-2 px-3 text-center text-primary">${formatCurrency(licMonto)}</td>
+                            <td class="py-2 px-3 text-center bg-accent/10 text-accent">${formatCurrency(licCostoPorKm)}</td>
                         </tr>
                     `;
                 });
@@ -5834,9 +5836,9 @@
                     <tr class="bg-slate-200 border-t-2 border-slate-300">
                         <td class="py-2 px-3 text-center">Costo Total</td>
                         <td class="py-2 px-3 text-center"></td>
-                        <td class="py-2 px-3 text-center bg-total-km-adjudicados-cell text-white">${formatNumber(totalKmAdjudicados)}</td> <!-- KM Adjudicados de construcción como base -->
-                        <td class="py-2 px-3 text-center bg-accent text-white">${formatCurrency(totalKmAdjudicados > 0 ? grandTotalMontoOtras / totalKmAdjudicados : 0)}</td>
+                        <td class="py-2 px-3 text-center bg-total-km-adjudicados-cell text-white">${formatNumber(totalKmAdjudicados)}</td>
                         <td class="py-2 px-3 text-center bg-green-600 text-white">${formatCurrency(grandTotalMontoOtras)}</td>
+                        <td class="py-2 px-3 text-center bg-accent text-white">${formatCurrency(totalKmAdjudicados > 0 ? grandTotalMontoOtras / totalKmAdjudicados : 0)}</td>
                     </tr>
                 </tfoot>
             </table>`;
