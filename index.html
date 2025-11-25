@@ -2794,10 +2794,10 @@
         async function handleFormSubmit(e) {
             e.preventDefault();
             
-            const saveButton = document.getElementById('save-ficha-btn');
-            const cancelButton = document.getElementById('cancel-btn');
-            const btnText = saveButton.querySelector('.btn-text');
-            const btnSpinner = saveButton.querySelector('.btn-spinner');
+            const saveButton = document.getElementById('save-ficha-btn'); // ID correcto del botón de guardado
+            const cancelButton = document.getElementById('cancel-btn'); // Botón de cancelar
+            const btnText = saveButton.querySelector('.btn-text'); // Span para el texto del botón
+            const btnSpinner = saveButton.querySelector('.btn-spinner'); // Span para el spinner
 
             // Deshabilitar botones y mostrar spinner
             saveButton.disabled = true;
@@ -2887,7 +2887,7 @@
                 showAlert(`Error al guardar: ${error.message}`, 'error');
             } finally {
                 // Volver a habilitar botones y ocultar spinner, sin importar si hubo éxito o error
-                saveButton.disabled = false;
+                saveButton.disabled = false; // Reactivar el botón de guardado
                 cancelButton.disabled = false;
                 btnText.classList.remove('hidden');
                 btnSpinner.classList.add('hidden');
