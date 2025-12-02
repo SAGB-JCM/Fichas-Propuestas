@@ -604,8 +604,18 @@
                 <section class="mb-8">
 
                     <!-- Search and Filters -->
-                    <div class="bg-white rounded-lg shadow-sm p-4 mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div class="bg-white rounded-lg shadow-sm p-4 mb-6 grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                         <!-- Filtro Proyecto Ferroviario -->
+                        <div>
+                            <label for="trimestre-filter" class="block text-sm font-medium text-gray-700 mb-1">Trimestre</label>
+                            <select id="trimestre-filter" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                                <option value="">Todos los Trimestres</option>
+                                <option value="Primer Trimestre">Primer trimestre</option>
+                                <option value="Segundo Trimestre">Segundo trimestre</option>
+                                <option value="Tercer Trimestre">Tercer trimestre</option>
+                                <option value="Cuarto Trimestre">Cuarto trimestre</option>
+                            </select>
+                        </div>
                         <div>
                             <label for="proyecto-ferroviario-filter" class="block text-sm font-medium text-gray-700 mb-1">Proyecto Ferroviario</label>
                             <select id="proyecto-ferroviario-filter" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
@@ -643,6 +653,7 @@
                             <thead class="text-xs text-slate-700 uppercase bg-slate-100 sticky top-0">
                                 <tr>
                                     <th class="py-3 px-6 text-center">No.</th>
+                                    <th class="py-3 px-6 text-center">Trimestre</th>
                                     <th class="py-3 px-6 text-center">Fase</th>
                                     <th class="py-3 px-6 text-center">Proyecto Ferroviario</th>
                                     <th class="py-3 px-6 text-center">Tramo Correspondiente</th>
@@ -1705,6 +1716,7 @@
             // Filtros de la tabla principal
             proyectoFerroviarioFilter: document.getElementById('proyecto-ferroviario-filter'),
             tramoCorrespondienteFilter: document.getElementById('tramo-correspondiente-filter'),
+            trimestreFilter: document.getElementById('trimestre-filter'), // Nuevo filtro
             // Filtros de la pestaña de reportes
             reportProyectoFerroviarioFilter: document.getElementById('report-proyecto-ferroviario-filter'),
             reportTramoCorrespondienteFilter: document.getElementById('report-tramo-correspondiente-filter'),
@@ -2021,6 +2033,11 @@
                 populateTramoFilter(elements.proyectoFerroviarioFilter.value, elements.tramoCorrespondienteFilter);
                 applyAllFiltersAndRender();
             });
+
+            elements.trimestreFilter.addEventListener('change', () => { // Listener para el nuevo filtro
+                applyAllFiltersAndRender();
+            });
+            
             elements.tramoCorrespondienteFilter.addEventListener('change', applyAllFiltersAndRender);
 
             elements.reportProyectoFerroviarioFilter.addEventListener('change', () => {
@@ -2369,6 +2386,7 @@
                 // --- FIN: Añadir datos para el tooltip ---
                 row.innerHTML = `
                     <td class="py-4 px-6">${index + 1}</td>
+                    <td class="py-4 px-6">${ficha.periodoReportado || ''}</td>
                     <td class="py-4 px-6">${ficha.faseProyecto || ''}</td>
                     <td class="py-4 px-6">${ficha.proyectoFerroviario || ''}</td>
                     <td class="py-4 px-6">${ficha.tramoCorrespondiente || ''}</td>
@@ -4113,12 +4131,18 @@
          */
         function applyAllFiltersAndRender(render = true) {
             const proyectoFiltro = elements.proyectoFerroviarioFilter.value;
+            const trimestreFiltro = elements.trimestreFilter.value; // Obtener valor del nuevo filtro
             const tramoFiltro = elements.tramoCorrespondienteFilter.value;
             const searchTerm = elements.searchInput.value.toLowerCase().trim();
 
             let data = fichas;
 
-            // 1. Filtrar por Proyecto Ferroviario
+            // 1. Filtrar por Trimestre
+            if (trimestreFiltro) {
+                data = data.filter(ficha => ficha.periodoReportado === trimestreFiltro);
+            }
+
+            // 2. Filtrar por Proyecto Ferroviario
             if (proyectoFiltro) {
                 data = data.filter(ficha => ficha.proyectoFerroviario === proyectoFiltro);
             }
@@ -4193,6 +4217,8 @@
 
         function clearSearch() {
             elements.searchInput.value = '';
+            elements.proyectoFerroviarioFilter.value = '';
+            elements.trimestreFilter.value = '';
             renderFichasTable();
         }
 
